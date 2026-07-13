@@ -1,0 +1,21 @@
+import type { Icon } from "@phosphor-icons/react";
+import { ChatCircleDots, Code, DeviceMobile, DotsThreeVertical, Storefront } from "@phosphor-icons/react";
+import { getShareQrValue } from "./share-qr";
+import { ShareQrButton } from "./share-qr-button";
+import type { CompatibilityStatus, DistributionChannel, DistributionChannelId, DistributionStatus } from "./types";
+
+const channelIcons: Record<DistributionChannelId, { icon: Icon; className: string }> = {
+  oyiioyii: { icon: DeviceMobile, className: "bg-indigo-600 text-white" },
+  "web-chat": { icon: ChatCircleDots, className: "bg-emerald-500 text-white" },
+  "brand-private": { icon: Storefront, className: "bg-blue-600 text-white" },
+  "api-runtime": { icon: Code, className: "bg-orange-500 text-white" },
+};
+const compatibilityStyles: Record<CompatibilityStatus, string> = { compatible: "text-success", upgrade: "text-warning", configure: "text-text-muted" };
+const statusStyles: Record<DistributionStatus, string> = { running: "bg-emerald-50 text-emerald-700 ring-emerald-200", unpublished: "bg-slate-50 text-slate-600 ring-slate-200", paused: "bg-rose-50 text-rose-700 ring-rose-200" };
+
+export function DistributionChannelTableNext({ channels, busyChannel, onAction }: { channels: DistributionChannel[]; busyChannel: DistributionChannelId | null; onAction: (channel: DistributionChannel) => void }) {
+  return <section aria-labelledby="distribution-overview-title"><h2 id="distribution-overview-title" className="text-lg font-semibold">多端发布概览</h2><div className="mt-3 overflow-hidden border-y border-border bg-surface"><div className="hidden grid-cols-[minmax(170px,1.2fr)_115px_165px_110px_150px_42px] border-b border-border px-3 py-3 text-xs font-medium text-text-muted md:grid"><span>应用端</span><span>适配版本</span><span>兼容状态</span><span>发布状态</span><span>最近发布</span><span /></div><div className="divide-y divide-border">{channels.map((channel) => {
+    const iconMeta = channelIcons[channel.id]; const ChannelIcon = iconMeta.icon; const qrValue = getShareQrValue(channel);
+    return <article key={channel.id} className="grid gap-4 px-3 py-4 transition hover:bg-subtle/45 md:grid-cols-[minmax(170px,1.2fr)_115px_165px_110px_150px_42px] md:items-center"><div className="flex min-w-0 items-center gap-3"><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${iconMeta.className}`}><ChannelIcon size={21} weight="bold" /></span><div className="min-w-0"><strong className="block truncate text-sm">{channel.name}</strong>{channel.shareUrl && <p className="mt-1 truncate text-xs text-text-muted">公开分享链接已生成</p>}{qrValue && <ShareQrButton url={qrValue} label={channel.name} />}</div></div><div><strong className="block text-sm font-medium">{channel.version}</strong><span className="text-xs text-text-muted">{channel.versionHint}</span></div><div><p className={`flex items-center gap-2 text-sm font-medium ${compatibilityStyles[channel.compatibility]}`}><span className="h-2 w-2 rounded-full bg-current" />{channel.compatibilityLabel}</p><p className="mt-1 text-xs text-text-muted">{channel.compatibilityHint}</p></div><div><span className={`inline-flex rounded px-2 py-1 text-xs font-medium ring-1 ring-inset ${statusStyles[channel.status]}`}>{channel.statusLabel}</span></div><div className="min-w-0">{channel.publishedAt ? <><p className="text-xs text-text-muted">{channel.publishedAt}</p><p className="mt-1 text-xs text-text-muted">{channel.publishedBy}</p></> : channel.actionLabel ? <button type="button" onClick={() => onAction(channel)} disabled={busyChannel === channel.id} className="min-h-8 rounded border border-primary/55 px-3 text-xs font-medium text-primary transition hover:bg-primary-soft disabled:opacity-50">{busyChannel === channel.id ? "处理中…" : channel.actionLabel}</button> : <span className="text-text-muted">—</span>}</div><button type="button" onClick={() => onAction(channel)} className="hidden h-9 w-9 items-center justify-center rounded-md text-text-muted hover:bg-subtle hover:text-text-strong md:flex" aria-label={`${channel.name} 操作`}><DotsThreeVertical size={19} weight="bold" /></button></article>;
+  })}</div></div><p className="mt-3 text-sm text-text-muted">共 {channels.length} 个应用端</p></section>;
+}

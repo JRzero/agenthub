@@ -1,0 +1,5 @@
+import { REVENUE_ROWS } from "./fixtures";
+
+export function RevenueTable() {
+  return <section className="panel overflow-hidden"><div className="border-b border-border px-5 py-4"><h2 className="text-lg font-semibold">收益明细</h2></div><div className="overflow-x-auto"><table className="w-full min-w-[880px] text-left"><thead className="bg-subtle text-xs text-text-muted"><tr><th className="px-5 py-3">日期</th><th>Agent</th><th>来源</th><th>收入（积分）</th><th>成本（积分）</th><th>预计分成（积分）</th><th>状态</th></tr></thead><tbody>{REVENUE_ROWS.map((row) => <tr key={`${row.date}-${row.agent}-${row.source}`} className="border-t border-border"><td className="px-5 py-4 text-text-muted">{row.date}</td><td className="font-medium">{row.agent}</td><td>{row.source}</td><td>{row.income.toLocaleString()}</td><td>{row.cost.toLocaleString()}</td><td>{row.share.toLocaleString()}</td><td><span className={`status-badge ${row.status === "已入账" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"}`}>{row.status}</span></td></tr>)}</tbody></table></div></section>;
+}

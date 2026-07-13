@@ -1,0 +1,11 @@
+import { ArrowClockwise, FileText, Trash } from "@phosphor-icons/react";
+import type { KnowledgeDocument } from "./types";
+
+export function KnowledgeDocumentTable({ documents, onOpen, onReindex, onDelete }: {
+  documents: KnowledgeDocument[];
+  onOpen: (document: KnowledgeDocument) => void;
+  onReindex: (document: KnowledgeDocument) => void;
+  onDelete: (document: KnowledgeDocument) => void;
+}) {
+  return <div className="mt-6 overflow-hidden rounded-lg border border-border"><div className="grid grid-cols-[minmax(0,1fr)_90px_90px_78px] gap-3 border-b border-border bg-subtle px-4 py-3 text-xs text-text-muted"><span>文档</span><span>来源</span><span>状态</span><span>操作</span></div>{documents.map((document) => <div key={document.id} className="grid grid-cols-[minmax(0,1fr)_90px_90px_78px] items-center gap-3 border-b border-border px-4 py-3 last:border-b-0"><button type="button" onClick={() => onOpen(document)} className="flex min-w-0 items-center gap-3 text-left"><FileText size={20} className="shrink-0 text-primary" /><span className="min-w-0"><strong className="block truncate text-sm">{document.title}</strong><span className="text-xs text-text-muted">{document.chunk_count} 个分块</span></span></button><span className="text-xs text-text-muted">{document.source_type}</span><span className={`status-badge justify-self-start ${document.status === "ready" ? "bg-emerald-50 text-emerald-700" : document.status === "failed" ? "bg-rose-50 text-rose-700" : "bg-amber-50 text-amber-700"}`}>{document.status}</span><span className="flex"><button type="button" onClick={() => onReindex(document)} className="rounded p-2 text-text-muted hover:bg-primary-soft hover:text-primary" aria-label={`重建 ${document.title} 索引`}><ArrowClockwise size={16} /></button><button type="button" onClick={() => onDelete(document)} className="rounded p-2 text-text-muted hover:bg-rose-50 hover:text-danger" aria-label={`删除文档 ${document.title}`}><Trash size={16} /></button></span></div>)}{!documents.length && <div className="flex min-h-52 flex-col items-center justify-center text-center"><FileText size={36} className="text-primary" /><p className="mt-3 font-medium">还没有文档</p><p className="mt-1 text-sm text-text-muted">添加文件、文本或网址，构建可检索的知识资产。</p></div>}</div>;
+}
