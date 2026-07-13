@@ -11,13 +11,13 @@ The new frontend already has compatible auth, workspace, Agent queries, capabili
 - Match the approved Build workspace hierarchy inside the selected Agent Asset route.
 - Support real edits for identity, persona, knowledge binding, skills, memory policy, runtime, and safe presentation flags through the current Agent update contract.
 - Make dirty, saving, saved, validation, reset, error, demo, and unavailable states explicit.
-- Keep the preview responsive and interactive using local form state.
+- Keep draft presentation responsive while using authenticated Runtime Chat for real model responses.
 - Keep components and contracts small enough for later domain-specific migration.
 
 **Non-Goals:**
 
 - Migrating skill marketplace configuration, media upload/generation, Motherland, moments, share links, or secret LLM credentials.
-- Adding a new test endpoint or claiming the local preview is a backend conversation.
+- Adding a new test endpoint or an unsaved prompt-override contract.
 - Changing the legacy Creator, backend schemas, or production routing.
 
 ## Decisions
@@ -44,9 +44,11 @@ The ordered section rail changes the active editor panel without changing the UR
 
 Alternative: one route per section. Rejected because navigation would require cross-route draft persistence before the product needs it.
 
-### 5. Treat the right preview as a draft renderer
+### 5. Reuse Runtime Chat for real preview responses
 
-The preview uses the selected Agent's real avatar plus local name, description, prompt, and example questions. Sending a preview message adds a local transcript item marked as preview-only; backend evaluation remains the responsibility of the Test route.
+The preview keeps avatar, name, description, and starter questions tied to the current draft, but sends messages through `useRuntimeChat`. Live mode creates a workspace-scoped test session and streams model output, with the existing non-stream request as fallback. Because the Runtime message contract does not accept an unsaved prompt override, sending is blocked while the draft is dirty and the user is asked to save first. Demo mode remains isolated and visibly simulated.
+
+This provides a real response loop without inventing a new backend endpoint or implying that unsaved system-prompt changes have reached Runtime.
 
 ### 6. Defer unsupported writes explicitly
 
@@ -60,7 +62,7 @@ Every Agent Asset route uses the same compact identity header so page transition
 
 - [The backend may omit optional fields in an update response] -> Merge the response with the submitted draft mapping before refreshing the query cache.
 - [One save payload spans several conceptual sections] -> Serialize only known fields and show the active dirty state globally.
-- [Local preview can be mistaken for model output] -> Label it as draft preview and route real evaluation to Test.
+- [Draft presentation changes can be mistaken for saved Runtime configuration] -> Label the response source, block sending while dirty, and show the returned model when available.
 - [Existing demo fixtures are static] -> Keep saved changes editor-local and reset them on reload.
 - [The current active overview change is not archived] -> Keep this change separate and validate both changes without archiving either.
 

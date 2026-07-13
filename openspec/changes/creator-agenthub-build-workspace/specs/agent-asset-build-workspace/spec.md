@@ -32,12 +32,24 @@ Demo mode MUST NOT call the Agent update endpoint and SHALL visibly identify sav
 - **WHEN** the creator saves in demo mode
 - **THEN** the editor updates its saved snapshot locally and no HTTP write occurs
 
-### Requirement: Draft preview
-The Build workspace SHALL render the current draft identity and starter questions in a preview panel and MUST label local transcript output as preview-only.
+### Requirement: Runtime-backed preview
+The Build workspace SHALL render current draft presentation fields and starter questions while using the authenticated Runtime Chat contract for model responses after the draft is saved.
 
 #### Scenario: Preview an unsaved name
 - **WHEN** the creator changes the Agent name without saving
 - **THEN** the preview panel immediately shows the draft name while the asset header continues to represent the saved Agent
+
+#### Scenario: Saved draft sends a real Runtime message
+- **WHEN** the live-mode draft has no unsaved changes and the creator sends a preview message
+- **THEN** the frontend creates or reuses a workspace-scoped test session and streams the real Runtime response, with the existing non-stream request as fallback
+
+#### Scenario: Unsaved draft blocks Runtime send
+- **WHEN** the creator has unsaved build changes
+- **THEN** the preview prevents message submission and asks the creator to save before testing the latest configuration
+
+#### Scenario: Demo preview remains isolated
+- **WHEN** AgentHub runs in demo data mode
+- **THEN** the preview is visibly labeled as simulated and does not create a backend Runtime session
 
 #### Scenario: Collapse the draft preview
 

@@ -8,7 +8,7 @@ The first AgentHub vertical slice establishes the two-level workspace and an Age
 - Add section navigation for identity, persona, knowledge, skills, memory policy, runtime, safety, and media.
 - Load editable values from the existing Agent contract and save supported fields through the existing `PUT /api/v1/agents/{id}` endpoint.
 - Add unsaved-change detection, reset, save feedback, validation, and explicit demo-mode write isolation.
-- Add a local real-time preview with starter questions and a draft message interaction without inventing a new backend endpoint.
+- Add a runtime-backed real-time preview that reuses the authenticated session and message APIs, while keeping demo traffic isolated.
 - Give every Agent Asset route a shared compact Agent header, while keeping the Build preview width-bounded and collapsible so focused content remains primary.
 - Keep unsupported media and advanced safety operations visibly unavailable instead of simulating production writes.
 
@@ -25,6 +25,6 @@ The first AgentHub vertical slice establishes the two-level workspace and an Age
 ## Impact
 
 - Adds frontend-only modules under `src/modules/agent-build/` and a Build route layout.
-- Reuses existing authentication, workspace headers, Agent query cache, and `PUT /agents/{id}` schema.
+- Reuses existing authentication, workspace headers, Agent query cache, `PUT /agents/{id}`, and Runtime Chat session/message contracts.
 - Adds no backend endpoint, schema, dependency, deployment, or legacy Creator change.
 - Extends unit and browser verification for editable fields, demo isolation, navigation, and responsive behavior.

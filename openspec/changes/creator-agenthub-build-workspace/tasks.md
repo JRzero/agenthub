@@ -14,6 +14,7 @@
 - [x] 2.6 Implement responsive desktop, tablet, and mobile layouts without page overflow
 - [x] 2.7 Compact the Build header and add a width-bounded, collapsible preview
 - [x] 2.8 Apply the shared compact Agent header across every Agent Asset lifecycle route
+- [x] 2.9 Replace the local transcript with authenticated Runtime Chat and an unsaved-draft guard
 
 ## 3. Verification
 
@@ -21,3 +22,4 @@
 - [x] 3.2 Pass lint, TypeScript, unit tests, production build, and strict OpenSpec validation
 - [x] 3.3 Verify section switching, dirty/reset/save, preview, validation, and Test navigation in the browser
 - [x] 3.4 Compare the 1440 x 1024 implementation with `04-build.png` and record design QA as passed
+- [ ] 3.5 Verify runtime preview session, streaming/fallback states, demo isolation, and error presentation
