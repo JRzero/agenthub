@@ -12,6 +12,8 @@
 - [x] 2.4 Implement explicit unavailable treatment for media and advanced safety operations
 - [x] 2.5 Implement the draft preview, starter questions, and local preview transcript
 - [x] 2.6 Implement responsive desktop, tablet, and mobile layouts without page overflow
+- [x] 2.7 Compact the Build header and add a width-bounded, collapsible preview
+- [x] 2.8 Apply the shared compact Agent header across every Agent Asset lifecycle route
 
 ## 3. Verification
 

@@ -52,6 +52,10 @@ The preview uses the selected Agent's real avatar plus local name, description, 
 
 Media upload and advanced safety policies remain visible sections with explanatory unavailable states. Secret provider keys are not read or edited in this slice.
 
+### 7. Prioritize content space across Agent Asset routes
+
+Every Agent Asset route uses the same compact identity header so page transitions preserve a stable content origin and do not repeat overview-scale identity content. The header keeps one contextual lifecycle action: Build routes expose Run Test, while the remaining routes expose Continue Build. The Build preview remains visible by default but uses a fixed desktop width rather than growing proportionally, and creators can collapse it to a narrow restore rail. On tablet widths, the preview spans the full row below the section rail and editor.
+
 ## Risks / Trade-offs
 
 - [The backend may omit optional fields in an update response] -> Merge the response with the submitted draft mapping before refreshing the query cache.

@@ -39,6 +39,11 @@ The Build workspace SHALL render the current draft identity and starter question
 - **WHEN** the creator changes the Agent name without saving
 - **THEN** the preview panel immediately shows the draft name while the asset header continues to represent the saved Agent
 
+#### Scenario: Collapse the draft preview
+
+- **WHEN** the creator collapses the preview on a desktop Build workspace
+- **THEN** the preview SHALL reduce to a narrow restore control and the focused editor SHALL receive the released width without losing draft state
+
 ### Requirement: Unsupported build capabilities
 The Build workspace MUST identify unavailable media and advanced safety operations and MUST prevent their production write controls.
 

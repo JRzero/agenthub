@@ -9,6 +9,7 @@ The first AgentHub vertical slice establishes the two-level workspace and an Age
 - Load editable values from the existing Agent contract and save supported fields through the existing `PUT /api/v1/agents/{id}` endpoint.
 - Add unsaved-change detection, reset, save feedback, validation, and explicit demo-mode write isolation.
 - Add a local real-time preview with starter questions and a draft message interaction without inventing a new backend endpoint.
+- Give every Agent Asset route a shared compact Agent header, while keeping the Build preview width-bounded and collapsible so focused content remains primary.
 - Keep unsupported media and advanced safety operations visibly unavailable instead of simulating production writes.
 
 ## Capabilities
