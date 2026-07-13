@@ -48,5 +48,31 @@ export function MomentComposer({ agentId, agentName, onPublished }: { agentId: n
     finally { setBusy(""); }
   };
 
-  return <section className="rounded-xl border border-border p-5"><div className="flex items-center justify-between gap-3"><div><h3 className="font-semibold">发布朋友圈</h3><p className="mt-1 text-xs text-text-muted">使用 Agent 身份发布，图片通过现有临时 Token 管线上传。</p></div><button type="button" onClick={() => void draft()} disabled={Boolean(busy)} className="button-secondary"><MagicWand size={17} />AI 草稿</button></div><textarea value={content} onChange={(event) => setContent(event.target.value)} rows={5} placeholder="输入朋友圈内容" className="mt-4 w-full resize-y rounded-lg border border-border p-3 leading-6" />{uploads.length > 0 && <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5">{uploads.map((item) => <div key={item.token} className="relative aspect-square overflow-hidden rounded-lg border border-border"><Image src={item.url} alt="待发布图片" fill unoptimized sizes="120px" className="object-cover" /><button type="button" onClick={() => setUploads((current) => current.filter((uploadItem) => uploadItem.token !== item.token))} className="absolute right-1 top-1 rounded-full bg-slate-950/70 p-1 text-white" aria-label="移除待发布图片"><X size={13} /></button></div>)}</div>}<div className="mt-4 flex flex-wrap items-center gap-3"><label className="button-secondary cursor-pointer"><ImageSquare size={17} />{busy === "upload" ? "上传中…" : "添加图片"}<input type="file" accept="image/*" multiple className="sr-only" onChange={(event) => void upload(event.target.files)} /></label><label className="flex items-center gap-2 text-sm text-text-muted"><input type="checkbox" checked={autoImage} onChange={(event) => setAutoImage(event.target.checked)} className="size-4 accent-primary" />无图片时自动配图</label><button type="button" onClick={() => void publish()} disabled={!content.trim() || Boolean(busy)} className="button-primary ml-auto"><PaperPlaneTilt size={17} />{busy === "publish" ? "发布中…" : "发布"}</button></div>{message && <p className="mt-3 text-sm text-text-muted">{message}</p>}</section>;
+  return (
+    <section className="rounded-xl border border-border p-5 sm:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 flex-1">
+          <h3 className="font-semibold">发布朋友圈</h3>
+          <p className="mt-1 max-w-2xl text-sm leading-6 text-text-muted">
+            内容将以当前 Agent 的身份发布。
+          </p>
+        </div>
+        <button type="button" onClick={() => void draft()} disabled={Boolean(busy)} className="button-secondary w-full shrink-0 whitespace-nowrap sm:w-auto">
+          <MagicWand size={17} />AI 草稿
+        </button>
+      </div>
+
+      <textarea value={content} onChange={(event) => setContent(event.target.value)} rows={5} placeholder="输入朋友圈内容" className="mt-5 w-full resize-y rounded-lg border border-border p-3 leading-6" />
+
+      {uploads.length > 0 && <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5">{uploads.map((item) => <div key={item.token} className="relative aspect-square overflow-hidden rounded-lg border border-border"><Image src={item.url} alt="待发布图片" fill unoptimized sizes="120px" className="object-cover" /><button type="button" onClick={() => setUploads((current) => current.filter((uploadItem) => uploadItem.token !== item.token))} className="absolute right-1 top-1 rounded-full bg-slate-950/70 p-1 text-white" aria-label="移除待发布图片"><X size={13} /></button></div>)}</div>}
+
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <label className="button-secondary w-full cursor-pointer whitespace-nowrap sm:w-auto"><ImageSquare size={17} />{busy === "upload" ? "上传中…" : "添加图片"}<input type="file" accept="image/*" multiple className="sr-only" onChange={(event) => void upload(event.target.files)} /></label>
+        <label className="flex items-center gap-2 text-sm text-text-muted"><input type="checkbox" checked={autoImage} onChange={(event) => setAutoImage(event.target.checked)} className="size-4 accent-primary" />无图片时自动配图</label>
+        <button type="button" onClick={() => void publish()} disabled={!content.trim() || Boolean(busy)} className="button-primary w-full whitespace-nowrap sm:ml-auto sm:w-auto"><PaperPlaneTilt size={17} />{busy === "publish" ? "发布中…" : "发布"}</button>
+      </div>
+
+      {message && <p className="mt-3 text-sm text-text-muted">{message}</p>}
+    </section>
+  );
 }

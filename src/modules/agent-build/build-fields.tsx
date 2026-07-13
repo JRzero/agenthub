@@ -1,5 +1,7 @@
 import { Info, LockKey, Plus, Trash } from "@phosphor-icons/react";
 import type { KnowledgeBaseOption } from "./api";
+import { getLLMProviderFamilies, getLLMProviderFamily, getLLMProviderModelOptions, getRuntimeModelPatch, getRuntimeProviderPatch, getRuntimeProviderSelection, RUNTIME_PROVIDER_PROTOCOLS } from "./advanced-api";
+import { useLLMProviders } from "./use-llm-providers";
 import type {
   AgentBuildDraft,
   BuildSectionId,
@@ -75,6 +77,16 @@ export function BasicSectionFields({
   knowledgeLoading: boolean;
   onPatch: (patch: Partial<AgentBuildDraft>) => void;
 }) {
+  const providersQuery = useLLMProviders(section === "runtime" && draft.agentType === "cloud");
+  const llmProviders = providersQuery.data || [];
+  const selectedProvider = llmProviders.find((provider) => provider.name === draft.llmProvider);
+  const providerFamilies = getLLMProviderFamilies(llmProviders);
+  const selectedProviderFamily = getLLMProviderFamily(llmProviders, draft.llmProvider);
+  const providerSelection = getRuntimeProviderSelection(draft.llmProvider, draft.llmProviderType, llmProviders);
+  const currentProviderMissing = Boolean(draft.llmProvider && !selectedProvider);
+  const modelOptions = getLLMProviderModelOptions(llmProviders, draft.llmProvider, draft.llmModelName);
+  const skipsTemperature = Boolean(selectedProvider?.skip_temperature);
+
   if (section === "identity") {
     return (
       <div className="space-y-5">
@@ -161,22 +173,76 @@ export function BasicSectionFields({
     return (
       <div className="space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Provider 协议">
-            <select className={inputClass} value={draft.llmProviderType} onChange={(e) => onPatch({ llmProviderType: e.target.value })}>
-              <option value="">系统默认</option><option value="openai">OpenAI 兼容</option><option value="anthropic">Anthropic 兼容</option><option value="gemini">Google Gemini</option>
+          <Field
+            label="供应商"
+            hint={providersQuery.isError ? "系统 Provider 加载失败，仍可选择兼容协议" : undefined}
+          >
+            <select
+              className={inputClass}
+              value={providerSelection}
+              onChange={(e) => onPatch(getRuntimeProviderPatch(e.target.value, llmProviders))}
+            >
+              <option value="">系统默认（不覆盖）</option>
+              {providersQuery.isLoading && <option disabled>正在加载系统 Provider…</option>}
+              {(providerFamilies.length > 0 || currentProviderMissing) && (
+                <optgroup label="系统 Provider">
+                  {currentProviderMissing && <option value={"provider:" + draft.llmProvider}>{draft.llmProvider}（当前配置）</option>}
+                  {providerFamilies.map((family) => (
+                    <option key={family.key} value={"catalogue:" + family.key}>{family.label}</option>
+                  ))}
+                </optgroup>
+              )}
+              <optgroup label="自定义兼容协议">
+                {RUNTIME_PROVIDER_PROTOCOLS.map((protocol) => (
+                  <option key={protocol.value} value={"protocol:" + protocol.value}>{protocol.label}</option>
+                ))}
+              </optgroup>
             </select>
-          </Field>
-          <Field label="模型名称">
-            <input className={inputClass} value={draft.llmModelName} onChange={(e) => onPatch({ llmModelName: e.target.value })} placeholder="留空使用系统默认" />
+            {selectedProviderFamily && (
+              <p className="mt-2 text-xs text-text-muted">
+                {selectedProviderFamily.label} · {modelOptions.length} 个可选模型
+              </p>
+            )}
+          </Field>          <Field label="模型名称" hint="留空使用系统默认">
+            <select
+              className={inputClass}
+              value={draft.llmModelName}
+              disabled={providersQuery.isLoading}
+              onChange={(e) => onPatch(getRuntimeModelPatch(e.target.value, providerSelection, llmProviders))}
+            >
+              <option value="">系统默认（不覆盖）</option>
+              {modelOptions.map((model) => <option key={model} value={model}>{model}</option>)}
+            </select>
           </Field>
         </div>
         <Field label="Base URL" hint="不在这里编辑 Provider 密钥">
           <input className={`${inputClass} font-mono`} value={draft.llmBaseUrl} onChange={(e) => onPatch({ llmBaseUrl: e.target.value })} placeholder="留空使用 Provider 默认地址" />
         </Field>
         <Field label="Temperature" error={errors.llmTemperature}>
+          <label className="mt-3 flex items-center justify-end gap-2 text-sm text-text-muted">
+            <input
+              type="checkbox"
+              checked={draft.llmTemperature === null}
+              disabled={skipsTemperature}
+              onChange={(e) => onPatch({ llmTemperature: e.target.checked ? null : 0.7 })}
+              className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+            />
+            {skipsTemperature ? "当前 Provider 不使用 Temperature" : "使用系统默认"}
+          </label>
           <div className="mt-3 flex items-center gap-4">
-            <input type="range" min="0" max="2" step="0.1" value={draft.llmTemperature ?? 0.7} onChange={(e) => onPatch({ llmTemperature: Number(e.target.value) })} className="min-w-0 flex-1 accent-primary" />
-            <output className="w-12 rounded bg-primary-soft px-2 py-1 text-center font-semibold text-primary">{(draft.llmTemperature ?? 0.7).toFixed(1)}</output>
+            <input
+              type="range"
+              min="0"
+              max="2"
+              step="0.1"
+              disabled={draft.llmTemperature === null || skipsTemperature}
+              value={draft.llmTemperature ?? 0.7}
+              onChange={(e) => onPatch({ llmTemperature: Number(e.target.value) })}
+              className="min-w-0 flex-1 accent-primary disabled:cursor-not-allowed disabled:opacity-45"
+            />
+            <output className="min-w-20 rounded bg-primary-soft px-2 py-1 text-center font-semibold text-primary">
+              {draft.llmTemperature === null ? "系统默认" : draft.llmTemperature.toFixed(1)}
+            </output>
           </div>
         </Field>
       </div>

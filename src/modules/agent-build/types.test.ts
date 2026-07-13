@@ -41,6 +41,19 @@ describe("Agent build draft", () => {
     expect(draft.showReasoning).toBe(false);
   });
 
+  it("preserves system defaults instead of backfilling legacy runtime values", () => {
+    const draft = createBuildDraft({
+      ...agent,
+      model: "gpt-4o",
+      temperature: 0.7,
+      llm_model_name: "",
+      llm_temperature: null,
+    });
+    expect(draft.llmModelName).toBe("");
+    expect(draft.llmTemperature).toBeNull();
+    expect(serializeBuildDraft(draft)).toMatchObject({ llm_model_name: "", llm_temperature: null });
+  });
+
   it("serializes only supported update fields and normalizes identifiers", () => {
     const draft = createBuildDraft(agent);
     draft.code = "  LIN-YUE-V2 ";

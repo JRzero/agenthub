@@ -48,7 +48,25 @@ export interface AgentBuildUpdateInput {
 export type DraftValidationErrors = Partial<Record<"name" | "code" | "systemPrompt" | "llmTemperature", string>>;
 
 export function createBuildDraft(agent: BuildAgent): AgentBuildDraft {
-  return { code: agent.code || "", name: agent.name || "", description: agent.description || "", systemPrompt: agent.system_prompt || agent.config?.system_prompt || "", examples: Array.isArray(agent.config?.examples) ? agent.config.examples : [], skills: Array.isArray(agent.config?.skills) ? agent.config.skills : [], knowledgeBaseId: agent.knowledge_base_id ?? null, memoryEnabled: Boolean(agent.memory_enabled), agentType: agent.agent_type || "cloud", llmProvider: agent.llm_provider || "", llmProviderType: agent.llm_provider_type || "", llmBaseUrl: agent.llm_base_url || "", llmModelName: agent.llm_model_name || agent.model || "", llmTemperature: agent.llm_temperature ?? agent.temperature ?? agent.config?.temperature ?? null, showReasoning: agent.config?.show_reasoning !== false, showTools: agent.config?.show_tools !== false, hidden: Boolean(agent.hidden) };
+  return {
+    code: agent.code || "",
+    name: agent.name || "",
+    description: agent.description || "",
+    systemPrompt: agent.system_prompt || agent.config?.system_prompt || "",
+    examples: Array.isArray(agent.config?.examples) ? agent.config.examples : [],
+    skills: Array.isArray(agent.config?.skills) ? agent.config.skills : [],
+    knowledgeBaseId: agent.knowledge_base_id ?? null,
+    memoryEnabled: Boolean(agent.memory_enabled),
+    agentType: agent.agent_type || "cloud",
+    llmProvider: agent.llm_provider || "",
+    llmProviderType: agent.llm_provider_type || "",
+    llmBaseUrl: agent.llm_base_url || "",
+    llmModelName: agent.llm_model_name || "",
+    llmTemperature: agent.llm_temperature ?? null,
+    showReasoning: agent.config?.show_reasoning !== false,
+    showTools: agent.config?.show_tools !== false,
+    hidden: Boolean(agent.hidden),
+  };
 }
 
 export function validateBuildDraft(draft: AgentBuildDraft): DraftValidationErrors {

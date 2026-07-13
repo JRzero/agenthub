@@ -8,6 +8,7 @@ Legacy Creator users can co-create an Agent with Motherland and operate its Mome
 
 - Add Motherland status, history, manual talk, auto topic/round, and reset.
 - Add Motherland narrative optimization and character design generation/save.
+- Refine Motherland into a guided co-creation workflow with distinct free-chat, topic-round, and prompt-application steps.
 - Add generated avatar preview and acceptance through the existing avatar endpoint.
 - Add Moment draft, image upload, publish, list, delete, Creator comments, and automatic schedules.
 - Add deletion of public share links.

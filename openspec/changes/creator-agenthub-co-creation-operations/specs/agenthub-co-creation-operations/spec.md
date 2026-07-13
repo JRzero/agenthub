@@ -9,6 +9,11 @@ Build SHALL support Motherland history, manual talk, topic generation, automatic
 - **WHEN** a Creator accepts an optimized narrative
 - **THEN** it SHALL update the unsaved Build prompt draft
 
+#### Scenario: Choose a co-creation mode
+
+- **WHEN** a Creator switches between free conversation and a guided topic round
+- **THEN** Build SHALL present only the controls and progress feedback required for the selected workflow while preserving the same Motherland history
+
 ### Requirement: Character design pipeline
 
 Build SHALL preserve generation and save of character specs, sheets, and avatar previews.
