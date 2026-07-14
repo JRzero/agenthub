@@ -17,6 +17,7 @@
 - [x] 2.9 Replace the local transcript with authenticated Runtime Chat and an unsaved-draft guard
 - [x] 2.10 Replace global editor tabs with section-owned persona, runtime, and safety configuration
 - [x] 2.11 Reorder the section rail around behavior, runtime, skills, and knowledge
+- [x] 2.12 Align the Overview composition with the prioritized Build section order
 
 ## 3. Verification
 
@@ -27,3 +28,4 @@
 - [ ] 3.5 Verify runtime preview session, streaming/fallback states, demo isolation, and error presentation
 - [x] 3.6 Verify the single-hierarchy editor navigation and section-owned controls in the browser
 - [x] 3.7 Verify the prioritized Build section order in the browser
+- [x] 3.8 Verify the matching Overview composition order in the browser

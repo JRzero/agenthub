@@ -83,11 +83,11 @@ export function mapAgentToAssetOverview(
       state: scoreState(identityScore),
     },
     {
-      id: "knowledge",
-      label: "知识",
-      description: "知识库、术语表、数据集",
-      score: knowledgeScore,
-      state: scoreState(knowledgeScore),
+      id: "runtime",
+      label: "运行配置",
+      description: "模型、参数、提示词、开关配置",
+      score: runtimeScore,
+      state: scoreState(runtimeScore),
     },
     {
       id: "skills",
@@ -95,6 +95,13 @@ export function mapAgentToAssetOverview(
       description: "内置技能、工作流、工具集",
       score: skillsScore,
       state: scoreState(skillsScore),
+    },
+    {
+      id: "knowledge",
+      label: "知识",
+      description: "知识库、术语表、数据集",
+      score: knowledgeScore,
+      state: scoreState(knowledgeScore),
     },
     {
       id: "memory",
@@ -109,13 +116,6 @@ export function mapAgentToAssetOverview(
       description: "图片、音频、视频、文档",
       score: mediaScore,
       state: scoreState(mediaScore),
-    },
-    {
-      id: "runtime",
-      label: "运行配置",
-      description: "模型、参数、提示词、开关配置",
-      score: runtimeScore,
-      state: scoreState(runtimeScore),
     },
     {
       id: "safety",

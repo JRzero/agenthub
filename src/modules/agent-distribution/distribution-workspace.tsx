@@ -185,7 +185,7 @@ export function DistributionWorkspace() {
   }
 
   return (
-    <section className="relative space-y-6 pb-6">
+    <section className="relative min-w-0 space-y-6 pb-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -203,7 +203,7 @@ export function DistributionWorkspace() {
 
       {loadError && <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">公开分享状态读取失败：{loadError}。其他端仍按未接入展示。</div>}
 
-      <div className="grid gap-7 min-[1400px]:grid-cols-[minmax(0,1fr)_310px]">
+      <div className="grid min-w-0 gap-7 min-[1400px]:grid-cols-[minmax(0,1fr)_310px]">
         <DistributionChannelTable channels={channels} busyChannel={busyChannel} onAction={(channel) => void handleChannelAction(channel)} />
         <DistributionSidePanel
           demo={demo}

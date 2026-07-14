@@ -31,6 +31,15 @@ describe("Agent Asset overview mapping", () => {
     expect(overview.sections.find((section) => section.id === "knowledge")?.score).toBe(100);
     expect(overview.sections.find((section) => section.id === "memory")?.score).toBe(80);
     expect(overview.sections.find((section) => section.id === "safety")?.state).toBe("unavailable");
+    expect(overview.sections.map((section) => section.id)).toEqual([
+      "identity",
+      "runtime",
+      "skills",
+      "knowledge",
+      "memory",
+      "media",
+      "safety",
+    ]);
   });
 
   it("does not present missing backend configuration as complete", () => {

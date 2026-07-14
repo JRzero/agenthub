@@ -13,6 +13,8 @@
 - [x] 2.4 Implement safe Public Agent Card preview and download
 - [x] 2.5 Implement governance, export, memory-boundary, rollback, and pause entry points
 - [x] 2.6 Implement responsive desktop and narrow-screen layouts
+- [x] 2.7 Separate recent release metadata from channel actions and contain the table layout
+- [x] 2.8 Standardize the action column width, alignment, and explicit labels
 
 ## 3. Verification
 
@@ -20,4 +22,5 @@
 - [x] 3.2 Pass lint, TypeScript, unit tests, production build, and strict OpenSpec validation
 - [x] 3.3 Verify share, publish, configure, export, governance, pause, rollback, and modal states in the browser
 - [x] 3.4 Compare the implementation with `06-distribution.png` and record design QA as passed
-
+- [x] 3.5 Verify the corrected table alignment and width containment at desktop and narrow browser widths
+- [x] 3.6 Verify the standardized action column in the browser

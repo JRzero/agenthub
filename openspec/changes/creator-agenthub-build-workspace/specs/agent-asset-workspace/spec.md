@@ -15,3 +15,13 @@ The primary Continue Build and Run Test controls SHALL navigate to the selected 
 #### Scenario: Run test
 - **WHEN** the user activates Run Test
 - **THEN** the application navigates to `/assets/{agentId}/test`
+
+### Requirement: Consistent core section order
+
+The Overview composition SHALL follow the Build workspace priority after combining identity and persona into one summary row.
+
+#### Scenario: Open prioritized asset composition
+
+- **WHEN** the user opens the selected Agent Asset Overview
+- **THEN** Runtime SHALL appear directly below Identity and Persona
+- **AND** Knowledge SHALL appear directly below Skills

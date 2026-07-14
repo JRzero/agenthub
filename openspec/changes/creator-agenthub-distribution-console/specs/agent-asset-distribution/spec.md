@@ -16,6 +16,13 @@ The Distribution route SHALL show each target application endpoint with its comp
 - **THEN** only the existing public Web Chat share link SHALL be presented as a connected live channel
 - **AND** other client publication actions SHALL state that their backend contracts are unavailable
 
+#### Scenario: Responsive release overview
+
+- **WHEN** the available Distribution workspace width supports the desktop table
+- **THEN** recent release metadata and channel actions SHALL appear in separate labeled columns
+- **AND** when that width is unavailable, each channel SHALL use a labeled card layout without horizontal overflow
+- **AND** the desktop action column SHALL use centered, equal-width, explicitly labeled actions
+
 ### Requirement: Public Web Chat distribution
 
 The console SHALL reuse the existing public share-link API to read, create, enable, and pause Web Chat distribution with the current API key and workspace scope.

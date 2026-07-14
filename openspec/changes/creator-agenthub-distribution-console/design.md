@@ -44,6 +44,10 @@ License, export, memory, safety, and audit entries open detailed boundary panels
 
 The rollback entry navigates to the version timeline. The actual rollback control stays unavailable because no backend restore endpoint exists.
 
+### 6. Keep release metadata and row actions in separate columns
+
+Recent release is historical metadata, while link generation and adapter configuration are commands. The table keeps them in separate, labeled columns and switches to a labeled two-column card layout when the available workspace width cannot support the desktop grid. The desktop action column is narrow and centered, and every row uses an equal-width text action instead of mixing unlabeled icon menus with text buttons. The surrounding workspace uses min-width containment so the governance rail cannot force the release overview outside its column.
+
 ## Risks / Trade-offs
 
 - [The full table may imply all channels are live] -> Source badge, status rows, and unsupported dialogs distinguish real public sharing from demo or unavailable channels.
