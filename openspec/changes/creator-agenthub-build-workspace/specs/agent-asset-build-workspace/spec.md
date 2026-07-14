@@ -1,11 +1,21 @@
 ## ADDED Requirements
 
 ### Requirement: Sectioned Agent construction
-The Build route SHALL provide ordered sections for identity, persona, knowledge, skills, memory policy, runtime, safety, and media while preserving one editable draft across section changes.
+The Build route SHALL provide one ordered section hierarchy for identity, persona, runtime, skills, knowledge, memory policy, safety, and media while preserving one editable draft across section changes. Persona SHALL own example conversations, Runtime SHALL own reasoning and tool-call display controls, and Safety SHALL own policy boundaries.
 
 #### Scenario: Switch build section
 - **WHEN** the creator edits identity fields and activates the runtime section
 - **THEN** the runtime editor opens and the unsaved identity changes remain in the draft
+#### Scenario: Show the prioritized section order
+- **WHEN** the creator opens the Build workspace
+- **THEN** Runtime appears directly below Persona and Knowledge appears directly below Skills
+#### Scenario: Open persona configuration
+- **WHEN** the creator activates the persona section
+- **THEN** the system prompt and example conversations appear in the same focused editor without a global editor-tab row
+
+#### Scenario: Open runtime and safety configuration
+- **WHEN** the creator activates runtime or safety
+- **THEN** runtime presents reasoning and tool-call display controls while safety presents visibility and unavailable policy boundaries
 
 ### Requirement: Compatible Agent editing
 The Build workspace SHALL load supported values from the selected Agent and MUST serialize only fields accepted by the existing Agent update contract.

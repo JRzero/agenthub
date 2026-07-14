@@ -37,20 +37,17 @@ function CheckSetting({
   label,
   description,
   onChange,
-  disabled,
 }: {
   checked: boolean;
   label: string;
   description: string;
   onChange: (checked: boolean) => void;
-  disabled?: boolean;
 }) {
   return (
     <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-4 has-[:checked]:border-primary/40 has-[:checked]:bg-primary-soft/40">
       <input
         type="checkbox"
         checked={checked}
-        disabled={disabled}
         onChange={(event) => onChange(event.target.checked)}
         className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
       />
@@ -291,12 +288,11 @@ export function ExamplesEditor({ draft, onPatch }: { draft: AgentBuildDraft; onP
   );
 }
 
-export function AdvancedRulesEditor({ draft, onPatch }: { draft: AgentBuildDraft; onPatch: (patch: Partial<AgentBuildDraft>) => void }) {
+export function RuntimeDisplaySettings({ draft, onPatch }: { draft: AgentBuildDraft; onPatch: (patch: Partial<AgentBuildDraft>) => void }) {
   return (
     <div className="space-y-3">
       <CheckSetting checked={draft.showReasoning} label="显示推理过程" description="沿用 show_reasoning 配置；具体可见范围由运行端决定。" onChange={(showReasoning) => onPatch({ showReasoning })} />
       <CheckSetting checked={draft.showTools} label="显示工具调用" description="沿用 show_tools 配置，便于调试 Agent 的技能执行。" onChange={(showTools) => onPatch({ showTools })} />
-      <CheckSetting checked={false} disabled label="高级安全规则" description="等待统一安全策略契约后开放。" onChange={() => undefined} />
     </div>
   );
 }

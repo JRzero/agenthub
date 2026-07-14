@@ -5,7 +5,7 @@ The first AgentHub vertical slice establishes the two-level workspace and an Age
 ## What Changes
 
 - Replace the Build placeholder with the approved three-column Agent construction workspace.
-- Add section navigation for identity, persona, knowledge, skills, memory policy, runtime, safety, and media.
+- Add one section navigation hierarchy for identity, persona, runtime, skills, knowledge, memory policy, safety, and media; persona owns examples, runtime owns output/debug display, and safety owns policy boundaries.
 - Load editable values from the existing Agent contract and save supported fields through the existing `PUT /api/v1/agents/{id}` endpoint.
 - Add unsaved-change detection, reset, save feedback, validation, and explicit demo-mode write isolation.
 - Add a runtime-backed real-time preview that reuses the authenticated session and message APIs, while keeping demo traffic isolated.

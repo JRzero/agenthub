@@ -7,10 +7,10 @@ interface BuildSection { id: BuildSectionId; label: string; icon: Icon }
 export const BUILD_SECTIONS: BuildSection[] = [
   { id: "identity", label: "身份设定", icon: IdentificationCard },
   { id: "persona", label: "角色人格", icon: Robot },
-  { id: "knowledge", label: "知识", icon: Database },
-  { id: "skills", label: "技能", icon: MagicWand },
-  { id: "memory", label: "记忆策略", icon: Brain },
   { id: "runtime", label: "运行配置", icon: SlidersHorizontal },
+  { id: "skills", label: "技能", icon: MagicWand },
+  { id: "knowledge", label: "知识", icon: Database },
+  { id: "memory", label: "记忆策略", icon: Brain },
   { id: "safety", label: "安全边界", icon: ShieldCheck },
   { id: "media", label: "媒体素材", icon: ImageSquare },
   { id: "moments", label: "朋友圈", icon: ChatCircleDots },

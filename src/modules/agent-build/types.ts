@@ -1,7 +1,6 @@
 import type { Agent, ExampleMessage } from "@/modules/agents/types";
 
 export type BuildSectionId = "identity" | "persona" | "knowledge" | "skills" | "memory" | "runtime" | "safety" | "media" | "moments" | "motherland";
-export type EditorTabId = "basics" | "examples" | "advanced";
 export type BuildAgent = Agent;
 
 export interface AgentBuildDraft {
