@@ -54,12 +54,13 @@ describe("Agent build draft", () => {
     expect(serializeBuildDraft(draft)).toMatchObject({ llm_model_name: "", llm_temperature: null });
   });
 
-  it("serializes only supported update fields and normalizes identifiers", () => {
+  it("serializes only editable update fields", () => {
     const draft = createBuildDraft(agent);
     draft.code = "  LIN-YUE-V2 ";
     draft.skills = [" realtime_weather ", ""];
-    expect(serializeBuildDraft(draft, "draft")).toMatchObject({
-      code: "lin-yue-v2",
+    const payload = serializeBuildDraft(draft, "draft");
+    expect(payload).not.toHaveProperty("code");
+    expect(payload).toMatchObject({
       skills: ["realtime_weather"],
       status: "draft",
       knowledge_base_id: 8,
@@ -69,12 +70,10 @@ describe("Agent build draft", () => {
   it("blocks invalid identity and runtime values", () => {
     const draft = createBuildDraft(agent);
     draft.name = "";
-    draft.code = "Invalid Code";
     draft.systemPrompt = "";
     draft.llmTemperature = 3;
     expect(validateBuildDraft(draft)).toEqual({
       name: "Agent 名称不能为空",
-      code: "使用 2–64 位小写字母、数字、下划线或短横线",
       systemPrompt: "角色系统提示词不能为空",
       llmTemperature: "Temperature 必须位于 0–2",
     });

@@ -10,7 +10,7 @@
 
 - [x] 2.1 Replace the flat Build rail with the four approved Chinese groups and ordered editor items
 - [x] 2.2 Add Test Evaluation and Versions and Release route shortcuts while keeping all editable sections on the existing single draft
-- [x] 2.3 Remove Moments and standalone Motherland from professional navigation after verifying that no other route depends on their section IDs
+- [x] 2.3 Keep Agent-scoped Moments in professional navigation, keep narrative optimization inside Persona, and remove standalone Motherland after verifying that no other route depends on the removed section ID
 - [x] 2.4 Preserve the shared workspace shell, compact Agent header, lifecycle tabs, and existing Save Draft / Save and Test toolbar behavior
 - [x] 2.5 Implement the desktop editor-first grid with a 320-360 pixel preview, page-level vertical scrolling, and no horizontal overflow
 - [x] 2.6 Implement responsive navigation and move the preview below the editor when the three-column desktop layout no longer fits

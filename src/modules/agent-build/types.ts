@@ -1,6 +1,6 @@
 import type { Agent, ExampleMessage } from "@/modules/agents/types";
 
-export type BuildSectionId = "identity" | "persona" | "runtime" | "skills" | "knowledge" | "memory" | "media" | "safety";
+export type BuildSectionId = "identity" | "persona" | "runtime" | "skills" | "knowledge" | "memory" | "media" | "moments" | "safety";
 export type BuildLifecycleDestination = "test" | "versions";
 
 export type BuildNavigationItem =
@@ -35,7 +35,6 @@ export interface AgentBuildDraft {
 }
 
 export interface AgentBuildUpdateInput {
-  code: string;
   name: string;
   description: string;
   system_prompt: string;
@@ -55,7 +54,7 @@ export interface AgentBuildUpdateInput {
   status?: string;
 }
 
-export type DraftValidationErrors = Partial<Record<"name" | "code" | "systemPrompt" | "llmTemperature", string>>;
+export type DraftValidationErrors = Partial<Record<"name" | "systemPrompt" | "llmTemperature", string>>;
 
 export function createBuildDraft(agent: BuildAgent): AgentBuildDraft {
   return {
@@ -82,14 +81,13 @@ export function createBuildDraft(agent: BuildAgent): AgentBuildDraft {
 export function validateBuildDraft(draft: AgentBuildDraft): DraftValidationErrors {
   const errors: DraftValidationErrors = {};
   if (!draft.name.trim()) errors.name = "Agent 名称不能为空";
-  if (!/^[a-z0-9_-]{2,64}$/.test(draft.code.trim().toLowerCase())) errors.code = "使用 2–64 位小写字母、数字、下划线或短横线";
   if (!draft.systemPrompt.trim()) errors.systemPrompt = "角色系统提示词不能为空";
   if (draft.llmTemperature !== null && (draft.llmTemperature < 0 || draft.llmTemperature > 2)) errors.llmTemperature = "Temperature 必须位于 0–2";
   return errors;
 }
 
 export function serializeBuildDraft(draft: AgentBuildDraft, status?: string): AgentBuildUpdateInput {
-  return { code: draft.code.trim().toLowerCase(), name: draft.name.trim(), description: draft.description.trim(), system_prompt: draft.systemPrompt, examples: draft.examples.filter((item) => item.content.trim()), skills: draft.skills.map((item) => item.trim()).filter(Boolean), knowledge_base_id: draft.knowledgeBaseId, memory_enabled: draft.memoryEnabled, agent_type: draft.agentType, llm_provider: draft.llmProvider, llm_provider_type: draft.llmProviderType.trim(), llm_base_url: draft.llmBaseUrl.trim(), llm_model_name: draft.llmModelName.trim(), llm_temperature: draft.llmTemperature, show_reasoning: draft.showReasoning, show_tools: draft.showTools, hidden: draft.hidden, ...(status ? { status } : {}) };
+  return { name: draft.name.trim(), description: draft.description.trim(), system_prompt: draft.systemPrompt, examples: draft.examples.filter((item) => item.content.trim()), skills: draft.skills.map((item) => item.trim()).filter(Boolean), knowledge_base_id: draft.knowledgeBaseId, memory_enabled: draft.memoryEnabled, agent_type: draft.agentType, llm_provider: draft.llmProvider, llm_provider_type: draft.llmProviderType.trim(), llm_base_url: draft.llmBaseUrl.trim(), llm_model_name: draft.llmModelName.trim(), llm_temperature: draft.llmTemperature, show_reasoning: draft.showReasoning, show_tools: draft.showTools, hidden: draft.hidden, ...(status ? { status } : {}) };
 }
 
 export function draftsEqual(a: AgentBuildDraft, b: AgentBuildDraft): boolean {

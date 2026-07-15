@@ -1,6 +1,6 @@
 ## Why
 
-The current Build workspace exposes a flat section list, standalone Moments and Motherland entries, and a preview that behaves too much like the Test workspace. This makes high-frequency Agent configuration harder to scan and leaves the media experience inconsistent with the approved professional configuration design.
+The current Build workspace exposes a flat section list, a standalone Motherland entry, inconsistent Agent-scoped Moments exposure, and a preview that behaves too much like the Test workspace. This makes high-frequency Agent configuration harder to scan and leaves the media experience inconsistent with the approved professional configuration design.
 
 This change establishes one focused professional configuration mode: grouped Build navigation, a narrower saved-configuration preview, and a media workspace where Motherland is a contextual visual-generation tool rather than a standalone product area.
 
@@ -8,7 +8,7 @@ This change establishes one focused professional configuration mode: grouped Bui
 
 - Replace the flat Build section rail with four professional configuration groups: Identity and Persona, Runtime Configuration, Capability Configuration, and Governance and Release.
 - Keep editable Build sections in one draft while exposing Test Evaluation and Versions and Release as shortcuts to their existing Agent Asset routes instead of duplicate editors.
-- Remove Moments and standalone Motherland entries from the professional Build navigation.
+- Keep Agent-scoped Moments as a professional Build capability entry, keep narrative optimization inside Persona as a system-prompt helper, and remove only the standalone Motherland entry from the professional Build navigation.
 - Add a Media Assets workspace for the saved avatar, avatar candidates, character sheets, and comic drafts.
 - Embed Motherland generation in Media Assets through a contextual candidate-and-confirm flow; generated content MUST NOT replace saved configuration before explicit confirmation.
 - Simplify the right preview to a saved-configuration feedback surface with one lightweight Runtime exchange. The desktop preview can collapse to a narrow labeled rail and expand back to its fixed-width panel without changing Runtime state; draft/published tabs, transcript management, session controls, and clear actions remain absent. Build content grows with the page so the browser window remains the only vertical scrollbar.

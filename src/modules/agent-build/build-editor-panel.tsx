@@ -6,6 +6,7 @@ import {
   RuntimeDisplaySettings,
 } from "./build-fields";
 import { MediaAssetsPanel } from "./media-assets-panel";
+import { MomentsPanel } from "./moments-panel";
 import { BUILD_SECTION_LABELS } from "./professional-navigation";
 import { RuntimeCapabilitiesPanel } from "./runtime-capabilities-panel";
 import { StagedSkillsPanel } from "./staged-skills-panel";
@@ -56,7 +57,7 @@ export function BuildEditorPanel({
   onPatch,
   onAgentUpdated,
 }: BuildEditorPanelProps) {
-  const special = section === "media";
+  const special = section === "media" || section === "moments";
 
   return (
     <section className="min-w-0 bg-surface">
@@ -75,9 +76,14 @@ export function BuildEditorPanel({
           />
         )}
 
+        {section === "moments" && (
+          <MomentsPanel agentId={agent.id} agentName={agent.name} />
+        )}
+
         {!special && (
           <>
             <BasicSectionFields
+              agentId={agent.id}
               section={section}
               draft={draft}
               errors={errors}

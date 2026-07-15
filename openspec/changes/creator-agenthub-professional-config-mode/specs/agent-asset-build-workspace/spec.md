@@ -2,7 +2,7 @@
 
 ### Requirement: Sectioned Agent construction
 
-The Build route SHALL provide one grouped professional configuration hierarchy while preserving one editable draft across editor-section changes. The hierarchy MUST order Identity and Persona, Runtime Configuration, Capability Configuration, and Governance and Release as its groups. Persona SHALL own example conversations, Runtime SHALL own provider and reasoning/tool-call display controls, and Safety SHALL own policy boundaries. Test Evaluation and Versions and Release SHALL be route shortcuts rather than duplicate Build editors.
+The Build route SHALL provide one grouped professional configuration hierarchy while preserving one editable draft across editor-section changes. The hierarchy MUST order Identity and Persona, Runtime Configuration, Capability Configuration, and Governance and Release as its groups. Persona SHALL own the role system prompt, Motherland prompt optimization, draft application, and example conversations; Runtime SHALL own provider and reasoning/tool-call display controls, and Safety SHALL own policy boundaries. Test Evaluation and Versions and Release SHALL be route shortcuts rather than duplicate Build editors.
 
 #### Scenario: Switch editable build section
 
@@ -13,7 +13,7 @@ The Build route SHALL provide one grouped professional configuration hierarchy w
 
 - **WHEN** the creator opens the Build workspace
 - **THEN** the rail shows `身份与人设`, `运行配置`, `能力配置`, and `治理与发布` in that order
-- **AND** Runtime appears below Persona, Knowledge appears below Skills, and Media Assets appears in Capability Configuration
+- **AND** Runtime appears below Persona, Knowledge appears below Skills, and Media Assets and Moments appear in Capability Configuration
 
 #### Scenario: Open lifecycle destination
 
@@ -24,9 +24,14 @@ The Build route SHALL provide one grouped professional configuration hierarchy w
 #### Scenario: Exclude unrelated professional sections
 
 - **WHEN** the professional Build rail is rendered
-- **THEN** Moments and standalone Motherland entries are absent
-- **AND** Motherland visual generation remains available only through Media Assets when its capability is supported
+- **THEN** standalone Motherland entries are absent
+- **AND** Moments remains available as an Agent-scoped operation entry while narrative optimization remains inside Persona and Motherland visual generation remains available only through Media Assets when its capability is supported
 
+
+#### Scenario: Optimize role system prompt
+
+- **WHEN** the creator opens Persona
+- **THEN** the role system prompt editor shows an Optimize Narrative button in the prompt header, opens the Motherland optimization dialog on demand, and can apply an optimized prompt to the local Build draft without saving automatically
 #### Scenario: Open persona configuration
 
 - **WHEN** the creator activates Persona

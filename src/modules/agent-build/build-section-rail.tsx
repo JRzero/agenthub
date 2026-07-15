@@ -4,6 +4,7 @@ import type { Icon } from "@phosphor-icons/react";
 import {
   ArrowSquareOut,
   Brain,
+  ChatCircle,
   Database,
   Flask,
   IdentificationCard,
@@ -29,6 +30,7 @@ const EDITOR_ICONS: Record<BuildSectionId, Icon> = {
   knowledge: Database,
   memory: Brain,
   media: ImageSquare,
+  moments: ChatCircle,
   safety: ShieldCheck,
 };
 

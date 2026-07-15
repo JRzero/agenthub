@@ -1,6 +1,6 @@
 ## Context
 
-The handoff document and the two approved professional-configuration references describe a three-part Build surface: grouped configuration navigation, a focused editor, and a narrow real-time preview. The current implementation already has a shared Agent Asset shell, compact Agent header, one draft lifecycle, live avatar endpoints, Motherland generation endpoints, a single saved character-design model, and authenticated Runtime Chat. It also has a flat Build rail, standalone Moments and Motherland sections, and a preview with transcript and session-management behavior that belongs in Test Evaluation.
+The handoff document and the two approved professional-configuration references describe a three-part Build surface: grouped configuration navigation, a focused editor, and a narrow real-time preview. The current implementation already has a shared Agent Asset shell, compact Agent header, one draft lifecycle, live avatar endpoints, Motherland generation endpoints, a single saved character-design model, and authenticated Runtime Chat. It also has a flat Build rail, a standalone Motherland section, inconsistent Agent-scoped Moments exposure, and a preview with transcript and session-management behavior that belongs in Test Evaluation.
 
 The frontend repository cannot add backend storage. In particular, the current Agent contract exposes one avatar and one `character_design_spec` / `character_design_sheet` pair, but no typed media-asset collection, history, comic-draft persistence, or asset-picker endpoint. The design must therefore distinguish real Live operations from isolated Demo presentation and explicit unavailable states.
 
@@ -23,7 +23,7 @@ The approved visual reference uses a full-width branded top bar, an icon-only de
   **Non-Goals:**
 
 - Replacing the full labeled navigation on workspace-level routes or the full mobile navigation drawer.
-- Adding a standalone Motherland route or restoring Moments inside professional Build configuration.
+- Adding a standalone Motherland route or duplicating Moments outside the Agent-scoped operation entry.
 - Duplicating Test Evaluation, Versions, Distribution, session management, publishing, or client configuration inside Build.
 - Adding media history, comic persistence, review workflows, permissions, version comparison, or a character-sheet reference field to Persona without backend contracts.
 - Changing backend services, introducing new dependencies, or fabricating Live media records from fixtures or local storage.
@@ -44,12 +44,12 @@ The Build rail will render four ordered groups:
 
 1. `身份与人设`: `身份信息`, `角色人格`
 2. `运行配置`: `运行配置`
-3. `能力配置`: `技能`, `知识`, `记忆策略`, `媒体资产`
+3. `能力配置`: `技能`, `知识`, `记忆策略`, `媒体资产`, `朋友圈`
 4. `治理与发布`: `安全边界`, `测试评估`, `版本与发布`
 
 Editable items select an in-route `BuildSectionId` and preserve the current draft. `测试评估` navigates to `/assets/{agentId}/test`. `版本与发布` lands on `/assets/{agentId}/versions`; the existing lifecycle tabs remain the route to Distribution. Route shortcuts are visually distinguished from editor sections and never create duplicate Build panels.
 
-`moments` and standalone `motherland` are removed from the professional section model. Existing components or API adapters are deleted only after import and compatibility checks confirm that no other route depends on them.
+`moments` remains an Agent-scoped professional operation section in Capability Configuration. Narrative optimization remains inside Persona as a role system prompt header action that opens a dialog and applies Motherland-optimized text to the local prompt draft. Standalone `motherland` is removed from the professional section model. Existing components or API adapters are deleted only after import and compatibility checks confirm that no remaining route depends on them.
 
 Alternative: make every menu item a nested Build route. Rejected because cross-route draft persistence is unnecessary and would weaken the current single-draft lifecycle.
 
@@ -116,7 +116,7 @@ The global Build draft continues to serialize fields accepted by `PUT /agents/{i
 ## Risks / Trade-offs
 
 - [The reference shows two or three recent asset cards, but the backend exposes no collection] -> Show only real current data in Live, mark history unavailable, and reserve full collections for isolated Demo mode until a typed backend contract exists.
-- [Removing standalone Moments and Motherland can strand imported components] -> Remove only navigation exposure first, then use import and route checks before deleting code.
+- [Changing Moments and Motherland exposure can strand imported components] -> Keep Agent-scoped Moments reachable and keep narrative optimization inside Persona, remove only standalone Motherland exposure first, then use import and route checks before deleting code.
 - [A Runtime session still exists behind the simplified preview] -> Keep it implementation-only, retain only the latest exchange, and place all session/test controls in Test Evaluation.
 - [Fixed columns can overflow smaller desktops] -> Use a 320-360 pixel preview, compact internal rail, min-width-safe editor fields, page-level vertical scrolling, and a responsive stacked preview below the desktop breakpoint.
 - [Candidate generation can succeed while confirmation fails] -> Preserve the candidate in the drawer, show a retryable confirmation error, and never imply that the saved Agent changed.
@@ -128,7 +128,7 @@ The global Build draft continues to serialize fields accepted by `PUT /agents/{i
 2. Add typed grouped navigation and route destinations while preserving the existing draft hook.
 3. Replace the preview presentation with the saved-configuration, latest-exchange model and add page-level layout behavior.
 4. Add the media view model, capability declarations, and adapters for existing avatar and current character-design contracts.
-5. Move Motherland visual generation behind the contextual drawer and remove standalone professional-menu exposure for Motherland and Moments.
+5. Move Motherland visual generation behind the contextual drawer, remove standalone professional-menu exposure for Motherland, and keep Agent-scoped Moments in Capability Configuration and narrative optimization inside Persona.
 6. Add unavailable Live treatment for library history, asset selection, and comic drafts; add isolated Demo fixtures only where the design needs demonstrable states.
 7. Verify at 1440 pixels and responsive breakpoints, then record browser evidence under `docs/qa/`.
 

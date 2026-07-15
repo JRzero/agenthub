@@ -27,6 +27,7 @@ export const PROFESSIONAL_BUILD_GROUPS: BuildNavigationGroup[] = [
       { kind: "editor", id: "knowledge", label: "知识" },
       { kind: "editor", id: "memory", label: "记忆策略" },
       { kind: "editor", id: "media", label: "媒体资产" },
+      { kind: "editor", id: "moments", label: "朋友圈" },
     ],
   },
   {

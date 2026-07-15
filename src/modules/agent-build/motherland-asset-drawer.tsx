@@ -24,8 +24,8 @@ const KIND_COPY: Record<MediaAssetKind, { title: string; description: string; pr
   },
   "character-sheet": {
     title: "生成角色设定稿",
-    description: "根据当前角色提示词生成视觉设定和角色图，确认后保存到 Agent。",
-    prompt: "补充角色的外观、动作、配色和设定稿要求",
+    description: "先生成可编辑的角色设定正文，再生成漫画设计稿图；确认后保存到 Agent。",
+    prompt: "角色视觉设定正文",
   },
   "comic-draft": {
     title: "生成漫画草稿",
@@ -61,6 +61,7 @@ export function MotherlandAssetDrawer({
   const { session } = useAuth();
   const demo = DATA_MODE === "demo";
   const [prompt, setPrompt] = useState("");
+  const [characterSpec, setCharacterSpec] = useState("");
   const [candidate, setCandidate] = useState<MediaCandidate | null>(null);
   const [state, dispatch] = useReducer(reduceMediaGenerationState, "idle");
   const [error, setError] = useState("");
@@ -68,47 +69,76 @@ export function MotherlandAssetDrawer({
 
   useEffect(() => {
     setPrompt("");
+    setCharacterSpec(kind === "character-sheet" ? agent.config?.metadata?.character_design_spec || "" : "");
     setCandidate(null);
     dispatch("reset");
     setError("");
     setImageFailed(false);
-  }, [kind]);
+  }, [agent.config?.metadata?.character_design_spec, kind]);
 
   if (!kind) return null;
   const copy = KIND_COPY[kind];
   const busy = state === "generating" || state === "confirming";
   const candidatePreviewUrl = candidate ? resolveGeneratedMediaUrl(candidate.url, candidate.kind) : "";
+  const isCharacterSheet = kind === "character-sheet";
 
   const generate = async () => {
     const value = prompt.trim();
-    if (!value || (!demo && !session?.apiKey)) return;
+    if ((!value && kind !== "character-sheet") || (!demo && !session?.apiKey)) return;
     dispatch("start");
     setError("");
     try {
       let url = "/images/lin-yue-avatar.png";
-      let specText = "";
       if (!demo && session?.apiKey) {
         if (kind === "avatar") {
           url = (await generateAvatarPreview(session.apiKey, agent.id, value)).image_url;
-        } else if (kind === "character-sheet") {
-          specText = (await generateCharacterSpec(
-            session.apiKey,
-            agent.id,
-            `${draft.systemPrompt}\n\n视觉补充：${value}`,
-          )).spec_text;
-          url = (await generateCharacterSheet(session.apiKey, agent.id, specText)).image_url;
-        } else {
+        } else if (kind === "comic-draft") {
           throw new Error("漫画草稿后端能力尚未接入");
         }
-      } else if (kind === "character-sheet") {
-        specText = `${agent.name} 角色视觉设定\n${value}\n${draft.systemPrompt.slice(0, 240)}`;
       }
-      setCandidate({ kind, url, prompt: value, specText, state: "pending-confirmation", demoOnly: demo });
+      setCandidate({ kind, url, prompt: value, state: "pending-confirmation", demoOnly: demo });
       setImageFailed(false);
       dispatch("generated");
     } catch (requestError) {
       dispatch("failed");
       setError(requestError instanceof Error ? requestError.message : "生成失败，请重试");
+    }
+  };
+
+  const generateSpec = async () => {
+    if (!demo && !session?.apiKey) return;
+    dispatch("start");
+    setError("");
+    try {
+      const basePrompt = draft.systemPrompt.trim();
+      const specText = demo
+        ? `角色名称：${agent.name}\n视觉基调：沉静、可信、具有清晰边界。\n角色依据：${basePrompt.slice(0, 240)}`
+        : (await generateCharacterSpec(session!.apiKey, agent.id, basePrompt)).spec_text;
+      setCharacterSpec(specText);
+      setCandidate(null);
+      setImageFailed(false);
+      dispatch("reset");
+    } catch (requestError) {
+      dispatch("failed");
+      setError(requestError instanceof Error ? requestError.message : "设定稿生成失败");
+    }
+  };
+
+  const generateSheet = async () => {
+    const specText = characterSpec.trim();
+    if (!specText || (!demo && !session?.apiKey)) return;
+    dispatch("start");
+    setError("");
+    try {
+      const url = demo
+        ? "/images/lin-yue-avatar.png"
+        : (await generateCharacterSheet(session!.apiKey, agent.id, specText)).image_url;
+      setCandidate({ kind: "character-sheet", url, prompt: specText.slice(0, 120), specText, state: "pending-confirmation", demoOnly: demo });
+      setImageFailed(false);
+      dispatch("generated");
+    } catch (requestError) {
+      dispatch("failed");
+      setError(requestError instanceof Error ? requestError.message : "设计稿生成失败");
     }
   };
 
@@ -133,7 +163,7 @@ export function MotherlandAssetDrawer({
           onAgentUpdated(await uploadAgentAvatar(session.apiKey, agent.id, await response.blob()));
         }
       } else if (kind === "character-sheet") {
-        const specText = candidate.specText || candidate.prompt;
+        const specText = candidate.specText || characterSpec.trim() || candidate.prompt;
         if (demo) {
           onAgentUpdated({
             ...agent,
@@ -158,7 +188,7 @@ export function MotherlandAssetDrawer({
         name: kind === "avatar" ? `${agent.name} 当前头像` : kind === "character-sheet" ? `${agent.name} 角色设定稿` : candidate.prompt,
         url: candidate.url,
         status: "saved",
-        specText: kind === "character-sheet" ? candidate.specText : undefined,
+        specText: kind === "character-sheet" ? candidate.specText || characterSpec.trim() : undefined,
         version: demo ? "演示" : `v${agent.version}`,
         createdAt: new Date().toISOString(),
         demoOnly: demo,
@@ -179,7 +209,7 @@ export function MotherlandAssetDrawer({
         aria-modal="true"
         aria-labelledby="motherland-drawer-title"
         onMouseDown={(event) => event.stopPropagation()}
-        className="ml-auto flex h-full w-full max-w-lg flex-col overflow-hidden bg-surface shadow-2xl"
+        className="ml-auto flex h-full w-full max-w-xl flex-col overflow-hidden bg-surface shadow-2xl"
       >
         <header className="shrink-0 border-b border-border px-5 py-4">
           <div className="flex items-start justify-between gap-4">
@@ -197,24 +227,54 @@ export function MotherlandAssetDrawer({
           <p className="mt-3 text-sm leading-5 text-text-muted">{copy.description}</p>
         </header>
 
-        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-5">
-          <label className="block text-sm font-medium">
-            生成要求
-            <textarea
-              autoFocus
-              value={prompt}
-              onChange={(event) => setPrompt(event.target.value)}
-              rows={4}
-              placeholder={copy.prompt}
-              disabled={busy}
-              className="mt-2 w-full resize-none rounded-lg border border-border bg-surface p-3 leading-6 outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:opacity-60"
-            />
-          </label>
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5">
+          {isCharacterSheet ? (
+            <>
+              <label className="block text-sm font-medium">
+                角色设定稿（可编辑）
+                <textarea
+                  autoFocus
+                  value={characterSpec}
+                  onChange={(event) => {
+                    setCharacterSpec(event.target.value);
+                    if (candidate) setCandidate(null);
+                  }}
+                  rows={10}
+                  placeholder={copy.prompt}
+                  disabled={busy}
+                  className="mt-2 w-full resize-none rounded-lg border border-border bg-surface p-3 leading-6 outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:opacity-60"
+                />
+              </label>
+              <div className="flex flex-wrap gap-3">
+                <button type="button" onClick={() => void generateSpec()} disabled={busy} className="button-secondary">
+                  {state === "generating" && !candidate ? <SpinnerGap size={17} className="animate-spin" /> : <MagicWand size={17} />}
+                  生成设定稿
+                </button>
+                <button type="button" onClick={() => void generateSheet()} disabled={!characterSpec.trim() || busy} className="button-secondary">
+                  {state === "generating" && candidate ? <SpinnerGap size={17} className="animate-spin" /> : <MagicWand size={17} />}
+                  生成漫画设计稿图
+                </button>
+              </div>
+            </>
+          ) : (
+            <label className="block text-sm font-medium">
+              生成要求
+              <textarea
+                autoFocus
+                value={prompt}
+                onChange={(event) => setPrompt(event.target.value)}
+                rows={4}
+                placeholder={copy.prompt}
+                disabled={busy}
+                className="mt-2 w-full resize-none rounded-lg border border-border bg-surface p-3 leading-6 outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:opacity-60"
+              />
+            </label>
+          )}
 
           {!candidate && (
             <div className="rounded-xl border border-dashed border-border bg-subtle px-5 py-8 text-center">
               {state === "generating" ? (
-                <><SpinnerGap size={28} className="mx-auto animate-spin text-primary" /><p className="mt-3 text-sm font-medium">Motherland 正在生成候选素材</p></>
+                <><SpinnerGap size={28} className="mx-auto animate-spin text-primary" /><p className="mt-3 text-sm font-medium">Motherland 正在生成</p></>
               ) : (
                 <><MagicWand size={28} className="mx-auto text-primary" /><p className="mt-3 text-sm font-medium">候选素材会先在这里预览</p><p className="mt-1 text-xs text-text-muted">未确认前不会影响当前 Agent</p></>
               )}
@@ -227,8 +287,8 @@ export function MotherlandAssetDrawer({
                 <div className="grid min-h-[220px] place-items-center px-5 py-8 text-center">
                   <div>
                     <MagicWand size={28} className="mx-auto text-text-muted" />
-                    <p className="mt-3 text-sm font-medium text-text-primary">{"\u5019\u9009\u56fe\u7247\u52a0\u8f7d\u5931\u8d25"}</p>
-                    <p className="mt-1 text-xs text-text-muted">{"\u8bf7\u91cd\u65b0\u751f\u6210\uff0c\u6216\u68c0\u67e5\u540e\u7aef\u8fd4\u56de\u7684\u56fe\u7247\u5730\u5740\u3002"}</p>
+                    <p className="mt-3 text-sm font-medium text-text-primary">候选图片加载失败</p>
+                    <p className="mt-1 text-xs text-text-muted">请重新生成，或检查后端返回的图片地址。</p>
                   </div>
                 </div>
               ) : (
@@ -255,10 +315,12 @@ export function MotherlandAssetDrawer({
 
         <footer className="shrink-0 flex flex-wrap justify-end gap-3 border-t border-border px-5 py-4">
           <button type="button" onClick={onClose} disabled={busy} className="button-secondary">取消</button>
-          <button type="button" onClick={() => void generate()} disabled={!prompt.trim() || busy} className="button-secondary">
-            {state === "generating" ? <SpinnerGap size={17} className="animate-spin" /> : state === "failed" ? <ArrowClockwise size={17} /> : <MagicWand size={17} />}
-            {state === "failed" ? "重新生成" : "生成候选"}
-          </button>
+          {!isCharacterSheet && (
+            <button type="button" onClick={() => void generate()} disabled={!prompt.trim() || busy} className="button-secondary">
+              {state === "generating" ? <SpinnerGap size={17} className="animate-spin" /> : state === "failed" ? <ArrowClockwise size={17} /> : <MagicWand size={17} />}
+              {state === "failed" ? "重新生成" : "生成候选"}
+            </button>
+          )}
           {candidate && state !== "saved" && (
             <button type="button" onClick={() => void confirm()} disabled={busy || imageFailed} className="button-primary">
               {state === "confirming" ? <SpinnerGap size={17} className="animate-spin" /> : <CheckCircle size={17} />}

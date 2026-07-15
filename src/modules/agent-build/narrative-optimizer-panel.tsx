@@ -16,19 +16,21 @@ export function NarrativeOptimizerPanel({ agentId, draft, onPatch }: { agentId: 
   const [optimized, setOptimized] = useState("");
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
+  const [applied, setApplied] = useState(false);
 
   const optimize = async () => {
     if (!session?.apiKey) return;
     setBusy(true);
     setFeedback(null);
+    setApplied(false);
     try {
       const result = demo
         ? { optimized_prompt: `${draft.systemPrompt}\n\n补充规则：先确认用户感受，再明确边界并给出下一步建议。` }
         : await optimizeNarrative(session.apiKey, agentId, draft.systemPrompt, instruction);
       setOptimized(result.optimized_prompt);
-      setFeedback({ tone: "success", text: "优化版本已生成，你可以先编辑，再应用到角色提示词。" });
+      setFeedback({ tone: "success", text: "已生成优化版本，可先检查和微调，满意后再应用到草稿。" });
     } catch (error) {
-      setFeedback({ tone: "error", text: error instanceof Error ? error.message : "叙事优化失败" });
+      setFeedback({ tone: "error", text: error instanceof Error ? error.message : "优化失败，请稍后重试" });
     } finally {
       setBusy(false);
     }
@@ -37,7 +39,8 @@ export function NarrativeOptimizerPanel({ agentId, draft, onPatch }: { agentId: 
   const apply = () => {
     if (!optimized.trim()) return;
     onPatch({ systemPrompt: optimized });
-    setFeedback({ tone: "success", text: "已应用到角色提示词草稿，请点击页面顶部的“保存草稿”完成保存。" });
+    setApplied(true);
+    setFeedback({ tone: "success", text: "已应用到上方草稿，请点击页面顶部“保存草稿”完成保存。" });
   };
 
   return (
@@ -45,31 +48,31 @@ export function NarrativeOptimizerPanel({ agentId, draft, onPatch }: { agentId: 
       <header className="flex items-start gap-3 border-b border-border px-5 py-4 sm:px-6">
         <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><NotePencil size={20} /></span>
         <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2"><span className="status-badge bg-primary-soft text-primary">第 2 步</span><h3 className="font-semibold">整理为角色提示词</h3></div>
-          <p className="mt-1 text-sm leading-6 text-text-muted">结合当前角色提示词和上方共创记录，生成一份可以继续编辑的优化版本。</p>
+          <div className="flex flex-wrap items-center gap-2"><h3 className="font-semibold">生成优化建议</h3></div>
+          <p className="mt-1 text-sm leading-6 text-text-muted">会参考当前角色设定，生成更清晰、稳定、适合对话的版本；不会直接覆盖已有内容。</p>
         </div>
       </header>
 
       <div className="p-5 sm:p-6">
-        <label className="block text-sm font-medium" htmlFor="motherland-optimization-focus">本次想重点优化什么？<span className="ml-1 font-normal text-text-muted">选填</span></label>
+        <label className="block text-sm font-medium" htmlFor="system-prompt-optimization-focus">希望这次重点改进什么？<span className="ml-1 font-normal text-text-muted">选填</span></label>
         <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-          <input id="motherland-optimization-focus" value={instruction} onChange={(event) => setInstruction(event.target.value)} placeholder="例如：边界表达更自然，语气更温和" className="h-10 min-w-0 flex-1 rounded-md border border-border px-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
-          <button type="button" onClick={() => void optimize()} disabled={busy || !draft.systemPrompt.trim()} className="button-secondary shrink-0 whitespace-nowrap"><MagicWand size={17} />{busy ? "生成中…" : optimized ? "重新生成" : "生成优化版本"}</button>
+          <input id="system-prompt-optimization-focus" value={instruction} onChange={(event) => setInstruction(event.target.value)} placeholder="例如：语气更亲切、边界更自然、回答更简洁" className="h-10 min-w-0 flex-1 rounded-md border border-border px-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
+          <button type="button" onClick={() => void optimize()} disabled={busy || !draft.systemPrompt.trim()} className="button-secondary shrink-0 whitespace-nowrap"><MagicWand size={17} />{busy ? "生成中…" : optimized ? "重新优化" : "生成优化版本"}</button>
         </div>
 
         {!optimized && (
           <div className="mt-5 rounded-lg border border-dashed border-border bg-canvas/30 px-5 py-7 text-center">
             <NotePencil size={24} className="mx-auto text-primary" />
-            <h4 className="mt-3 text-sm font-semibold">共创内容不会自动修改 Agent</h4>
-            <p className="mx-auto mt-1 max-w-lg text-xs leading-5 text-text-muted">生成优化版本后，你可以先检查和编辑，再主动应用到当前角色提示词草稿。</p>
+            <h4 className="mt-3 text-sm font-semibold">先生成，再决定是否使用</h4>
+            <p className="mx-auto mt-1 max-w-lg text-xs leading-5 text-text-muted">结果会显示在这里。确认满意后，点击“应用到草稿”才会更新上方内容。</p>
           </div>
         )}
 
         {optimized && (
           <div className="mt-5 rounded-lg border border-border bg-canvas/30 p-4">
-            <div className="flex flex-wrap items-center justify-between gap-2"><h4 className="text-sm font-semibold">可编辑的优化版本</h4><span className="status-badge bg-amber-50 text-amber-700">尚未应用</span></div>
-            <textarea value={optimized} onChange={(event) => setOptimized(event.target.value)} rows={10} aria-label="Motherland 优化后的角色提示词" className="mt-3 w-full resize-y rounded-lg border border-border bg-surface p-3 leading-6 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
-            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p className="text-xs leading-5 text-text-muted">应用后只更新本地草稿，还需要使用页面顶部的保存操作。</p><button type="button" onClick={apply} disabled={!optimized.trim()} className="button-primary shrink-0"><CheckCircle size={17} />应用到角色提示词</button></div>
+            <div className="flex flex-wrap items-center justify-between gap-2"><h4 className="text-sm font-semibold">优化后的角色设定</h4><span className={`status-badge ${applied ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{applied ? "已应用" : "待确认"}</span></div>
+            <textarea value={optimized} onChange={(event) => { setOptimized(event.target.value); setApplied(false); }} rows={10} aria-label="优化后的角色系统提示词" className="mt-3 w-full resize-y rounded-lg border border-border bg-surface p-3 leading-6 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
+            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p className="text-xs leading-5 text-text-muted">应用后会更新上方草稿，仍需点击页面顶部“保存草稿”才会正式保存。</p><button type="button" onClick={apply} disabled={!optimized.trim() || applied} className="button-primary shrink-0 disabled:cursor-not-allowed disabled:opacity-60"><CheckCircle size={17} />{applied ? "已应用" : "应用到草稿"}</button></div>
           </div>
         )}
 

@@ -1,5 +1,7 @@
-import { Info, LockKey, Plus, Trash } from "@phosphor-icons/react";
+import { useState } from "react";
+import { Info, LockKey, MagicWand, Plus, Trash, X } from "@phosphor-icons/react";
 import type { KnowledgeBaseOption } from "./api";
+import { NarrativeOptimizerPanel } from "./narrative-optimizer-panel";
 import {
   getLLMProviderFamilies,
   getLLMProviderFamily,
@@ -70,6 +72,7 @@ function CheckSetting({
 }
 
 export function BasicSectionFields({
+  agentId,
   section,
   draft,
   errors,
@@ -77,6 +80,7 @@ export function BasicSectionFields({
   knowledgeLoading,
   onPatch,
 }: {
+  agentId: number;
   section: BuildSectionId;
   draft: AgentBuildDraft;
   errors: DraftValidationErrors;
@@ -84,6 +88,7 @@ export function BasicSectionFields({
   knowledgeLoading: boolean;
   onPatch: (patch: Partial<AgentBuildDraft>) => void;
 }) {
+  const [optimizerOpen, setOptimizerOpen] = useState(false);
   const providersQuery = useLLMProviders(
     section === "runtime" && draft.agentType === "cloud",
   );
@@ -123,14 +128,14 @@ export function BasicSectionFields({
             />
           </Field>
           <Field
-            label="唯一编码"
-            hint="保存后用于接口和发行标识"
-            error={errors.code}
+            label={"Agent \u7f16\u7801"}
+            hint={"\u7cfb\u7edf\u751f\u6210\uff0c\u7528\u4e8e\u63a5\u53e3\u548c\u53d1\u884c\u6807\u8bc6"}
           >
             <input
-              className={inputClass}
+              className={`${inputClass} cursor-not-allowed bg-subtle text-text-muted`}
               value={draft.code}
-              onChange={(e) => onPatch({ code: e.target.value })}
+              readOnly
+              aria-readonly="true"
             />
           </Field>
         </div>
@@ -161,21 +166,56 @@ export function BasicSectionFields({
   if (section === "persona") {
     return (
       <div className="space-y-5">
-        <div className="rounded-lg border border-primary/20 bg-primary-soft/50 px-4 py-3 text-sm leading-6 text-text-muted">
-          定义角色定位、表达风格和行为边界。
-        </div>
-        <Field
-          label="角色系统提示词"
-          hint={`${draft.systemPrompt.length}/8000`}
-          error={errors.systemPrompt}
-        >
+        <p className="text-sm leading-6 text-text-muted">定义角色定位、表达风格和行为边界。</p>
+        <div>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span className="font-medium text-text-strong">角色系统提示词</span>
+              <span className="ml-2 text-xs text-text-muted">{draft.systemPrompt.length}/8000</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setOptimizerOpen(true)}
+              disabled={!draft.systemPrompt.trim()}
+              className="button-secondary h-9 px-3 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <MagicWand size={16} />
+              优化叙事
+            </button>
+          </div>
           <textarea
             className={`${inputClass} min-h-[320px] resize-y leading-7`}
             maxLength={8000}
             value={draft.systemPrompt}
             onChange={(e) => onPatch({ systemPrompt: e.target.value })}
           />
-        </Field>
+          {errors.systemPrompt && <span className="mt-1 block text-xs text-danger">{errors.systemPrompt}</span>}
+        </div>
+
+        {optimizerOpen && (
+          <div className="fixed inset-0 z-50 bg-slate-950/30" onMouseDown={() => setOptimizerOpen(false)}>
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="system-prompt-optimizer-title"
+              onMouseDown={(event) => event.stopPropagation()}
+              className="mx-auto mt-[8vh] flex max-h-[84vh] w-[min(760px,calc(100vw-32px))] flex-col overflow-hidden rounded-2xl bg-surface shadow-2xl"
+            >
+              <header className="flex shrink-0 items-start justify-between gap-4 border-b border-border px-5 py-4">
+                <div>
+                  <h3 id="system-prompt-optimizer-title" className="text-lg font-semibold">优化角色设定</h3>
+                  <p className="mt-1 text-sm text-text-muted">让 Motherland 帮你润色当前角色设定；生成后可先预览和调整，确认应用后再保存。</p>
+                </div>
+                <button type="button" onClick={() => setOptimizerOpen(false)} aria-label="关闭优化角色设定" className="rounded-md p-2 text-text-muted hover:bg-subtle">
+                  <X size={18} />
+                </button>
+              </header>
+              <div className="min-h-0 flex-1 overflow-y-auto p-5">
+                <NarrativeOptimizerPanel agentId={agentId} draft={draft} onPatch={onPatch} />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

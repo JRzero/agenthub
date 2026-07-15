@@ -56,12 +56,12 @@ describe("professional Build contracts", () => {
       "knowledge",
       "memory",
       "media",
+      "moments",
       "safety",
     ]);
     expect(
       items.filter((item) => item.kind === "route").map((item) => item.id),
     ).toEqual(["test", "versions"]);
-    expect(items.map((item) => String(item.id))).not.toContain("moments");
     expect(items.map((item) => String(item.id))).not.toContain("motherland");
     expect(getBuildLifecyclePath(32, "test")).toBe("/assets/32/test");
   });
