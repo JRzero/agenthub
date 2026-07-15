@@ -105,7 +105,7 @@ export function mapAgentToAssetOverview(
     },
     {
       id: "memory",
-      label: "Memory Policy",
+      label: "记忆策略",
       description: "记忆策略、摘要规则、保留周期",
       score: memoryScore,
       state: scoreState(memoryScore),

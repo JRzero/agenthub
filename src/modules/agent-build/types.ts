@@ -1,6 +1,17 @@
 import type { Agent, ExampleMessage } from "@/modules/agents/types";
 
-export type BuildSectionId = "identity" | "persona" | "knowledge" | "skills" | "memory" | "runtime" | "safety" | "media" | "moments" | "motherland";
+export type BuildSectionId = "identity" | "persona" | "runtime" | "skills" | "knowledge" | "memory" | "media" | "safety";
+export type BuildLifecycleDestination = "test" | "versions";
+
+export type BuildNavigationItem =
+  | { kind: "editor"; id: BuildSectionId; label: string }
+  | { kind: "route"; id: BuildLifecycleDestination; label: string };
+
+export interface BuildNavigationGroup {
+  id: "identity-persona" | "runtime" | "capabilities" | "governance-release";
+  label: string;
+  items: BuildNavigationItem[];
+}
 export type BuildAgent = Agent;
 
 export interface AgentBuildDraft {

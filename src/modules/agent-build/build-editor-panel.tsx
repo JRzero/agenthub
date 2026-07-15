@@ -1,14 +1,19 @@
 import type { Agent } from "@/modules/agents/types";
 import type { KnowledgeBaseOption } from "./api";
-import { AgentAvatarEditor } from "./agent-avatar-editor";
-import { BasicSectionFields, ExamplesEditor, RuntimeDisplaySettings } from "./build-fields";
-import { BUILD_SECTIONS } from "./build-section-rail";
-import { CharacterDesignPanel } from "./character-design-panel";
-import { MomentsPanel } from "./moments-panel";
-import { MotherlandChatPanel } from "./motherland-chat-panel";
+import {
+  BasicSectionFields,
+  ExamplesEditor,
+  RuntimeDisplaySettings,
+} from "./build-fields";
+import { MediaAssetsPanel } from "./media-assets-panel";
+import { BUILD_SECTION_LABELS } from "./professional-navigation";
 import { RuntimeCapabilitiesPanel } from "./runtime-capabilities-panel";
 import { StagedSkillsPanel } from "./staged-skills-panel";
-import type { AgentBuildDraft, BuildSectionId, DraftValidationErrors } from "./types";
+import type {
+  AgentBuildDraft,
+  BuildSectionId,
+  DraftValidationErrors,
+} from "./types";
 
 interface BuildEditorPanelProps {
   section: BuildSectionId;
@@ -51,24 +56,23 @@ export function BuildEditorPanel({
   onPatch,
   onAgentUpdated,
 }: BuildEditorPanelProps) {
-  const sectionLabel = BUILD_SECTIONS.find((item) => item.id === section)?.label;
-  const special = section === "media" || section === "moments" || section === "motherland";
+  const special = section === "media";
 
   return (
     <section className="min-w-0 bg-surface">
       <div className="p-5 sm:p-7">
-        <div className="mb-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Build section</p>
-          <h2 className="mt-2 text-xl font-semibold">{sectionLabel}</h2>
+        <div className="mb-5">
+          <h2 className="text-xl font-semibold">
+            {BUILD_SECTION_LABELS[section]}
+          </h2>
         </div>
 
-        {section === "media" && <AgentAvatarEditor agent={agent} onUpdated={onAgentUpdated} />}
-        {section === "moments" && <MomentsPanel agentId={agent.id} agentName={agent.name} />}
-        {section === "motherland" && (
-          <div className="space-y-7">
-            <MotherlandChatPanel agentId={agent.id} draft={draft} onPatch={onPatch} />
-            <CharacterDesignPanel agent={agent} draft={draft} onAgentUpdated={onAgentUpdated} />
-          </div>
+        {section === "media" && (
+          <MediaAssetsPanel
+            agent={agent}
+            draft={draft}
+            onAgentUpdated={onAgentUpdated}
+          />
         )}
 
         {!special && (
@@ -85,7 +89,7 @@ export function BuildEditorPanel({
             {section === "persona" && (
               <SectionGroup
                 title="示例对话"
-                description="用典型的用户与 Agent 对话示范表达方式，并作为实时预览的推荐问题来源。"
+                description="用典型的用户与 Agent 对话示范表达方式。"
               >
                 <ExamplesEditor draft={draft} onPatch={onPatch} />
               </SectionGroup>

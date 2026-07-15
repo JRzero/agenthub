@@ -8,5 +8,8 @@ describe("capability registry", () => {
     expect(capabilitySource("assetCompleteness")).toBe("derived");
     expect(capabilitySource("clientAdapters")).toBe("unavailable");
     expect(capabilitySource("revenue")).toBe("unavailable");
+    expect(capabilitySource("avatarUpload")).toBe("live");
+    expect(capabilitySource("mediaAssetLibrary")).toBe("unavailable");
+    expect(capabilitySource("comicDrafts", "demo")).toBe("demo");
   });
 });

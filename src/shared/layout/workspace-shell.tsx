@@ -6,12 +6,14 @@ import { useAuth } from "@/modules/auth/auth-provider";
 import { WorkspaceProvider } from "@/modules/workspace/workspace-provider";
 import { Topbar } from "./topbar";
 import { WorkspaceSidebar } from "./workspace-sidebar";
+import { resolveWorkspaceShellLayout } from "./shell-mode";
 
 export function WorkspaceShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { session, ready } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const shellLayout = resolveWorkspaceShellLayout(pathname);
 
   useEffect(() => {
     if (ready && !session) {
@@ -33,10 +35,26 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
   return (
     <WorkspaceProvider>
       <div className="min-h-screen bg-canvas">
-        <WorkspaceSidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
-        <Topbar onOpenNavigation={() => setMobileOpen(true)} />
-        <main className="min-h-screen pt-[60px] lg:pl-[224px]">
-          <div className="mx-auto w-full max-w-[1510px] px-4 py-6 sm:px-6 lg:px-7">
+        <WorkspaceSidebar
+          agentAssetMode={shellLayout.agentAssetMode}
+          collapsed={shellLayout.sidebarCollapsed}
+          mobileOpen={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+        />
+        <Topbar
+          compact={shellLayout.agentAssetMode}
+          onOpenNavigation={() => setMobileOpen(true)}
+        />
+        <main
+          className={`min-h-screen transition-[padding] duration-200 ${shellLayout.mainTopPaddingClass} ${shellLayout.mainDesktopPaddingClass}`}
+        >
+          <div
+            className={
+              shellLayout.agentAssetMode
+                ? "w-full px-4 py-6 sm:px-6 lg:px-7"
+                : "mx-auto w-full max-w-[1510px] px-4 py-6 sm:px-6 lg:px-7"
+            }
+          >
             {children}
           </div>
         </main>

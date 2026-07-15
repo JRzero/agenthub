@@ -8,6 +8,11 @@ export type CapabilityId =
   | "clientAdapters"
   | "versionHistory"
   | "packageExport"
+  | "avatarUpload"
+  | "motherlandAvatarGeneration"
+  | "characterDesign"
+  | "mediaAssetLibrary"
+  | "comicDrafts"
   | "governance"
   | "analytics"
   | "revenue";
@@ -23,6 +28,11 @@ const liveCapabilities: Record<CapabilityId, CapabilitySource> = {
   clientAdapters: "unavailable",
   versionHistory: "unavailable",
   packageExport: "unavailable",
+  avatarUpload: "live",
+  motherlandAvatarGeneration: "live",
+  characterDesign: "live",
+  mediaAssetLibrary: "unavailable",
+  comicDrafts: "unavailable",
   governance: "unavailable",
   analytics: "unavailable",
   revenue: "unavailable",
@@ -32,6 +42,11 @@ const demoCapabilities: Record<CapabilityId, CapabilitySource> = {
   ...liveCapabilities,
   clientAdapters: "demo",
   versionHistory: "demo",
+  avatarUpload: "demo",
+  motherlandAvatarGeneration: "demo",
+  characterDesign: "demo",
+  mediaAssetLibrary: "demo",
+  comicDrafts: "demo",
   governance: "demo",
   analytics: "demo",
   revenue: "demo",
@@ -40,8 +55,11 @@ const demoCapabilities: Record<CapabilityId, CapabilitySource> = {
 export const CAPABILITIES =
   DATA_MODE === "demo" ? demoCapabilities : liveCapabilities;
 
-export function capabilitySource(id: CapabilityId): CapabilitySource {
-  return CAPABILITIES[id];
+export function capabilitySource(
+  id: CapabilityId,
+  mode: "live" | "demo" = DATA_MODE,
+): CapabilitySource {
+  return (mode === "demo" ? demoCapabilities : liveCapabilities)[id];
 }
 
 export function isDemoCapability(id: CapabilityId): boolean {

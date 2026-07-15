@@ -23,7 +23,7 @@ export default function AssetWorkspaceLayout({ children }: { children: React.Rea
   return (
     <div>
       <AssetWorkspaceHeader overview={query.overview} />
-      {children}
+      <div className="pt-4">{children}</div>
     </div>
   );
 }

@@ -1,22 +1,100 @@
+"use client";
+
 import type { Icon } from "@phosphor-icons/react";
-import { Brain, ChatCircleDots, Database, IdentificationCard, ImageSquare, MagicWand, Planet, Robot, ShieldCheck, SlidersHorizontal } from "@phosphor-icons/react";
-import type { BuildSectionId } from "./types";
+import {
+  ArrowSquareOut,
+  Brain,
+  Database,
+  Flask,
+  IdentificationCard,
+  ImageSquare,
+  MagicWand,
+  Robot,
+  ShieldCheck,
+  SlidersHorizontal,
+  Stack,
+} from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
+import {
+  getBuildLifecyclePath,
+  PROFESSIONAL_BUILD_GROUPS,
+} from "./professional-navigation";
+import type { BuildLifecycleDestination, BuildSectionId } from "./types";
 
-interface BuildSection { id: BuildSectionId; label: string; icon: Icon }
+const EDITOR_ICONS: Record<BuildSectionId, Icon> = {
+  identity: IdentificationCard,
+  persona: Robot,
+  runtime: SlidersHorizontal,
+  skills: MagicWand,
+  knowledge: Database,
+  memory: Brain,
+  media: ImageSquare,
+  safety: ShieldCheck,
+};
 
-export const BUILD_SECTIONS: BuildSection[] = [
-  { id: "identity", label: "身份设定", icon: IdentificationCard },
-  { id: "persona", label: "角色人格", icon: Robot },
-  { id: "runtime", label: "运行配置", icon: SlidersHorizontal },
-  { id: "skills", label: "技能", icon: MagicWand },
-  { id: "knowledge", label: "知识", icon: Database },
-  { id: "memory", label: "记忆策略", icon: Brain },
-  { id: "safety", label: "安全边界", icon: ShieldCheck },
-  { id: "media", label: "媒体素材", icon: ImageSquare },
-  { id: "moments", label: "朋友圈", icon: ChatCircleDots },
-  { id: "motherland", label: "Motherland", icon: Planet },
-];
+const ROUTE_ICONS: Record<BuildLifecycleDestination, Icon> = {
+  test: Flask,
+  versions: Stack,
+};
 
-export function BuildSectionRail({ active, onChange }: { active: BuildSectionId; onChange: (section: BuildSectionId) => void }) {
-  return <aside className="border-b border-border bg-surface lg:border-b-0 lg:border-r"><div className="flex gap-2 overflow-x-auto p-3 lg:flex-col lg:gap-1 lg:p-4">{BUILD_SECTIONS.map((section, index) => { const Icon = section.icon; const selected = section.id === active; return <button key={section.id} type="button" aria-pressed={selected} onClick={() => onChange(section.id)} className={`group flex min-w-max items-center gap-3 rounded-lg px-3 py-3 text-left text-sm transition lg:w-full ${selected ? "bg-primary-soft font-semibold text-primary" : "text-text-muted hover:bg-subtle hover:text-text-strong"}`}><span className={`flex h-7 w-7 items-center justify-center rounded-full border text-xs ${selected ? "border-primary bg-primary text-white" : "border-border bg-surface"}`}><span className="lg:hidden">{index + 1}</span><Icon className="hidden lg:block" size={16} /></span><span>{section.label}</span></button>; })}</div></aside>;
+export function BuildSectionRail({
+  agentId,
+  active,
+  onChange,
+}: {
+  agentId: number;
+  active: BuildSectionId;
+  onChange: (section: BuildSectionId) => void;
+}) {
+  const router = useRouter();
+
+  return (
+    <aside className="min-w-0 border-b border-border bg-surface lg:border-b-0 lg:border-r">
+      <nav aria-label="专业配置" className="overflow-x-auto p-2">
+        <div className="flex min-w-max gap-3 lg:min-w-0 lg:flex-col lg:gap-2">
+          {PROFESSIONAL_BUILD_GROUPS.map((group) => (
+            <section key={group.id} className="min-w-max lg:min-w-0">
+              <h2 className="mb-1 px-2 text-[10px] font-semibold tracking-[0.08em] text-text-muted">
+                {group.label}
+              </h2>
+              <div className="flex gap-1 lg:flex-col">
+                {group.items.map((item) => {
+                  const selected = item.kind === "editor" && item.id === active;
+                  const Icon =
+                    item.kind === "editor"
+                      ? EDITOR_ICONS[item.id]
+                      : ROUTE_ICONS[item.id];
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      aria-pressed={
+                        item.kind === "editor" ? selected : undefined
+                      }
+                      onClick={() => {
+                        if (item.kind === "editor") onChange(item.id);
+                        else
+                          router.push(getBuildLifecyclePath(agentId, item.id));
+                      }}
+                      className={`group flex min-h-10 min-w-max items-center gap-1.5 rounded-md px-2 py-1 text-left text-[13px] leading-5 transition lg:w-full ${selected ? "bg-primary-soft font-semibold text-primary" : "text-text-muted hover:bg-subtle hover:text-text-strong"}`}
+                    >
+                      <span
+                        className={`grid size-[22px] shrink-0 place-items-center rounded-full border ${selected ? "border-primary bg-primary text-white" : "border-border bg-surface"}`}
+                      >
+                        <Icon size={13} />
+                      </span>
+                      <span className="flex-1">{item.label}</span>
+                      {item.kind === "route" && (
+                        <ArrowSquareOut size={12} className="text-text-muted" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
+      </nav>
+    </aside>
+  );
 }
