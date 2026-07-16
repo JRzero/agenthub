@@ -79,22 +79,46 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   }
 
   return (
-    <main className="grid min-h-screen bg-surface lg:grid-cols-[minmax(430px,0.9fr)_1.1fr]">
-      <section className="flex items-center justify-center px-6 py-10 sm:px-10">
-        <div className="w-full max-w-[430px]">
-          <Link href="/" className="mb-9 inline-flex items-center gap-3" aria-label="AgentHub 首页">
-            <Image src="/images/agenthub-logo.png" alt="" width={40} height={40} priority />
+    <main className="grid min-h-screen bg-[#0f1224] lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)]">
+      <section className="relative hidden min-h-screen overflow-hidden px-10 py-10 text-white lg:flex lg:flex-col">
+        <div className="absolute -left-32 top-10 h-96 w-96 rounded-full bg-primary/25 blur-3xl" />
+        <div className="absolute bottom-10 right-10 h-80 w-80 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+
+        <Link href="/" className="relative inline-flex items-center gap-3 self-start" aria-label="AgentHub 首页">
+          <Image src="/images/agenthub-logo.png" alt="" width={38} height={38} priority />
+          <span className="text-2xl font-bold tracking-tight">AgentHub</span>
+        </Link>
+
+        <div className="relative flex flex-1 items-center justify-center">
+          <div className="w-full max-w-[860px] rounded-[32px] border border-white/10 bg-white/[0.04] p-3 shadow-2xl shadow-black/20 backdrop-blur">
+            <Image
+              src="/images/login-agent-asset-hero.png"
+              alt="AgentHub Agent 资产平台概念图"
+              width={1536}
+              height={1024}
+              priority
+              className="h-auto w-full rounded-[24px] object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="flex min-h-screen items-center justify-center bg-surface px-6 py-10 sm:px-10">
+        <div className="w-full max-w-[480px] rounded-[28px] border border-border bg-white p-8 shadow-2xl shadow-slate-200/70 sm:p-10">
+          <Link href="/" className="mb-8 inline-flex items-center gap-3 lg:hidden" aria-label="AgentHub 首页">
+            <Image src="/images/agenthub-logo.png" alt="" width={36} height={36} priority />
             <span className="text-2xl font-bold tracking-tight">AgentHub</span>
           </Link>
 
-          <p className="text-xs font-bold tracking-[0.16em] text-primary">CREATOR WORKSPACE</p>
+          <p className="text-xs font-bold tracking-[0.16em] text-primary">WORKSPACE LOGIN</p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-text-strong">
-            {registerMode ? "创建 Creator 账号" : "欢迎回到 AgentHub"}
+            {registerMode ? "创建 AgentHub 账号" : "登录 AgentHub"}
           </h1>
           <p className="mt-3 text-sm leading-6 text-text-muted">
             {registerMode
-              ? "使用邀请码注册，开始构建可跨 Client 发行的 Agent 资产。"
-              : "登录后继续管理 Agent 的构建、测试、版本与发行。"}
+              ? "使用邀请码加入工作空间，开始构建和发行 Agent 资产。"
+              : "进入工作空间，继续管理 Agent 资产、测试评估和多端发行。"}
           </p>
 
           {demo ? (
@@ -113,7 +137,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
                   onChange={(event) => setUsername(event.target.value)}
                   className={fieldClass}
                   autoComplete="username"
-                  placeholder={registerMode ? "设置 Creator 用户名" : "输入用户名或邮箱"}
+                  placeholder={registerMode ? "设置用户名" : "输入用户名或邮箱"}
                   required
                   minLength={registerMode ? 3 : 1}
                   maxLength={100}
@@ -212,30 +236,6 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           )}
         </div>
       </section>
-
-      <section className="relative hidden overflow-hidden border-l border-border bg-[#111326] p-12 text-white lg:flex lg:items-end">
-        <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-primary/30 blur-3xl" />
-        <div className="absolute bottom-20 left-20 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
-        <div className="relative max-w-[620px] rounded-2xl border border-white/10 bg-white/[0.06] p-8 shadow-2xl backdrop-blur">
-          <p className="text-sm font-semibold text-indigo-300">Build once, adapt everywhere.</p>
-          <h2 className="mt-4 text-3xl font-bold leading-tight">Agent 不再只是某个 App 里的功能。</h2>
-          <p className="mt-4 max-w-[540px] leading-7 text-slate-300">
-            在统一资产源头管理身份、人设、知识、技能、记忆策略、版本和 Client 适配，再以受控方式完成测试和多端发行。
-          </p>
-          <div className="mt-8 grid grid-cols-3 gap-3 text-xs text-slate-300">
-            {[
-              ["01", "统一构建"],
-              ["02", "持续评估"],
-              ["03", "多端发行"],
-            ].map(([index, label]) => (
-              <div key={index} className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3">
-                <span className="text-indigo-300">{index}</span>
-                <strong className="mt-1 block text-sm text-white">{label}</strong>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </main>
   );
 }
@@ -259,5 +259,3 @@ function AuthField({
     </label>
   );
 }
-
-
