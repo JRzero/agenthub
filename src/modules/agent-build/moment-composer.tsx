@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ImageSquare, MagicWand, PaperPlaneTilt, X } from "@phosphor-icons/react";
+import { ImageSquare, MagicWand, PaperPlaneTilt, SpinnerGap, X } from "@phosphor-icons/react";
 import { DATA_MODE } from "@/config/capabilities";
 import { useAuth } from "@/modules/auth/auth-provider";
 import { createMoment, getMomentDraft, uploadMomentImage, type MomentItem } from "./moments-api";
@@ -17,6 +17,8 @@ export function MomentComposer({ agentId, agentName, onPublished }: { agentId: n
   const [autoImage, setAutoImage] = useState(false);
   const [busy, setBusy] = useState("");
   const [message, setMessage] = useState("");
+
+  const drafting = busy === "draft";
 
   const draft = async () => {
     if (!session?.apiKey) return;
@@ -57,8 +59,9 @@ export function MomentComposer({ agentId, agentName, onPublished }: { agentId: n
             内容将以当前 Agent 的身份发布。
           </p>
         </div>
-        <button type="button" onClick={() => void draft()} disabled={Boolean(busy)} className="button-secondary w-full shrink-0 whitespace-nowrap sm:w-auto">
-          <MagicWand size={17} />AI 草稿
+        <button type="button" onClick={() => void draft()} disabled={Boolean(busy)} className="button-secondary w-full shrink-0 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto" aria-busy={drafting}>
+          {drafting ? <span className="loading-spin"><SpinnerGap size={17} /></span> : <MagicWand size={17} />}
+          {drafting ? "正在生成…" : "AI 草稿"}
         </button>
       </div>
 
