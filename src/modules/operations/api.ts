@@ -1,5 +1,45 @@
+import type { Agent } from "@/modules/agents/types";
 import { ApiError, apiRequest } from "@/shared/api/http-client";
-import type { SessionMessage, SharedSessionRow, UserAgentPrompt } from "./types";
+import type { SessionMessage, SharedSessionInfo, SharedSessionRow, SharedUser, UserAgentPrompt } from "./types";
+
+function normalizeAgent(agent: Agent): SharedSessionRow["agent"] {
+  return {
+    id: agent.id,
+    uuid: agent.uuid,
+    name: agent.name,
+    code: agent.code,
+    avatar: agent.config?.metadata?.avatar || "",
+    agent_type: agent.agent_type,
+    online: agent.edge_status === "online",
+  };
+}
+
+function normalizeHuman(user: SharedUser): SharedSessionRow["human"] {
+  return {
+    id: user.user_id,
+    uuid: user.uuid || `user-${user.user_id}`,
+    username: user.username,
+    display_name: user.display_name || user.username,
+    avatar: user.avatar || "",
+  };
+}
+
+export async function listOperationAgents(apiKey: string, workspaceCode: string): Promise<Agent[]> {
+  const result = await apiRequest<{ agents: Agent[] }>("/agents", { apiKey, workspaceCode });
+  return result.agents || [];
+}
+
+export async function listSharedUsers(apiKey: string, workspaceCode: string, agentId: number): Promise<SharedUser[]> {
+  const result = await apiRequest<{ users: SharedUser[] }>(`/agents/${agentId}/shared-users`, { apiKey, workspaceCode });
+  return result.users || [];
+}
+
+export async function listAgentUserSharedSessions(apiKey: string, workspaceCode: string, agent: Agent, user: SharedUser): Promise<SharedSessionRow[]> {
+  const result = await apiRequest<{ sessions: SharedSessionInfo[] }>(`/agents/${agent.id}/users/${user.user_id}/shared-sessions`, { apiKey, workspaceCode });
+  const rowAgent = normalizeAgent(agent);
+  const human = normalizeHuman(user);
+  return (result.sessions || []).map((session) => ({ session, agent: rowAgent, human }));
+}
 
 export async function listSharedSessions(apiKey: string, workspaceCode: string): Promise<SharedSessionRow[]> {
   const result = await apiRequest<{ sessions: SharedSessionRow[] }>("/sessions/shared", { apiKey, workspaceCode });
@@ -33,5 +73,14 @@ export function setUserAgentPrompt(apiKey: string, workspaceCode: string, agentI
 }
 
 export function pushCreatorComment(apiKey: string, workspaceCode: string, row: SharedSessionRow, content: string): Promise<{ message_id: string; session_id: number }> {
-  return apiRequest("/user/push-messages", { method: "POST", apiKey, workspaceCode, body: JSON.stringify({ user_id: row.human.id, session_id: row.session.id, sender_agent_id: row.agent.id, sender_name: row.agent.name, content: `[创作者评论] ${content.trim()}`, content_type: "text" }) });
+  const body: Record<string, unknown> = {
+    user_id: row.human.id,
+    sender_agent_id: row.agent.id,
+    sender_name: row.agent.name,
+    content: `[创作者评论] ${content.trim()}`,
+    content_type: "text",
+  };
+  if (row.session.is_group && row.session.group_id) body.group_id = row.session.group_id;
+  else body.session_id = row.session.id;
+  return apiRequest("/user/push-messages", { method: "POST", apiKey, workspaceCode, body: JSON.stringify(body) });
 }
