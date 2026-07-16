@@ -14,6 +14,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
   const { session, ready } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const shellLayout = resolveWorkspaceShellLayout(pathname);
+  const compactShell = shellLayout.sidebarCollapsed;
 
   useEffect(() => {
     if (ready && !session) {
@@ -36,13 +37,13 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
     <WorkspaceProvider>
       <div className="min-h-screen bg-canvas">
         <WorkspaceSidebar
-          agentAssetMode={shellLayout.agentAssetMode}
+          agentAssetMode={compactShell}
           collapsed={shellLayout.sidebarCollapsed}
           mobileOpen={mobileOpen}
           onClose={() => setMobileOpen(false)}
         />
         <Topbar
-          compact={shellLayout.agentAssetMode}
+          compact={compactShell}
           onOpenNavigation={() => setMobileOpen(true)}
         />
         <main

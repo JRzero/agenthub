@@ -1,4 +1,4 @@
-﻿import { SourceBadge } from "@/shared/ui/source-badge";
+import { SourceBadge } from "@/shared/ui/source-badge";
 import type { SharedSessionRow } from "./types";
 
 export function SessionInspector({
@@ -22,10 +22,10 @@ export function SessionInspector({
   onSaveSessionPrompt: () => void;
   onSaveUserPrompt: () => void;
 }) {
-  if (!row) return <aside className="border-t border-border p-5 text-sm text-text-muted min-[1400px]:border-l min-[1400px]:border-t-0">选择会话后编辑 Prompt</aside>;
+  if (!row) return <aside className="border-l border-border p-4 text-sm text-text-muted">选择会话后编辑 Prompt</aside>;
 
   return (
-    <aside className="flex min-h-0 flex-col border-t border-border bg-surface min-[1400px]:border-l min-[1400px]:border-t-0">
+    <aside className="flex min-h-0 flex-col border-l border-border bg-surface">
       <header className="border-b border-border px-4 py-3">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-text-muted">PROMPT 编辑</h2>
@@ -33,7 +33,7 @@ export function SessionInspector({
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
         <PromptBlock
           title="会话级 Prompt"
           description="只影响当前会话，用于临时修正本次对话的回复策略。"
@@ -65,8 +65,8 @@ function PromptBlock({ title, description, value, placeholder, saving, onChange,
       value={value}
       onChange={(event) => onChange(event.target.value)}
       placeholder={placeholder}
-      rows={8}
-      className="mt-3 min-h-56 w-full resize-y rounded-lg border border-border bg-surface px-3 py-3 text-sm leading-6 text-text-strong outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+      rows={5}
+      className="mt-3 min-h-36 w-full resize-y rounded-lg border border-border bg-surface px-3 py-3 text-sm leading-6 text-text-strong outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
     />
     <button type="button" onClick={onSave} disabled={saving} className="mt-3 w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50">
       {saving ? "保存中…" : "保存"}

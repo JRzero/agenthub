@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   isAgentAssetWorkspacePath,
   resolveWorkspaceShellLayout,
+  shouldCollapseWorkspaceSidebar,
 } from "./shell-mode";
 
 describe("isAgentAssetWorkspacePath", () => {
@@ -11,13 +12,29 @@ describe("isAgentAssetWorkspacePath", () => {
     "/assets/agent-81abf0/test",
     "/assets/agent-81abf0/versions",
     "/assets/agent-81abf0/distribution",
-  ])("uses the compact shell for %s", (pathname) => {
+  ])("uses the Agent asset shell for %s", (pathname) => {
     expect(isAgentAssetWorkspacePath(pathname)).toBe(true);
   });
 
   it.each(["/assets", "/resources", "/operations"])(
-    "keeps the workspace shell for %s",
+    "does not treat %s as an Agent asset workspace",
     (pathname) => expect(isAgentAssetWorkspacePath(pathname)).toBe(false),
+  );
+});
+
+describe("shouldCollapseWorkspaceSidebar", () => {
+  it.each([
+    "/assets/32/overview",
+    "/assets/32/build",
+    "/operations",
+    "/operations/sessions",
+  ])("collapses the workspace sidebar for %s", (pathname) => {
+    expect(shouldCollapseWorkspaceSidebar(pathname)).toBe(true);
+  });
+
+  it.each(["/assets", "/resources", "/workbench"])(
+    "keeps the workspace sidebar expanded for %s",
+    (pathname) => expect(shouldCollapseWorkspaceSidebar(pathname)).toBe(false),
   );
 });
 
@@ -31,6 +48,15 @@ describe("resolveWorkspaceShellLayout", () => {
   ])("forces Agent lifecycle route %s to the compact rail", (pathname) => {
     expect(resolveWorkspaceShellLayout(pathname)).toEqual({
       agentAssetMode: true,
+      sidebarCollapsed: true,
+      mainDesktopPaddingClass: "lg:pl-[88px]",
+      mainTopPaddingClass: "pt-[60px]",
+    });
+  });
+
+  it("collapses operations without enabling Agent asset mode", () => {
+    expect(resolveWorkspaceShellLayout("/operations")).toEqual({
+      agentAssetMode: false,
       sidebarCollapsed: true,
       mainDesktopPaddingClass: "lg:pl-[88px]",
       mainTopPaddingClass: "pt-[60px]",

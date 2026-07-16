@@ -2,6 +2,10 @@ export function isAgentAssetWorkspacePath(pathname: string): boolean {
   return /^\/assets\/[^/]+(?:\/|$)/.test(pathname);
 }
 
+export function shouldCollapseWorkspaceSidebar(pathname: string): boolean {
+  return isAgentAssetWorkspacePath(pathname) || pathname === "/operations" || pathname.startsWith("/operations/");
+}
+
 export type WorkspaceShellLayout = {
   agentAssetMode: boolean;
   sidebarCollapsed: boolean;
@@ -13,11 +17,12 @@ export function resolveWorkspaceShellLayout(
   pathname: string,
 ): WorkspaceShellLayout {
   const agentAssetMode = isAgentAssetWorkspacePath(pathname);
+  const sidebarCollapsed = shouldCollapseWorkspaceSidebar(pathname);
 
   return {
     agentAssetMode,
-    sidebarCollapsed: agentAssetMode,
-    mainDesktopPaddingClass: agentAssetMode ? "lg:pl-[88px]" : "lg:pl-[224px]",
+    sidebarCollapsed,
+    mainDesktopPaddingClass: sidebarCollapsed ? "lg:pl-[88px]" : "lg:pl-[224px]",
     mainTopPaddingClass: "pt-[60px]",
   };
 }
