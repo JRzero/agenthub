@@ -51,14 +51,14 @@ describe("Agent build draft", () => {
     });
     expect(draft.llmModelName).toBe("");
     expect(draft.llmTemperature).toBeNull();
-    expect(serializeBuildDraft(draft)).toMatchObject({ llm_model_name: "", llm_temperature: null });
+    expect(serializeBuildDraft(draft, 0)).toMatchObject({ llm_model_name: "", llm_temperature: null });
   });
 
   it("serializes only editable update fields", () => {
     const draft = createBuildDraft(agent);
     draft.code = "  LIN-YUE-V2 ";
     draft.skills = [" realtime_weather ", ""];
-    const payload = serializeBuildDraft(draft, "draft");
+    const payload = serializeBuildDraft(draft, 0, "draft");
     expect(payload).not.toHaveProperty("code");
     expect(payload).toMatchObject({
       skills: ["realtime_weather"],

@@ -2,7 +2,7 @@ const API_OVERRIDE_KEY = "linkyun-api-url-override";
 
 interface ApiEnvelope<T> {
   success?: boolean;
-  data?: T;
+  data?: T | { code?: string; error?: string; message?: string; [key: string]: unknown };
   error?: { code?: string; message?: string };
 }
 
@@ -11,6 +11,7 @@ export class ApiError extends Error {
     message: string,
     public readonly status: number,
     public readonly code?: string,
+    public readonly details?: Record<string, unknown>,
   ) {
     super(message);
     this.name = "ApiError";
@@ -73,10 +74,23 @@ export async function apiRequest<T>(
     if (response.status === 401 && typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("agenthub:unauthorized"));
     }
+    const businessError =
+      envelope.data && typeof envelope.data === "object"
+        ? (envelope.data as Record<string, unknown>)
+        : undefined;
+    const businessMessage =
+      typeof businessError?.error === "string"
+        ? businessError.error
+        : typeof businessError?.message === "string"
+          ? businessError.message
+          : undefined;
+    const businessCode =
+      typeof businessError?.code === "string" ? businessError.code : undefined;
     throw new ApiError(
-      envelope.error?.message || `请求失败（${response.status}）`,
+      envelope.error?.message || businessMessage || `请求失败（${response.status}）`,
       response.status,
-      envelope.error?.code,
+      envelope.error?.code || businessCode,
+      businessError,
     );
   }
 

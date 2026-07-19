@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import type { Agent } from "@/modules/agents/types";
-import { buildCurrentVersion, buildDemoVersionHistory, compareVersions, createDemoDraft } from "./model";
+import {
+  buildCurrentVersion,
+  buildDemoVersionHistory,
+  compareVersions,
+  createDemoDraft,
+  resolveDraftBaseVersionNumber,
+  resolveVersionPublisher,
+} from "./model";
 
 const agent: Agent = {
   id: 32,
@@ -36,8 +43,12 @@ describe("Agent version model", () => {
   it("reports only actual field changes", () => {
     const [current, previous] = buildDemoVersionHistory(agent);
     const differences = compareVersions(previous, current);
-    expect(differences.find((item) => item.field === "temperature")?.changed).toBe(true);
-    expect(differences.find((item) => item.field === "model")?.changed).toBe(false);
+    expect(
+      differences.find((item) => item.field === "temperature")?.changed,
+    ).toBe(true);
+    expect(differences.find((item) => item.field === "model")?.changed).toBe(
+      false,
+    );
   });
 
   it("creates an isolated demo draft from a selected version", () => {
@@ -46,5 +57,68 @@ describe("Agent version model", () => {
     draft.snapshot.skills.push("new-skill");
     expect(draft.status).toBe("draft");
     expect(source.snapshot.skills).not.toContain("new-skill");
+  });
+
+  it("resolves a restored draft base id to its published version number", () => {
+    expect(
+      resolveDraftBaseVersionNumber(
+        {
+          version: 3,
+          current_version_id: 103,
+          draft_base_version_id: 101,
+        },
+        [
+          { id: 103, version_no: 3 },
+          { id: 101, version_no: 1 },
+        ],
+      ),
+    ).toBe(1);
+
+    expect(
+      resolveDraftBaseVersionNumber(
+        {
+          version: 3,
+          current_version_id: 103,
+          draft_base_version_id: 103,
+        },
+        [],
+      ),
+    ).toBe(3);
+  });
+
+  it("resolves the publisher name without exposing the numeric creator id", () => {
+    expect(
+      resolveVersionPublisher({
+        created_by: 2,
+        created_by_name: "Alice Chen",
+      }),
+    ).toBe("Alice Chen");
+
+    expect(
+      resolveVersionPublisher(
+        { created_by: 2 },
+        {
+          id: 2,
+          uuid: "creator-2",
+          username: "alice",
+          email: "alice@example.com",
+          status: "active",
+          metadata: { full_name: "Alice" },
+        },
+      ),
+    ).toBe("Alice");
+
+    expect(
+      resolveVersionPublisher(
+        { created_by: 9 },
+        {
+          id: 2,
+          uuid: "creator-2",
+          username: "alice",
+          email: "alice@example.com",
+          status: "active",
+        },
+      ),
+    ).toBe("未知用户");
   });
 });

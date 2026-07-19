@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowCounterClockwise, FloppyDisk, Play } from "@phosphor-icons/react";
+import {
+  ArrowCounterClockwise,
+  FloppyDisk,
+  PaperPlaneTilt,
+  Play,
+} from "@phosphor-icons/react";
 import { BuildEditorPanel } from "./build-editor-panel";
 import { resolveBuildPreviewLayout } from "./build-layout";
 import { BuildPreview } from "./build-preview";
@@ -18,7 +23,7 @@ export function BuildWorkspace() {
   const router = useRouter();
   const agentId = Number(params.agentId);
   const editor = useBuildEditor(Number.isFinite(agentId) ? agentId : null);
-  const [section, setSection] = useState<BuildSectionId>("persona");
+  const [section, setSection] = useState<BuildSectionId>("identity");
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
   const [actionsTarget, setActionsTarget] = useState<HTMLElement | null>(null);
   const previewLayout = resolveBuildPreviewLayout(previewCollapsed);
@@ -62,7 +67,7 @@ export function BuildWorkspace() {
               className="button-secondary min-h-9 px-3"
             >
               <ArrowCounterClockwise size={16} />
-              重置
+              放弃修改
             </button>
             <button
               type="button"
@@ -77,10 +82,20 @@ export function BuildWorkspace() {
               type="button"
               onClick={() => void saveAndTest()}
               disabled={editor.saving}
-              className="button-primary min-h-9 px-3"
+              className="button-secondary min-h-9 px-3"
             >
               <Play size={16} />
-              保存并测试
+              测试草稿
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push("/assets/" + agentId + "/versions")}
+              disabled={editor.saving || editor.dirty}
+              className="button-primary min-h-9 px-3"
+              title={editor.dirty ? "请先保存当前草稿" : "前往版本管理发布"}
+            >
+              <PaperPlaneTilt size={16} />
+              发布草稿
             </button>
           </div>,
           actionsTarget,

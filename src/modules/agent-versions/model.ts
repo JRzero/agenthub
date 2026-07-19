@@ -1,5 +1,44 @@
 import type { Agent } from "@/modules/agents/types";
-import type { VersionDifference, VersionSnapshot } from "./types";
+import type { CreatorProfile } from "@/modules/settings/types";
+import type { AgentVersion, VersionDifference, VersionSnapshot } from "./types";
+
+export function resolveVersionPublisher(
+  version: Pick<
+    AgentVersion,
+    "created_by" | "created_by_name" | "created_by_username"
+  >,
+  profile?: CreatorProfile | null,
+  sessionUsername?: string | null,
+): string {
+  const responseName =
+    version.created_by_name?.trim() || version.created_by_username?.trim();
+  if (responseName) return responseName;
+
+  if (profile && version.created_by === profile.id) {
+    return profile.metadata?.full_name?.trim() || profile.username;
+  }
+
+  if (!profile && sessionUsername?.trim()) return sessionUsername.trim();
+  return "未知用户";
+}
+
+export function resolveDraftBaseVersionNumber(
+  agent: Pick<
+    Agent,
+    "version" | "current_version_id" | "draft_base_version_id"
+  >,
+  versions: Array<Pick<AgentVersion, "id" | "version_no">>,
+): number | null {
+  if (!agent.draft_base_version_id) return null;
+  const baseVersion = versions.find(
+    (version) => version.id === agent.draft_base_version_id,
+  );
+  if (baseVersion) return baseVersion.version_no;
+  if (agent.draft_base_version_id === agent.current_version_id) {
+    return agent.version;
+  }
+  return null;
+}
 
 function snapshotFromAgent(agent: Agent): VersionSnapshot["snapshot"] {
   return {
@@ -44,7 +83,9 @@ export function buildDemoVersionHistory(agent: Agent): VersionSnapshot[] {
       ...current.snapshot,
       prompt: "温柔、敏锐，善于承接用户情绪，并明确保持安全边界。",
       temperature: 0.65,
-      skills: current.snapshot.skills.filter((skill) => skill !== "image_generation"),
+      skills: current.snapshot.skills.filter(
+        (skill) => skill !== "image_generation",
+      ),
     },
   };
 
@@ -96,11 +137,20 @@ export function compareVersions(
   return fields.map(([field, label]) => {
     const previous = display(before.snapshot[field]);
     const next = display(after.snapshot[field]);
-    return { field, label, before: previous, after: next, changed: previous !== next };
+    return {
+      field,
+      label,
+      before: previous,
+      after: next,
+      changed: previous !== next,
+    };
   });
 }
 
-export function createDemoDraft(source: VersionSnapshot, version: number): VersionSnapshot {
+export function createDemoDraft(
+  source: VersionSnapshot,
+  version: number,
+): VersionSnapshot {
   return {
     ...source,
     id: `demo-draft-${version}-${Date.now()}`,

@@ -4,6 +4,11 @@
 
 The Build route SHALL provide one grouped professional configuration hierarchy while preserving one editable draft across editor-section changes. The hierarchy MUST order Identity and Persona, Runtime Configuration, Capability Configuration, and Governance and Release as its groups. Persona SHALL own the role system prompt, Motherland prompt optimization, draft application, and example conversations; Runtime SHALL own provider and reasoning/tool-call display controls, and Safety SHALL own policy boundaries. Test Evaluation and Versions and Release SHALL be route shortcuts rather than duplicate Build editors.
 
+#### Scenario: Default to identity information
+
+- **WHEN** the creator enters the Build workspace
+- **THEN** the Identity Information editor is selected by default
+
 #### Scenario: Switch editable build section
 
 - **WHEN** the creator edits identity fields and activates the Runtime Configuration editor
@@ -27,11 +32,11 @@ The Build route SHALL provide one grouped professional configuration hierarchy w
 - **THEN** standalone Motherland entries are absent
 - **AND** Moments remains available as an Agent-scoped operation entry while narrative optimization remains inside Persona and Motherland visual generation remains available only through Media Assets when its capability is supported
 
-
 #### Scenario: Optimize role system prompt
 
 - **WHEN** the creator opens Persona
 - **THEN** the role system prompt editor shows an Optimize Narrative button in the prompt header, opens the Motherland optimization dialog on demand, and can apply an optimized prompt to the local Build draft without saving automatically
+
 #### Scenario: Open persona configuration
 
 - **WHEN** the creator activates Persona

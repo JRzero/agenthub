@@ -40,4 +40,24 @@ describe("AgentHub HTTP client", () => {
     const init = fetchMock.mock.calls[0][1] as RequestInit;
     expect(init.headers).not.toHaveProperty("X-Workspace-Code");
   });
-});
+  it("normalizes version business errors from data", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: false,
+          data: {
+            code: "DRAFT_CONFLICT",
+            error: "draft revision mismatch",
+            current_draft_revision: 9,
+          },
+        }),
+        { status: 409 },
+      ),
+    );
+
+    await expect(apiRequest("/agents/12", { method: "PUT" })).rejects.toMatchObject({
+      code: "DRAFT_CONFLICT",
+      status: 409,
+      details: expect.objectContaining({ current_draft_revision: 9 }),
+    });
+  });});

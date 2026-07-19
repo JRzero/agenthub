@@ -120,7 +120,7 @@ describe("professional Build contracts", () => {
       },
       mediaAssets: DEMO_COMIC_DRAFTS,
     });
-    const payload = serializeBuildDraft(draft);
+    const payload = serializeBuildDraft(draft, 0);
     expect(payload).not.toHaveProperty("mediaCandidate");
     expect(payload).not.toHaveProperty("mediaAssets");
     expect(JSON.stringify(payload)).not.toContain("demo-comic");

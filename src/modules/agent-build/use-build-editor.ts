@@ -7,6 +7,7 @@ import { useAgent } from "@/modules/agents/queries";
 import type { Agent } from "@/modules/agents/types";
 import { useAuth } from "@/modules/auth/auth-provider";
 import { useWorkspace } from "@/modules/workspace/workspace-provider";
+import { ApiError } from "@/shared/api/http-client";
 import { listKnowledgeBaseOptions, updateAgentBuild, type KnowledgeBaseOption } from "./api";
 import { createBuildDraft, draftsEqual, serializeBuildDraft, validateBuildDraft, type AgentBuildDraft } from "./types";
 
@@ -36,11 +37,13 @@ export function useBuildEditor(agentId: number | null) {
 
   useEffect(() => {
     if (!query.data) return;
-    const key = `${query.data.id}:${query.data.updated_at || "initial"}:${query.data.version}`;
+    const key = `${query.data.id}:${query.data.updated_at || "initial"}:${query.data.version}:${query.data.draft_revision ?? 0}`;
     if (loadedKey.current === key) return;
     const next = createBuildDraft(query.data);
     loadedKey.current = key;
-    setDraft(next); setSavedDraft(next); setSaveError("");
+    setDraft(next);
+    setSavedDraft(next);
+    setSaveError("");
   }, [query.data]);
 
   const validationErrors = useMemo(() => draft ? validateBuildDraft(draft) : {}, [draft]);
@@ -57,28 +60,61 @@ export function useBuildEditor(agentId: number | null) {
   }, [savedDraft]);
 
   const applyAgentUpdate = useCallback((updated: Agent) => {
-    loadedKey.current = `${updated.id}:${updated.updated_at || "initial"}:${updated.version}`;
+    loadedKey.current = `${updated.id}:${updated.updated_at || "initial"}:${updated.version}:${updated.draft_revision ?? 0}`;
     queryClient.setQueryData(["agent", updated.id, workspaceCode, demo], updated);
   }, [demo, queryClient, workspaceCode]);
 
   const save = useCallback(async (status?: string): Promise<boolean> => {
     if (!draft || !agentId || !query.data) return false;
     const errors = validateBuildDraft(draft);
-    if (Object.keys(errors).length) { setSaveError("请先修正标记的必填项"); return false; }
-    setSaving(true); setSaveError("");
+    if (Object.keys(errors).length) {
+      setSaveError("请先修正标记的必填项");
+      return false;
+    }
+    setSaving(true);
+    setSaveError("");
     try {
       if (!demo) {
-        const updated = await updateAgentBuild(session?.apiKey || "", agentId, workspaceCode, serializeBuildDraft(draft, status));
-        applyAgentUpdate({ ...query.data, ...updated });
+        const updated = await updateAgentBuild(
+          session?.apiKey || "",
+          agentId,
+          workspaceCode,
+          serializeBuildDraft(draft, query.data.draft_revision ?? 0, status),
+        );
+        applyAgentUpdate(updated);
       }
       const snapshot = structuredClone(draft);
-      setSavedDraft(snapshot); setDraft(snapshot); setSavedAt(new Date());
+      setSavedDraft(snapshot);
+      setDraft(snapshot);
+      setSavedAt(new Date());
       return true;
     } catch (error) {
-      setSaveError(error instanceof Error ? error.message : "保存失败，请重试");
+      if (error instanceof ApiError && error.code === "DRAFT_CONFLICT") {
+        await query.refetch();
+        setSaveError("草稿已被其他操作更新，已刷新到最新版本，请确认后再保存。");
+      } else {
+        setSaveError(error instanceof Error ? error.message : "保存失败，请重试");
+      }
       return false;
-    } finally { setSaving(false); }
-  }, [agentId, applyAgentUpdate, demo, draft, query.data, session?.apiKey, workspaceCode]);
+    } finally {
+      setSaving(false);
+    }
+  }, [agentId, applyAgentUpdate, demo, draft, query, session?.apiKey, workspaceCode]);
 
-  return { ...query, draft, dirty, saving, saveError, savedAt, validationErrors, knowledgeBases: knowledgeQuery.data || [], knowledgeLoading: knowledgeQuery.isLoading, demo, patchDraft, reset, applyAgentUpdate, save };
+  return {
+    ...query,
+    draft,
+    dirty,
+    saving,
+    saveError,
+    savedAt,
+    validationErrors,
+    knowledgeBases: knowledgeQuery.data || [],
+    knowledgeLoading: knowledgeQuery.isLoading,
+    demo,
+    patchDraft,
+    reset,
+    applyAgentUpdate,
+    save,
+  };
 }

@@ -6,7 +6,9 @@ describe("capability registry", () => {
     expect(DATA_MODE).toBe("live");
     expect(capabilitySource("agentAssets")).toBe("live");
     expect(capabilitySource("assetCompleteness")).toBe("derived");
-    expect(capabilitySource("clientAdapters")).toBe("unavailable");
+    expect(capabilitySource("clientAdapters")).toBe("live");
+    expect(capabilitySource("versionHistory")).toBe("live");
+    expect(capabilitySource("packageExport")).toBe("live");
     expect(capabilitySource("revenue")).toBe("unavailable");
     expect(capabilitySource("avatarUpload")).toBe("live");
     expect(capabilitySource("mediaAssetLibrary")).toBe("unavailable");

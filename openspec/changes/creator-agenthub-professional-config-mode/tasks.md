@@ -14,6 +14,7 @@
 - [x] 2.4 Preserve the shared workspace shell, compact Agent header, lifecycle tabs, and existing Save Draft / Save and Test toolbar behavior
 - [x] 2.5 Implement the desktop editor-first grid with a 320-360 pixel preview, page-level vertical scrolling, and no horizontal overflow
 - [x] 2.6 Implement responsive navigation and move the preview below the editor when the three-column desktop layout no longer fits
+- [x] 2.7 Open the Build workspace on Identity Information by default
 
 ## 3. Saved-Configuration Preview
 

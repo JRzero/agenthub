@@ -62,6 +62,18 @@ export function BuildEditorPanel({
   return (
     <section className="min-w-0 bg-surface">
       <div className="p-5 sm:p-7">
+        <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+          <span className="font-medium">
+            {agent.current_version_id
+              ? "平台仍运行 v" +
+                agent.version +
+                "；草稿发布前不会影响 Client 或已有会话"
+              : "当前尚未发布；草稿发布前不会被 Client 或新会话使用"}
+          </span>
+          <span className="ml-auto text-xs text-blue-600">
+            草稿 Hash：发布后生成
+          </span>
+        </div>
         <div className="mb-5">
           <h2 className="text-xl font-semibold">
             {BUILD_SECTION_LABELS[section]}

@@ -33,6 +33,11 @@ export interface Agent {
   llm_api_key_configured?: boolean;
   knowledge_base_id?: number | null;
   version: number;
+  current_version_id?: number | null;
+  draft_base_version_id?: number | null;
+  draft_revision?: number;
+  draft_content_hash?: string;
+  published_at?: string | null;
   system_prompt?: string;
   temperature?: number;
   config?: AgentConfig;
