@@ -23,9 +23,12 @@
 - [x] 4.1 Replace per-Client release semantics with platform-current following and acknowledgement status
 - [x] 4.2 Implement local Client current-version export and explicit no-download state for internal storage paths
 - [x] 4.3 Update capability sources and remove independent Client version selection/update/rollback UI
+- [x] 4.4 Support generic current-version configuration export without a Client while retaining optional local Client package export
 
 ## 5. Verification and evidence
 
 - [x] 5.1 Add unit and interaction tests for save conflicts, publish payloads/errors, history restore and Client export contracts
 - [x] 5.2 Verify responsive visual states against all eight references and save QA evidence/report
 - [x] 5.3 Run lint, typecheck, tests, build and strict OpenSpec validation
+- [x] 5.4 Add secret-sanitization coverage and verify the no-Client export flow
+- [x] 5.5 Keep the export dialog within short viewports with a scrollable content region and persistent actions

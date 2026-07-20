@@ -1,4 +1,5 @@
 import type { Agent } from "@/modules/agents/types";
+import type { AgentVersion } from "@/modules/agent-versions/types";
 import type {
   DistributionChannel,
   DistributionChannelId,
@@ -31,7 +32,9 @@ export function buildDistributionChannels(
     demo: boolean;
     shareLink: ShareLink | null;
     paused?: boolean;
-    overrides?: Partial<Record<DistributionChannelId, Partial<DistributionChannel>>>;
+    overrides?: Partial<
+      Record<DistributionChannelId, Partial<DistributionChannel>>
+    >;
   },
 ): DistributionChannel[] {
   const currentVersion = `${agent.version || 1}.0`;
@@ -61,11 +64,19 @@ export function buildDistributionChannels(
       compatibility: "compatible",
       compatibilityLabel: "完全兼容",
       compatibilityHint: "公开分享能力可用",
-      status: webRunning ? "running" : options.paused ? "paused" : "unpublished",
+      status: webRunning
+        ? "running"
+        : options.paused
+          ? "paused"
+          : "unpublished",
       statusLabel: webRunning ? "运行中" : options.paused ? "已暂停" : "未发布",
       publishedAt: webRunning ? "2026-07-10 09:58" : undefined,
       publishedBy: webRunning ? "王磊" : undefined,
-      actionLabel: webRunning ? "复制链接" : options.shareLink ? "启用链接" : "生成链接",
+      actionLabel: webRunning
+        ? "复制链接"
+        : options.shareLink
+          ? "启用链接"
+          : "生成链接",
       shareUrl,
     },
     {
@@ -120,4 +131,64 @@ export function buildPublicAgentCard(
       generated_at: generatedAt,
     },
   };
+}
+
+const SENSITIVE_CONFIG_KEY =
+  /(^|_)(api_key|access_token|refresh_token|auth_token|token|password|passwd|secret|client_secret|private_key|authorization|cookie)$/;
+
+function normalizedKey(key: string) {
+  return key
+    .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+    .replace(/[\s-]+/g, "_")
+    .toLowerCase();
+}
+
+export function sanitizeExportConfig(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(sanitizeExportConfig);
+  if (!value || typeof value !== "object") return value;
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .filter(([key]) => !SENSITIVE_CONFIG_KEY.test(normalizedKey(key)))
+      .map(([key, nestedValue]) => [key, sanitizeExportConfig(nestedValue)]),
+  );
+}
+
+export function buildAgentVersionConfigExport(
+  agent: Agent,
+  version: AgentVersion,
+  exportNote = "",
+  exportedAt = new Date().toISOString(),
+) {
+  return {
+    schema_version: "agenthub.agent-config.v1",
+    agent: {
+      code: agent.code,
+      name: agent.name,
+    },
+    version: {
+      number: version.version_no,
+      hash: version.version_hash,
+      hash_schema_version: version.hash_schema_version,
+      published_at: version.created_at,
+      release_note: version.release_note,
+      config: sanitizeExportConfig(version.config_snapshot),
+      resources: sanitizeExportConfig(version.resource_manifest),
+      required_capabilities: version.required_capabilities || [],
+    },
+    export_note: exportNote.trim() || undefined,
+    exported_at: exportedAt,
+  };
+}
+
+export function buildAgentVersionConfigFilename(
+  agent: Agent,
+  version: AgentVersion,
+) {
+  const base = (agent.code || agent.name || "agent")
+    .trim()
+    .replace(/[^a-zA-Z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase();
+  return (base || "agent") + "-v" + version.version_no + "-config.json";
 }

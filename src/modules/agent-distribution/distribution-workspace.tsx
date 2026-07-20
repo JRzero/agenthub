@@ -17,7 +17,10 @@ import {
 } from "@phosphor-icons/react";
 import { useAgent } from "@/modules/agents/queries";
 import { useAuth } from "@/modules/auth/auth-provider";
-import { createAgentClientExport } from "@/modules/agent-versions/api";
+import {
+  createAgentClientExport,
+  getAgentVersion,
+} from "@/modules/agent-versions/api";
 import {
   useAgentClients,
   useAgentClientRuntimeVersion,
@@ -27,6 +30,10 @@ import type { AgentClient } from "@/modules/agent-versions/types";
 import { useWorkspace } from "@/modules/workspace/workspace-provider";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 import { createShareLink, getShareLink, setShareLinkEnabled } from "./api";
+import {
+  buildAgentVersionConfigExport,
+  buildAgentVersionConfigFilename,
+} from "./model";
 import type { ShareLink } from "./types";
 
 function shortHash(value?: string | null) {
@@ -105,11 +112,12 @@ export function DistributionWorkspace() {
       item.status === "enabled" &&
       item.last_ack_version_id !== agent.current_version_id,
   ).length;
-  const disabled = clients.filter((item) => item.status === "disabled").length;
+  const localClients = clients.filter(
+    (item) => item.status === "enabled" && isLocalClient(item),
+  );
 
   function openExport() {
-    const local = clients.find((client) => isLocalClient(client));
-    setExportClientId(local?.id || selectedClientId || clients[0]?.id || null);
+    setExportClientId(localClients[0]?.id || null);
     setExportNote("");
     setMessage("");
     setExportOpen(true);
@@ -138,10 +146,27 @@ export function DistributionWorkspace() {
   }
 
   async function createExport() {
-    if (!exportClientId || !current) return;
+    if (!current) return;
     setExporting(true);
     setMessage("");
     try {
+      if (!exportClientId) {
+        const version = await getAgentVersion(
+          auth,
+          agent.id,
+          current.version_no,
+        );
+        const payload = buildAgentVersionConfigExport(
+          agent,
+          version,
+          exportNote,
+        );
+        downloadJson(buildAgentVersionConfigFilename(agent, version), payload);
+        setExportOpen(false);
+        setMessage("平台当前版本配置已导出为 JSON 文件。");
+        return;
+      }
+
       const result = await createAgentClientExport(auth, exportClientId);
       setExportOpen(false);
       setMessage(
@@ -183,9 +208,7 @@ export function DistributionWorkspace() {
           Hash&nbsp; {current ? shortHash(current.version_hash) : "—"}
         </span>
         <span className="hidden h-5 w-px bg-border sm:block" />
-        <span>
-          已启用 {clients.length} 个 Client
-        </span>
+        <span>已启用 {clients.length} 个 Client</span>
         <span className="inline-flex items-center gap-2 text-success">
           <span className="size-2 rounded-full bg-success" />
           {synced} 个已同步
@@ -196,12 +219,12 @@ export function DistributionWorkspace() {
         </span>
         <span className="inline-flex items-center gap-2 text-text-muted">
           <span className="size-2 rounded-full bg-slate-400" />
-          {disabled} 个本地导出
+          {localClients.length} 个本地 Client
         </span>
         <button
           type="button"
           className="button-secondary ml-auto min-h-9"
-          disabled={!current || !clients.length}
+          disabled={!current}
           onClick={openExport}
         >
           <DownloadSimple size={16} />
@@ -233,7 +256,7 @@ export function DistributionWorkspace() {
             </div>
           ) : (
             <div className="grid min-h-80 place-items-center px-6 text-center text-sm text-text-muted">
-              尚未配置 Client。请先在 Clients 中添加接入端。
+              尚未配置 Client；仍可导出平台当前版本的通用配置。
             </div>
           )}
         </div>
@@ -293,7 +316,7 @@ export function DistributionWorkspace() {
         <ExportDialog
           currentVersionNo={current.version_no}
           currentHash={current.version_hash}
-          clients={clients}
+          clients={localClients}
           clientId={exportClientId}
           client={exportClient}
           note={exportNote}
@@ -518,7 +541,7 @@ function ExportDialog({
   client?: AgentClient;
   note: string;
   exporting: boolean;
-  onClient: (value: number) => void;
+  onClient: (value: number | null) => void;
   onNote: (value: string) => void;
   onClose: () => void;
   onExport: () => void;
@@ -529,12 +552,12 @@ function ExportDialog({
       role="dialog"
       aria-modal="true"
     >
-      <div className="w-full max-w-[480px] rounded-xl bg-surface shadow-2xl">
-        <header className="flex items-start justify-between border-b border-border px-6 py-4">
+      <div className="flex max-h-[calc(100dvh-2rem)] w-full max-w-[480px] flex-col overflow-hidden rounded-xl bg-surface shadow-2xl">
+        <header className="flex shrink-0 items-start justify-between border-b border-border px-6 py-4">
           <div>
             <h3 className="text-xl font-bold">导出当前版本</h3>
             <p className="mt-1 text-sm text-text-muted">
-              生成供本地 Client 使用的完整运行包
+              下载通用配置，或生成供本地 Client 使用的运行包
             </p>
           </div>
           <button
@@ -546,7 +569,7 @@ function ExportDialog({
             <X size={20} />
           </button>
         </header>
-        <div className="space-y-4 px-6 py-5">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-6 py-5">
           <div className="rounded-md border border-emerald-200 bg-emerald-50/60 p-4">
             <p className="text-xs text-success">平台当前版本</p>
             <div className="mt-2 flex items-center justify-between">
@@ -558,12 +581,15 @@ function ExportDialog({
             <p className="mt-2 text-xs text-text-muted">只能导出平台当前版本</p>
           </div>
           <label className="block text-sm font-medium">
-            目标 Client
+            导出方式
             <select
               className="mt-2 h-10 w-full rounded-md border border-border bg-surface px-3"
               value={clientId || ""}
-              onChange={(event) => onClient(Number(event.target.value))}
+              onChange={(event) =>
+                onClient(event.target.value ? Number(event.target.value) : null)
+              }
             >
+              <option value="">通用配置（不关联 Client）</option>
               {clients.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.name}
@@ -571,36 +597,42 @@ function ExportDialog({
               ))}
             </select>
             <span className="mt-1.5 block text-xs font-normal text-text-muted">
-              将组合该 Client 的独立配置
+              {client
+                ? "将组合该 Client 的独立配置并生成运行包"
+                : "直接下载平台当前版本配置，无需关联 Client"}
             </span>
           </label>
           <div>
-            <h4 className="text-sm font-semibold">运行包内容</h4>
+            <h4 className="text-sm font-semibold">
+              {client ? "运行包内容" : "配置文件内容"}
+            </h4>
             <div className="mt-2 overflow-hidden rounded-md border border-border">
               <PackageRow label="Agent 配置" value="平台当前版本" />
-              <PackageRow label="运行媒体" value="固化引用" />
-              <PackageRow label="知识与技能" value="版本引用" />
+              <PackageRow label="资源清单" value="版本引用" />
+              <PackageRow label="能力要求" value="版本引用" />
               <PackageRow
                 label="Client 配置"
-                value={client?.name || "未选择"}
+                value={client?.name || "不包含"}
               />
             </div>
           </div>
           <div className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs text-emerald-700">
-            检查通过，可以导出。已导出的运行包不会随后续发布自动更新。
+            检查通过，可以导出。导出内容固定为当前版本，不会随后续发布自动更新。
           </div>
-          <label className="block text-sm font-medium">
-            导出说明{" "}
-            <span className="font-normal text-text-muted">（选填）</span>
-            <input
-              className="mt-2 h-10 w-full rounded-md border border-border px-3"
-              value={note}
-              onChange={(event) => onNote(event.target.value)}
-              placeholder="例如：线下体验机 7 月版本"
-            />
-          </label>
+          {!client && (
+            <label className="block text-sm font-medium">
+              导出说明{" "}
+              <span className="font-normal text-text-muted">（选填）</span>
+              <input
+                className="mt-2 h-10 w-full rounded-md border border-border px-3"
+                value={note}
+                onChange={(event) => onNote(event.target.value)}
+                placeholder="例如：线下体验机 7 月版本"
+              />
+            </label>
+          )}
         </div>
-        <footer className="flex justify-end gap-2 border-t border-border px-6 py-4">
+        <footer className="flex shrink-0 justify-end gap-2 border-t border-border bg-surface px-6 py-4">
           <button
             type="button"
             className="button-secondary"
@@ -613,10 +645,16 @@ function ExportDialog({
             type="button"
             className="button-primary"
             onClick={onExport}
-            disabled={exporting || !clientId}
+            disabled={exporting}
           >
             <DownloadSimple size={17} />
-            {exporting ? "正在生成…" : "生成运行包"}
+            {exporting
+              ? client
+                ? "正在生成…"
+                : "正在导出…"
+              : client
+                ? "生成运行包"
+                : "导出配置"}
           </button>
         </footer>
       </div>
@@ -686,4 +724,18 @@ function isLocalClient(client: AgentClient) {
     client.client_type.includes("desktop") ||
     client.client_type.includes("edge")
   );
+}
+
+function downloadJson(filename: string, value: unknown) {
+  const blob = new Blob([JSON.stringify(value, null, 2)], {
+    type: "application/json;charset=utf-8",
+  });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
 }

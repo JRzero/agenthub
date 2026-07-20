@@ -63,6 +63,30 @@
 - Because the final implementation was not captured at the same viewport, spacing, alignment, overflow, and compact/expanded preview coexistence remain visually unverified.
 - This is a QA tooling blocker, not a recorded visual pass.
 
+## 2026-07-20 export dialog short-viewport follow-up
+
+- Source visual truth: `docs/qa/images/export-dialog-overflow-reference.png`.
+- Implementation route: `http://localhost:3002/assets/29/distribution`.
+- Viewport: 1024 ? 650, short desktop viewport.
+- State: export dialog expected to be open with generic configuration selected.
+- Full-view comparison: the source shows the dialog extending below the viewport and hiding part of the footer; the implementation now constrains the dialog to `100dvh - 2rem`.
+- Focused comparison: the dialog header and footer are non-shrinking regions, while the middle form is the only vertical scroll container.
+- Typography, color tokens, icons, copy and image assets were intentionally unchanged.
+
+### QA history
+
+1. P1: the source state clips the export action footer and provides no usable vertical scroll area.
+2. Fix: added a viewport-relative maximum height, flex column layout, middle-region `overflow-y-auto`, and persistent header/footer.
+3. Post-fix browser evidence: unavailable because the local page returned `Failed to fetch` before Agent data and the export dialog could render.
+4. Automated verification passed for lint, typecheck, focused export tests, strict OpenSpec validation and diff checking.
+
+### Current verification status
+
+- Implementation screenshot: unavailable due the local backend request failure.
+- Primary interaction: not testable because the distribution workspace did not finish loading.
+- Console errors: the visible application error was `Failed to fetch`.
+- The CSS implementation is complete, but visual comparison remains blocked until the local backend is reachable.
+
 ## Final result
 
 final result: blocked
