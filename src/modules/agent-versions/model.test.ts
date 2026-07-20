@@ -6,6 +6,7 @@ import {
   compareVersions,
   createDemoDraft,
   resolveDraftBaseVersionNumber,
+  resolveVersionSummary,
   resolveVersionPublisher,
 } from "./model";
 
@@ -120,5 +121,13 @@ describe("Agent version model", () => {
         },
       ),
     ).toBe("未知用户");
+  });
+  it("uses a dash when a version has no user-facing summary", () => {
+    expect(resolveVersionSummary("首次发布", null)).toBe("首次发布");
+    expect(resolveVersionSummary("", { summary: "优化角色表达" })).toBe(
+      "优化角色表达",
+    );
+    expect(resolveVersionSummary("", { base_version_id: null })).toBe("-");
+    expect(resolveVersionSummary("   ", { summary: "   " })).toBe("-");
   });
 });

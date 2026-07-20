@@ -23,7 +23,7 @@ import { useWorkspace } from "@/modules/workspace/workspace-provider";
 import { ApiError } from "@/shared/api/http-client";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 import { createDraftFromVersion, publishAgentVersion } from "./api";
-import { resolveVersionPublisher } from "./model";
+import { resolveVersionPublisher, resolveVersionSummary } from "./model";
 import { useAgentClients, useAgentVersion, useAgentVersions } from "./queries";
 import type { AgentClient, AgentVersion } from "./types";
 
@@ -47,12 +47,6 @@ function recordCount(value: object | null | undefined) {
 
 function arrayCount(value: unknown) {
   return Array.isArray(value) ? value.length : 0;
-}
-
-function changeText(value: Record<string, unknown> | null) {
-  if (!value) return "";
-  if (typeof value.summary === "string") return value.summary;
-  return Object.keys(value).slice(0, 3).join("、");
 }
 
 function versionErrorMessage(error: unknown) {
@@ -453,9 +447,10 @@ function VersionHistory({
                 {formatDate(version.created_at)}
               </span>
               <span className="truncate text-sm text-text-muted">
-                {version.release_note ||
-                  changeText(version.change_summary) ||
-                  "未填写版本说明"}
+                {resolveVersionSummary(
+                  version.release_note,
+                  version.change_summary,
+                )}
               </span>
             </button>
           );

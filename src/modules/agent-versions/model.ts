@@ -40,6 +40,21 @@ export function resolveDraftBaseVersionNumber(
   return null;
 }
 
+export function resolveVersionSummary(
+  releaseNote?: string | null,
+  changeSummary?: Record<string, unknown> | null,
+): string {
+  const note = releaseNote?.trim();
+  if (note) return note;
+
+  const summary = changeSummary?.summary;
+  if (typeof summary === "string" && summary.trim()) {
+    return summary.trim();
+  }
+
+  return "-";
+}
+
 function snapshotFromAgent(agent: Agent): VersionSnapshot["snapshot"] {
   return {
     description: agent.description || "",
