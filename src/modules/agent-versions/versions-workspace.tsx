@@ -27,6 +27,7 @@ import { getProfile } from "@/modules/settings/api";
 import { useWorkspace } from "@/modules/workspace/workspace-provider";
 import { ApiError } from "@/shared/api/http-client";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
+import { createRequestKey } from "@/shared/utils/request-key";
 import { createDraftFromVersion, publishAgentVersion } from "./api";
 import {
   countSkillReferences,
@@ -127,7 +128,7 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
     setReleaseNote("");
     setPublishError("");
     setPublishErrorCode("");
-    setRequestKey(crypto.randomUUID());
+    setRequestKey(createRequestKey());
     setPublishOpen(true);
   }
 
@@ -174,7 +175,7 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
           queryClient.invalidateQueries({ queryKey: ["agent", agent.id] }),
           versionsQuery.refetch(),
         ]);
-        setRequestKey(crypto.randomUUID());
+        setRequestKey(createRequestKey());
       }
     } finally {
       setPublishing(false);
