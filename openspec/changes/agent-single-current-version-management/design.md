@@ -11,7 +11,7 @@
 - 让构建草稿保存具备 Revision 乐观并发控制，并明确草稿与线上运行版本的边界。
 - 接入发布、历史列表/详情、基于历史创建草稿和版本业务错误分支。
 - 让版本页忠实表达平台当前版本、唯一当前草稿、Version Hash、Session 绑定影响和 Client 跟随状态。
-- 接入 Client 列表、运行版本与平台当前版本导出；无 Client 时下载通用配置，选择本地 Client 时生成运行包；删除 Client 独立选版本、单独更新和回退心智。
+- 接入 Client 列表、运行版本与平台当前版本导出；删除 Client 独立选版本、单独更新和回退心智。
 - 通过 TanStack Query 统一缓存更新与失效，确保构建、版本和发行页面状态一致。
 
 **Non-Goals:**
@@ -48,9 +48,9 @@
 
 顶部操作改为放弃修改、保存草稿、测试草稿和发布草稿。编辑区显示“平台仍运行 vN”和“草稿 Hash 发布后生成”。只有发布成功更新平台当前版本；保存与测试不改变线上状态。
 
-### 6. Client 只跟随平台当前版本
+### 6. Client 只跟随平台当前版本，导出包由后端生成
 
-发行页从旧的多端独立发布矩阵收敛为 Client 列表与详情。托管 Client、远程 Client 和本地 Client 展示跟随/等待同步/已导出状态；不显示版本选择器。导出入口不依赖 Client：未选择 Client 时，前端通过版本详情接口读取不可变平台当前版本，移除密钥、Token、密码等敏感字段后下载通用 JSON 配置；选择已启用的本地 Client 时，调用 `/exports` 生成包含 Client 独立配置的运行包。运行包结果只展示记录元数据，不把内部存储路径渲染成下载链接。
+发行页从旧的多端独立发布矩阵收敛为 Client 列表与详情。托管 Client、远程 Client 和本地 Client 展示跟随/等待同步状态；不显示版本选择器。主导出流程调用 Agent 级 `/agents/{id}/exports` 创建不绑定 Client 的通用不可变 ZIP，再通过 `/agent-exports/{id}/download` 读取原始 Blob 并触发浏览器保存。前端不拼装 JSON 或 ZIP，不把内部 `storage_path` 渲染成下载链接，并在下载端点被显式关闭时通过能力开关禁用正式导出。
 
 ### 7. Demo 与 Live 分离
 
@@ -76,5 +76,6 @@ Live 能力开关更新为真实 version history 与 client adapters；package e
 
 ## Open Questions
 
-- Client 运行包导出接口当前只返回内部 `storage_path`，真正可下载的签名 URL 或文件流需要后续后端契约；通用配置导出不依赖该地址。
+- Agent 级导出创建端点已上线，主导出流程默认不传 `client_id`；Client 级端点仅保留兼容用途。
+- ZIP 下载端点已上线，正式下载默认开放；仅在需要紧急回退时设置 `NEXT_PUBLIC_AGENT_EXPORT_ZIP_DOWNLOAD_ENABLED=false`。
 - 发布兼容性错误的详情字段未在交接文档中固定，前端先展示规范化错误消息和可选详情，后续可补强结构化 Client 问题列表。

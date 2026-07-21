@@ -23,12 +23,13 @@
 - [x] 4.1 Replace per-Client release semantics with platform-current following and acknowledgement status
 - [x] 4.2 Implement local Client current-version export and explicit no-download state for internal storage paths
 - [x] 4.3 Update capability sources and remove independent Client version selection/update/rollback UI
-- [x] 4.4 Support generic current-version configuration export without a Client while retaining optional local Client package export
+- [x] 4.4 Remove browser-generated JSON export and align the UI with the backend-generated ZIP contract
+- [x] 4.5 Add authenticated ZIP Blob download support enabled by default with an explicit rollback flag
+- [x] 4.6 Switch the primary export flow to the Agent-level generic ZIP endpoint without requiring a Client
 
 ## 5. Verification and evidence
 
 - [x] 5.1 Add unit and interaction tests for save conflicts, publish payloads/errors, history restore and Client export contracts
 - [x] 5.2 Verify responsive visual states against all eight references and save QA evidence/report
 - [x] 5.3 Run lint, typecheck, tests, build and strict OpenSpec validation
-- [x] 5.4 Add secret-sanitization coverage and verify the no-Client export flow
-- [x] 5.5 Keep the export dialog within short viewports with a scrollable content region and persistent actions
+- [x] 5.4 Add contract coverage for ZIP response parsing, filename handling and invalid non-ZIP responses

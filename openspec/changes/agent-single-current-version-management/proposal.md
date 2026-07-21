@@ -8,7 +8,7 @@ AgentHub 当前版本页仍以本地推导或 Demo 快照表达版本历史，�
 - 新增真实发布流程、发布确认与检查状态，发布成功后刷新 Agent 和版本历史。
 - 重构版本页，展示平台当前版本、当前草稿、Version Hash、历史记录、版本详情与基于历史版本创建草稿。
 - 调整构建页状态文案与操作，明确“线上仍运行当前版本”和“当前草稿”的边界。
-- 接入 Client 跟随状态和平台当前版本导出入口；无 Client 时可导出通用配置，选择本地 Client 时可生成运行包，不提供 Client 独立选版本、更新或回退。
+- 接入 Client 跟随状态和不绑定 Client 的平台当前版本通用 ZIP 导出入口，不提供 Client 独立选版本、更新或回退。
 - 统一版本业务错误解析与用户提示，覆盖冲突、无变更、不兼容和历史版本不可用等分支。
 - 保留 Demo 数据隔离；Live 模式只展示后端真实返回和真实写入结果。
 
@@ -17,7 +17,7 @@ AgentHub 当前版本页仍以本地推导或 Demo 快照表达版本历史，�
 ### New Capabilities
 
 - `agent-version-lifecycle`: Agent 草稿并发保存、平台当前版本发布、版本历史、版本详情和基于历史创建草稿。
-- `agent-client-version-following`: Client 跟随平台当前版本、同步状态、无 Client 的通用配置导出和可选本地 Client 运行包导出，不允许 Client 独立选择 Agent 版本。
+- `agent-client-version-following`: Client 跟随平台当前版本、同步状态和当前版本导出，不允许 Client 独立选择 Agent 版本。
 
 ### Modified Capabilities
 
@@ -26,6 +26,6 @@ AgentHub 当前版本页仍以本地推导或 Demo 快照表达版本历史，�
 ## Impact
 
 - 影响 `src/modules/agents`、`src/modules/agent-build`、`src/modules/agent-versions`、`src/modules/agent-distribution`、公共 API 错误适配器和相关路由页。
-- 接入 `GET/PUT /agents/{id}`、`POST /agents/{id}/publish`、版本历史/详情/创建草稿接口，以及 Agent Client 查询、运行版本和导出接口。
+- 接入 `GET/PUT /agents/{id}`、`POST /agents/{id}/publish`、版本历史/详情/创建草稿接口，以及 Agent Client 查询、运行版本、Agent 级导出记录创建和 ZIP Blob 下载接口。
 - 更新 `src/config/capabilities.ts`，将后端已交付的版本与 Client 能力标记为 Live。
 - 增加契约测试、交互状态测试、设计参考和浏览器 QA 证据；不新增 npm 依赖，不修改后端字段。
