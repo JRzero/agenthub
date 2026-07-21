@@ -20,6 +20,9 @@ export type CapabilityId =
 export const DATA_MODE =
   process.env.NEXT_PUBLIC_AGENTHUB_DATA_MODE === "demo" ? "demo" : "live";
 
+export const PACKAGE_EXPORT_DOWNLOAD_ENABLED =
+  process.env.NEXT_PUBLIC_AGENT_EXPORT_ZIP_DOWNLOAD_ENABLED !== "false";
+
 const liveCapabilities: Record<CapabilityId, CapabilitySource> = {
   auth: "live",
   workspaces: "live",
@@ -27,7 +30,7 @@ const liveCapabilities: Record<CapabilityId, CapabilitySource> = {
   assetCompleteness: "derived",
   clientAdapters: "live",
   versionHistory: "live",
-  packageExport: "live",
+  packageExport: PACKAGE_EXPORT_DOWNLOAD_ENABLED ? "live" : "unavailable",
   avatarUpload: "live",
   motherlandAvatarGeneration: "live",
   characterDesign: "live",
