@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowRight,
   CheckCircle,
@@ -17,13 +17,24 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { useAuth } from "@/modules/auth/auth-provider";
+import { getAgent } from "@/modules/agents/api";
 import type { Agent } from "@/modules/agents/types";
+import {
+  listStageSkills,
+  type SkillStage,
+} from "@/modules/agent-build/advanced-api";
 import { getProfile } from "@/modules/settings/api";
 import { useWorkspace } from "@/modules/workspace/workspace-provider";
 import { ApiError } from "@/shared/api/http-client";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 import { createDraftFromVersion, publishAgentVersion } from "./api";
-import { resolveVersionPublisher, resolveVersionSummary } from "./model";
+import {
+  countSkillReferences,
+  resolveVersionPublisher,
+  resolveVersionResourceCounts,
+  resolveVersionSummary,
+  versionErrorMessage,
+} from "./model";
 import { useAgentClients, useAgentVersion, useAgentVersions } from "./queries";
 import type { AgentClient, AgentVersion } from "./types";
 
@@ -45,28 +56,7 @@ function recordCount(value: object | null | undefined) {
   return value ? Object.keys(value).length : 0;
 }
 
-function arrayCount(value: unknown) {
-  return Array.isArray(value) ? value.length : 0;
-}
-
-function versionErrorMessage(error: unknown) {
-  if (!(error instanceof ApiError)) {
-    return error instanceof Error ? error.message : "操作失败，请重试";
-  }
-  const messages: Record<string, string> = {
-    DRAFT_CONFLICT: "当前草稿已发生变化，请刷新后再操作。",
-    DRAFT_HAS_UNPUBLISHED_CHANGES:
-      "当前草稿有未发布修改，确认后可用所选历史版本替换草稿。",
-    NO_VERSION_CHANGES: "当前草稿与平台当前版本没有差异，无需重复发布。",
-    CURRENT_VERSION_CHANGED: "平台当前版本已变化，请刷新后重新确认发布。",
-    IDEMPOTENCY_CONFLICT: "本次发布请求与先前内容不一致，请重新发起发布。",
-    CLIENT_INCOMPATIBLE: "有 Client 与当前草稿不兼容，请先处理能力配置。",
-    CLIENT_CAPABILITIES_CHANGED: "Client 能力已变化，请刷新后重新检查。",
-    VERSION_REVOKED: "该历史版本已撤销，不能用于创建草稿。",
-    VERSION_NOT_FOUND: "未找到该版本，请刷新列表。",
-  };
-  return (error.code && messages[error.code]) || error.message;
-}
+const SKILL_STAGES: SkillStage[] = ["pre", "mid", "post"];
 
 export function VersionsWorkspace({ agent }: { agent: Agent }) {
   const queryClient = useQueryClient();
@@ -80,6 +70,13 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
   });
   const versionsQuery = useAgentVersions(agent.id);
   const clientsQuery = useAgentClients(agent.id);
+  const stageSkillQueries = useQueries({
+    queries: SKILL_STAGES.map((stage) => ({
+      queryKey: ["agent-stage-skills", agent.id, stage, demo],
+      queryFn: () => listStageSkills(session?.apiKey || "", agent.id, stage),
+      enabled: Boolean(session?.apiKey) && !demo,
+    })),
+  });
   const versions = useMemo(
     () => versionsQuery.data?.versions || [],
     [versionsQuery.data?.versions],
@@ -121,6 +118,10 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
   const nextVersionNo = (versions[0]?.version_no || agent.version || 0) + 1;
   const auth = { apiKey: session?.apiKey || "", workspaceCode };
   const clients = clientsQuery.data?.clients || [];
+  const draftSkillCount = countSkillReferences(
+    agent.config?.skills,
+    stageSkillQueries.flatMap((query) => query.data || []),
+  );
 
   function openPublish() {
     setReleaseNote("");
@@ -135,9 +136,18 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
     setPublishError("");
     setPublishErrorCode("");
     try {
+      const latestAgent = demo
+        ? agent
+        : await getAgent(session?.apiKey || "", agent.id, workspaceCode);
+      if (!demo) {
+        queryClient.setQueryData(
+          ["agent", agent.id, workspaceCode, false],
+          latestAgent,
+        );
+      }
       const result = await publishAgentVersion(auth, agent.id, {
-        expected_draft_revision: agent.draft_revision ?? 0,
-        expected_current_version_id: agent.current_version_id ?? null,
+        expected_draft_revision: latestAgent.draft_revision ?? 0,
+        expected_current_version_id: latestAgent.current_version_id ?? null,
         release_note: releaseNote.trim(),
         request_key: requestKey,
       });
@@ -153,8 +163,19 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
       setSelectedVersionNo(result.version.version_no);
       setPublishOpen(false);
     } catch (error) {
+      const errorCode = error instanceof ApiError ? error.code || "" : "";
       setPublishError(versionErrorMessage(error));
-      setPublishErrorCode(error instanceof ApiError ? error.code || "" : "");
+      setPublishErrorCode(errorCode);
+      if (
+        errorCode === "DRAFT_CONFLICT" ||
+        errorCode === "CURRENT_VERSION_CHANGED"
+      ) {
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["agent", agent.id] }),
+          versionsQuery.refetch(),
+        ]);
+        setRequestKey(crypto.randomUUID());
+      }
     } finally {
       setPublishing(false);
     }
@@ -284,7 +305,11 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
       )}
 
       {versions.length === 0 ? (
-        <FirstPublishState agent={agent} onPublish={openPublish} />
+        <FirstPublishState
+          agent={agent}
+          skillCount={draftSkillCount}
+          onPublish={openPublish}
+        />
       ) : (
         <div className="grid min-h-[430px] gap-4 xl:grid-cols-[minmax(360px,0.88fr)_minmax(0,1.42fr)]">
           <VersionHistory
@@ -328,6 +353,7 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
           nextVersionNo={nextVersionNo}
           agent={agent}
           clients={clients}
+          skillCount={draftSkillCount}
           releaseNote={releaseNote}
           error={publishError}
           blocked={
@@ -357,9 +383,11 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
 
 function FirstPublishState({
   agent,
+  skillCount,
   onPublish,
 }: {
   agent: Agent;
+  skillCount: number;
   onPublish: () => void;
 }) {
   return (
@@ -382,7 +410,7 @@ function FirstPublishState({
         <div className="mt-8 flex flex-wrap justify-center gap-x-7 gap-y-3 border-t border-border pt-5 text-sm text-text-muted">
           <span>配置内容 {recordCount(agent.config)} 项</span>
           <span>知识 {agent.knowledge_base_id ? 1 : 0} 个</span>
-          <span>技能 {agent.config?.skills?.length || 0} 个</span>
+          <span>技能 {skillCount} 个</span>
           <span>
             运行媒体{" "}
             {agent.config?.metadata ? recordCount(agent.config.metadata) : 0} 项
@@ -405,7 +433,7 @@ function VersionHistory({
   onSelect: (versionNo: number) => void;
 }) {
   return (
-    <aside className="panel overflow-hidden">
+    <aside className="panel overflow-visible">
       <div className="border-b border-border px-5 py-3.5">
         <h3 className="font-semibold">版本历史</h3>
       </div>
@@ -413,12 +441,16 @@ function VersionHistory({
         {versions.map((version) => {
           const selected = selectedVersionNo === version.version_no;
           const current = version.id === currentVersionId;
+          const summary = resolveVersionSummary(
+            version.release_note,
+            version.change_summary,
+          );
           return (
             <button
               key={version.id}
               type="button"
               className={
-                "relative grid w-full grid-cols-[44px_112px_92px_minmax(0,1fr)] items-center gap-2 px-5 py-4 text-left transition hover:bg-subtle " +
+                "group/history-row relative grid w-full grid-cols-[44px_112px_92px_minmax(0,1fr)] items-center gap-2 px-5 py-4 text-left transition hover:bg-subtle " +
                 (selected ? "bg-primary-soft/70" : "")
               }
               onClick={() => onSelect(version.version_no)}
@@ -446,10 +478,18 @@ function VersionHistory({
               <span className="text-xs text-text-muted">
                 {formatDate(version.created_at)}
               </span>
-              <span className="truncate text-sm text-text-muted">
-                {resolveVersionSummary(
-                  version.release_note,
-                  version.change_summary,
+              <span className="group/summary relative min-w-0">
+                <span className="block truncate text-sm text-text-muted">
+                  {summary}
+                </span>
+                {summary !== "-" && (
+                  <span
+                    role="tooltip"
+                    aria-hidden="true"
+                    className="pointer-events-none absolute bottom-full right-0 z-30 mb-2 hidden w-max max-w-sm whitespace-normal rounded-md bg-slate-900 px-3 py-2 text-xs leading-5 text-white shadow-lg group-hover/summary:block group-focus/history-row:block"
+                  >
+                    {summary}
+                  </span>
                 )}
               </span>
             </button>
@@ -481,9 +521,7 @@ function VersionDetail({
 }) {
   const isCurrent = version.id === agent.current_version_id;
   const configCount = recordCount(version.config_snapshot);
-  const skillCount = arrayCount(version.config_snapshot.skills);
-  const resourceCount = recordCount(version.resource_manifest);
-  const capabilityCount = version.required_capabilities?.length || 0;
+  const resourceCounts = resolveVersionResourceCounts(version);
 
   return (
     <div className="flex h-full min-h-[430px] flex-col">
@@ -526,14 +564,12 @@ function VersionDetail({
           <SummaryRow
             icon={<MagicWand size={17} />}
             label="知识 · 技能"
-            value={
-              resourceCount + " 个 · " + (skillCount || capabilityCount) + " 个"
-            }
+            value={`${resourceCounts.knowledgeCount} 个 · ${resourceCounts.skillCount} 个`}
           />
           <SummaryRow
             icon={<PlayCircle size={17} />}
             label="运行媒体"
-            value={resourceCount + " 项"}
+            value={resourceCounts.mediaCount + " 项"}
           />
         </div>
 
@@ -617,6 +653,7 @@ function PublishDialog({
   nextVersionNo,
   agent,
   clients,
+  skillCount,
   releaseNote,
   error,
   blocked,
@@ -629,6 +666,7 @@ function PublishDialog({
   nextVersionNo: number;
   agent: Agent;
   clients: AgentClient[];
+  skillCount: number;
   releaseNote: string;
   error: string;
   blocked: boolean;
@@ -694,7 +732,7 @@ function PublishDialog({
             value={
               (agent.knowledge_base_id ? 1 : 0) +
               " 个 · " +
-              (agent.config?.skills?.length || 0) +
+              skillCount +
               " 个"
             }
           />
@@ -734,6 +772,16 @@ function PublishDialog({
           </div>
         )}
       </section>
+
+      {error && !blocked && (
+        <div
+          role="alert"
+          className="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700"
+        >
+          <strong className="block font-semibold">发布失败</strong>
+          <span>{error}</span>
+        </div>
+      )}
 
       <div
         className={

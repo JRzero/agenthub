@@ -59,3 +59,10 @@ The Build skills section SHALL preserve pre-, mid-, and post-conversation bindin
 
 - **WHEN** a Creator saves an Agent override
 - **THEN** the stage endpoint SHALL receive the selected skill list with the new config
+
+#### Scenario: Edit skill configuration with declared fields
+
+- **WHEN** a skill exposes a configuration schema
+- **THEN** the Build workspace SHALL render suitable inputs, selections, and switches for those fields instead of requiring raw JSON editing
+- **AND** the dialog SHALL remain usable within the viewport by scrolling its content while keeping its actions visible
+- **AND** the interface SHALL explain that Agent overrides are saved directly to the current draft

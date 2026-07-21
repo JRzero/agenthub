@@ -12,8 +12,10 @@
 - [x] 2.1 Add pre/mid/post binding controls
 - [x] 2.2 Add built-in image/document upload Widgets
 - [x] 2.3 Add Creator-global and Agent-level config editing
+- [x] 2.4 Replace raw skill JSON editing with schema-driven fields, clear draft-save semantics, and a viewport-safe scrolling dialog
 
 ## 3. Verification
 
 - [x] 3.1 Add advanced endpoint contract tests
 - [x] 3.2 Pass lint, typecheck, tests, strict OpenSpec, browser interactions, and production build
+- [x] 3.3 Verify schema-driven skill configuration and scrolling behavior

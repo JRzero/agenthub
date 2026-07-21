@@ -1,6 +1,94 @@
 import type { Agent } from "@/modules/agents/types";
 import type { CreatorProfile } from "@/modules/settings/types";
+import { ApiError } from "@/shared/api/http-client";
 import type { AgentVersion, VersionDifference, VersionSnapshot } from "./types";
+
+export function versionErrorMessage(error: unknown) {
+  if (!(error instanceof ApiError)) {
+    return error instanceof Error ? error.message : "操作失败，请重试";
+  }
+  const messages: Record<string, string> = {
+    DRAFT_CONFLICT:
+      "草稿内容已被其他操作更新，已刷新最新状态。请检查后重新发布。",
+    DRAFT_HAS_UNPUBLISHED_CHANGES:
+      "当前草稿有未发布修改，确认后可用所选历史版本替换草稿。",
+    NO_VERSION_CHANGES: "当前草稿与平台当前版本没有差异，无需重复发布。",
+    CURRENT_VERSION_CHANGED: "平台当前版本已变化，请刷新后重新确认发布。",
+    IDEMPOTENCY_CONFLICT: "本次发布请求与先前内容不一致，请重新发起发布。",
+    CLIENT_INCOMPATIBLE: "有 Client 与当前草稿不兼容，请先处理能力配置。",
+    CLIENT_CAPABILITIES_CHANGED: "Client 能力已变化，请刷新后重新检查。",
+    VERSION_REVOKED: "该历史版本已撤销，不能用于创建草稿。",
+    VERSION_NOT_FOUND: "未找到该版本，请刷新列表。",
+  };
+  return (error.code && messages[error.code]) || error.message;
+}
+
+type SkillReference = {
+  id?: number;
+  skill_id?: number;
+  skill_name?: string;
+  name?: string;
+};
+
+function normalizeSkillName(value?: string) {
+  return value?.trim().toLowerCase() || "";
+}
+
+export function countSkillReferences(
+  configuredSkills: readonly string[] = [],
+  boundSkills: readonly SkillReference[] = [],
+): number {
+  const references = new Set<string>();
+
+  configuredSkills.forEach((skill) => {
+    const name = normalizeSkillName(skill);
+    if (name) references.add(`name:${name}`);
+  });
+
+  boundSkills.forEach((skill) => {
+    const name = normalizeSkillName(skill.skill_name || skill.name);
+    if (name) {
+      references.add(`name:${name}`);
+    } else if (skill.skill_id) {
+      references.add(`skill:${skill.skill_id}`);
+    } else if (skill.id) {
+      references.add(`creator-skill:${skill.id}`);
+    }
+  });
+
+  return references.size;
+}
+
+function arrayValue(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function recordValue(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+export function resolveVersionResourceCounts(version: AgentVersion) {
+  const manifest = recordValue(version.resource_manifest);
+  const snapshot = recordValue(version.config_snapshot);
+  const config = recordValue(snapshot.config);
+  const configuredSkills = arrayValue(config.skills).filter(
+    (skill): skill is string => typeof skill === "string",
+  );
+  const manifestSkills = arrayValue(manifest.skills).filter(
+    (skill): skill is SkillReference =>
+      Boolean(skill && typeof skill === "object" && !Array.isArray(skill)),
+  );
+  const knowledgeDocuments = arrayValue(manifest.knowledge_documents);
+
+  return {
+    skillCount: countSkillReferences(configuredSkills, manifestSkills),
+    knowledgeCount:
+      knowledgeDocuments.length || (snapshot.knowledge_base_id ? 1 : 0),
+    mediaCount: arrayValue(manifest.media).length,
+  };
+}
 
 export function resolveVersionPublisher(
   version: Pick<
