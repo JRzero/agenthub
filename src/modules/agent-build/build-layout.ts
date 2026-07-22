@@ -1,11 +1,11 @@
 export const BUILD_PREVIEW_EXPANDED_GRID_CLASS =
-  "xl:grid-cols-[196px_minmax(0,1fr)_340px]";
+  "lg:grid-cols-[184px_minmax(0,1fr)_280px]";
 export const BUILD_PREVIEW_COLLAPSED_GRID_CLASS =
-  "xl:grid-cols-[196px_minmax(0,1fr)_64px]";
+  "lg:grid-cols-[184px_minmax(0,1fr)_56px]";
 
 export interface BuildPreviewLayout {
   collapsed: boolean;
-  desktopWidth: 340 | 64;
+  desktopWidth: 280 | 56;
   gridClass:
     | typeof BUILD_PREVIEW_EXPANDED_GRID_CLASS
     | typeof BUILD_PREVIEW_COLLAPSED_GRID_CLASS;
@@ -17,12 +17,12 @@ export function resolveBuildPreviewLayout(
   return collapsed
     ? {
         collapsed: true,
-        desktopWidth: 64,
+        desktopWidth: 56,
         gridClass: BUILD_PREVIEW_COLLAPSED_GRID_CLASS,
       }
     : {
         collapsed: false,
-        desktopWidth: 340,
+        desktopWidth: 280,
         gridClass: BUILD_PREVIEW_EXPANDED_GRID_CLASS,
       };
 }

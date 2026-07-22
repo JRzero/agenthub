@@ -127,13 +127,13 @@ export function SkillConfigDialog({ skill, agentConfig, saving, onClose, onSave 
 
         <div className="min-h-0 flex-1 overflow-y-auto p-5">
           <div className="flex rounded-md border border-border p-1">
-            <button type="button" onClick={() => setScope("global")} className={`flex-1 rounded px-4 py-2 text-sm ${scope === "global" ? "bg-primary-soft font-medium text-primary" : "text-text-muted"}`}>Creator 全局配置</button>
-            <button type="button" onClick={() => setScope("agent")} className={`flex-1 rounded px-4 py-2 text-sm ${scope === "agent" ? "bg-primary-soft font-medium text-primary" : "text-text-muted"}`}>当前 Agent 覆盖</button>
+            <button type="button" onClick={() => setScope("global")} className={`flex-1 rounded px-4 py-2 text-sm ${scope === "global" ? "bg-primary-soft font-medium text-primary" : "text-text-muted"}`}>技能默认配置</button>
+            <button type="button" onClick={() => setScope("agent")} className={`flex-1 rounded px-4 py-2 text-sm ${scope === "agent" ? "bg-primary-soft font-medium text-primary" : "text-text-muted"}`}>当前 Agent 配置</button>
           </div>
 
           <div className="mt-4 flex items-start gap-2 rounded-lg border border-primary/15 bg-primary-soft/50 px-4 py-3 text-sm leading-6 text-text-muted">
             <Info className="mt-1 shrink-0 text-primary" size={16} />
-            <p>{scope === "agent" ? "保存后直接写入当前 Agent 草稿，无需再次点击页面顶部的“保存草稿”。" : "保存后更新 Creator 技能的全局配置；当前 Agent 可通过覆盖配置保留独立参数。"}</p>
+            <p>{scope === "agent" ? "仅调整该技能在当前 Agent 中使用的参数。" : "作为该技能的默认参数，其他 Agent 可继续设置自己的参数。"}</p>
           </div>
 
           {fields.length ? (
@@ -190,7 +190,7 @@ export function SkillConfigDialog({ skill, agentConfig, saving, onClose, onSave 
 
         <footer className="flex shrink-0 justify-end gap-3 border-t border-border bg-surface px-5 py-4">
           <button type="button" onClick={onClose} className="button-secondary">取消</button>
-          <button type="button" onClick={() => void save()} disabled={saving} className="button-primary">{saving ? "保存中…" : scope === "agent" ? "保存到当前草稿" : "保存全局配置"}</button>
+          <button type="button" onClick={() => void save()} disabled={saving} className="button-primary">{saving ? "保存中…" : "保存配置"}</button>
         </footer>
       </section>
     </div>

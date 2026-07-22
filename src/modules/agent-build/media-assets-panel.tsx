@@ -1,11 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ClockCounterClockwise, ImageSquare, MagicWand, Plus, WarningCircle } from "@phosphor-icons/react";
+import { ClockCounterClockwise, ImageSquare, MagicWand, Plus } from "@phosphor-icons/react";
 import { DATA_MODE } from "@/config/capabilities";
 import { DEMO_CHARACTER_SHEETS, DEMO_COMIC_DRAFTS } from "@/fixtures/demo-media-assets";
 import type { Agent } from "@/modules/agents/types";
-import { SourceBadge } from "@/shared/ui/source-badge";
 import { AgentAvatarEditor } from "./agent-avatar-editor";
 import {
   mapAgentMediaAssets,
@@ -30,6 +29,7 @@ export function MediaAssetsPanel({
   const mapped = useMemo(() => mapAgentMediaAssets(agent), [agent]);
   const [drawerKind, setDrawerKind] = useState<MediaAssetKind | null>(null);
   const [demoAssets, setDemoAssets] = useState<MediaAsset[]>([]);
+  const [activeTab, setActiveTab] = useState<"avatar" | "character-sheet" | "comic-draft">("avatar");
 
   const characterSheets = demo
     ? [...demoAssets.filter((asset) => asset.kind === "character-sheet"), ...DEMO_CHARACTER_SHEETS].slice(0, 3)
@@ -44,16 +44,22 @@ export function MediaAssetsPanel({
   };
 
   return (
-    <div className="space-y-7">
-      <AgentAvatarEditor
-        agent={agent}
-        onUpdated={onAgentUpdated}
-        onGenerate={() => setDrawerKind("avatar")}
-        assetLibrarySource={capabilities.assetLibrary}
-        generationSource={capabilities.avatarGeneration}
-      />
+    <div className="space-y-5">
+      <div className="flex gap-1 overflow-x-auto rounded-lg border border-border bg-subtle p-1" role="tablist" aria-label="媒体资产类型">
+        <MediaTab active={activeTab === "avatar"} onClick={() => setActiveTab("avatar")}>头像</MediaTab>
+        <MediaTab active={activeTab === "character-sheet"} onClick={() => setActiveTab("character-sheet")}>角色设定稿</MediaTab>
+        {capabilities.comicDrafts !== "unavailable" && <MediaTab active={activeTab === "comic-draft"} onClick={() => setActiveTab("comic-draft")}>漫画设计</MediaTab>}
+      </div>
 
-      <AssetSection
+      {activeTab === "avatar" && <AgentAvatarEditor
+          agent={agent}
+          onUpdated={onAgentUpdated}
+          onGenerate={() => setDrawerKind("avatar")}
+          assetLibrarySource={capabilities.assetLibrary}
+          generationSource={capabilities.avatarGeneration}
+        />}
+
+      {activeTab === "character-sheet" && <AssetSection
         title="角色设定稿"
         description="沉淀角色的配色、造型、表情与动作规范。"
         actionLabel="生成角色设定稿"
@@ -61,10 +67,9 @@ export function MediaAssetsPanel({
         onGenerate={() => setDrawerKind("character-sheet")}
         assets={characterSheets}
         emptyCopy="尚未保存角色设定稿"
-        unavailableCopy={!demo && capabilities.assetLibrary === "unavailable" ? "当前后端只提供一份已保存设定稿，历史版本待媒体资产库接入。" : undefined}
-      />
+      />}
 
-      <AssetSection
+      {activeTab === "comic-draft" && capabilities.comicDrafts !== "unavailable" && <AssetSection
         title="漫画草稿"
         description="围绕内容主题生成可继续编辑的漫画视觉草稿。"
         actionLabel="生成漫画草稿"
@@ -72,8 +77,7 @@ export function MediaAssetsPanel({
         onGenerate={() => setDrawerKind("comic-draft")}
         assets={comicDrafts}
         emptyCopy="暂无漫画草稿"
-        unavailableCopy={!demo && capabilities.comicDrafts === "unavailable" ? "漫画草稿生成与持久化接口尚未接入，Live 模式不会模拟保存。" : undefined}
-      />
+      />}
 
       <MotherlandAssetDrawer
         kind={drawerKind}
@@ -87,6 +91,10 @@ export function MediaAssetsPanel({
   );
 }
 
+function MediaTab({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return <button type="button" role="tab" aria-selected={active} onClick={onClick} className={`min-w-28 flex-1 rounded-md px-4 py-2 text-sm ${active ? "bg-surface font-medium text-primary shadow-sm" : "text-text-muted hover:text-text-strong"}`}>{children}</button>;
+}
+
 function AssetSection({
   title,
   description,
@@ -95,7 +103,6 @@ function AssetSection({
   onGenerate,
   assets,
   emptyCopy,
-  unavailableCopy,
 }: {
   title: string;
   description: string;
@@ -104,7 +111,6 @@ function AssetSection({
   onGenerate: () => void;
   assets: MediaAsset[];
   emptyCopy: string;
-  unavailableCopy?: string;
 }) {
   const unavailable = actionSource === "unavailable";
   const specAsset = assets.find((asset) => asset.specText?.trim());
@@ -113,17 +119,13 @@ function AssetSection({
     <section className="rounded-xl border border-border bg-surface p-5">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h3 className="font-semibold">{title}</h3>
-            <SourceBadge source={actionSource} />
-          </div>
+          <h3 className="font-semibold">{title}</h3>
           <p className="mt-1 text-sm leading-6 text-text-muted">{description}</p>
         </div>
         <button
           type="button"
           onClick={onGenerate}
           disabled={unavailable}
-          title={unavailable ? "\u7b49\u5f85\u540e\u7aef\u80fd\u529b\u63a5\u5165" : undefined}
           className="button-secondary disabled:cursor-not-allowed disabled:opacity-50"
         >
           <MagicWand size={17} />{actionLabel}
@@ -141,13 +143,6 @@ function AssetSection({
         <div className="mt-5 rounded-lg border border-dashed border-border bg-subtle px-4 py-8 text-center">
           <ImageSquare size={25} className="mx-auto text-text-muted" />
           <p className="mt-2 text-sm font-medium">{emptyCopy}</p>
-        </div>
-      )}
-
-      {unavailableCopy && (
-        <div className="mt-4 flex gap-2 rounded-lg bg-subtle px-3 py-2.5 text-xs leading-5 text-text-muted">
-          <WarningCircle size={17} className="mt-0.5 shrink-0" />
-          <span>{unavailableCopy}</span>
         </div>
       )}
     </section>

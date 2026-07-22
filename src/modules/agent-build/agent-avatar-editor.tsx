@@ -6,7 +6,6 @@ import { DATA_MODE, type CapabilitySource } from "@/config/capabilities";
 import { AgentAvatar } from "@/modules/agents/agent-avatar";
 import type { Agent } from "@/modules/agents/types";
 import { useAuth } from "@/modules/auth/auth-provider";
-import { SourceBadge } from "@/shared/ui/source-badge";
 import { deleteAgentAvatar, uploadAgentAvatar } from "./advanced-api";
 
 function drawCrop(canvas: HTMLCanvasElement, image: HTMLImageElement, zoom: number, offsetX: number, offsetY: number) {
@@ -149,19 +148,17 @@ export function AgentAvatarEditor({
             <p className="mt-1 text-sm leading-6 text-text-muted">用于 Agent 资料、预览和已接入的客户端。</p>
           </div>
         </div>
-        <SourceBadge source={generationSource} />
       </header>
 
       <div className="mt-5 flex flex-wrap gap-2">
-        <button
+        {assetLibrarySource !== "unavailable" && <button
           type="button"
           onClick={selectExisting}
-          disabled={assetLibrarySource === "unavailable" || busy}
-          title={assetLibrarySource === "unavailable" ? "等待媒体资产库接口接入" : undefined}
+          disabled={busy}
           className="button-secondary disabled:cursor-not-allowed disabled:opacity-50"
         >
           <FolderOpen size={17} />从资产选择
-        </button>
+        </button>}
         <label className={`button-secondary cursor-pointer ${busy ? "pointer-events-none opacity-50" : ""}`}>
           <UploadSimple size={17} />上传图片
           <input type="file" accept="image/*" className="sr-only" onChange={(event) => choose(event.target.files?.[0])} />
@@ -175,10 +172,6 @@ export function AgentAvatarEditor({
           </button>
         )}
       </div>
-
-      {assetLibrarySource === "unavailable" && (
-        <p className="mt-3 text-xs text-text-muted">资产选择将在媒体资产库后端接口接入后开放；上传和 Motherland 头像生成可正常使用。</p>
-      )}
 
       {source && (
         <div className="mt-5 grid gap-5 rounded-xl border border-border bg-subtle p-4 md:grid-cols-[240px_minmax(0,1fr)]">

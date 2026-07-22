@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useRef } from "react";
 import type { Icon } from "@phosphor-icons/react";
 import {
   ArrowSquareOut,
@@ -49,11 +50,41 @@ export function BuildSectionRail({
   onChange: (section: BuildSectionId) => void;
 }) {
   const router = useRouter();
+  const navRef = useRef<HTMLElement>(null);
+  const resetDesktopHorizontalOffset = () => {
+    if (
+      window.matchMedia("(min-width: 1024px)").matches &&
+      navRef.current?.scrollLeft
+    ) {
+      navRef.current.scrollLeft = 0;
+    }
+  };
+
+  useLayoutEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const resetHorizontalOffset = () => {
+      if (desktop.matches && navRef.current) navRef.current.scrollLeft = 0;
+    };
+
+    resetHorizontalOffset();
+    desktop.addEventListener("change", resetHorizontalOffset);
+    window.addEventListener("resize", resetHorizontalOffset);
+    return () => {
+      desktop.removeEventListener("change", resetHorizontalOffset);
+      window.removeEventListener("resize", resetHorizontalOffset);
+    };
+  }, []);
 
   return (
-    <aside className="min-w-0 border-b border-border bg-surface lg:border-b-0 lg:border-r">
-      <nav aria-label="专业配置" className="overflow-x-auto p-2">
-        <div className="flex min-w-max gap-3 lg:min-w-0 lg:flex-col lg:gap-2">
+    <aside className="min-h-0 min-w-0 border-b border-border bg-surface lg:h-full lg:border-b-0 lg:border-r">
+      <nav
+        ref={navRef}
+        aria-label="专业配置"
+        onScroll={resetDesktopHorizontalOffset}
+        onFocusCapture={resetDesktopHorizontalOffset}
+        className="scrollbar-hidden h-full overflow-x-auto p-2 lg:overflow-x-hidden lg:overflow-y-auto lg:overscroll-contain"
+      >
+        <div className="flex min-w-max gap-3 lg:w-full lg:min-w-0 lg:flex-col lg:gap-2">
           {PROFESSIONAL_BUILD_GROUPS.map((group) => (
             <section key={group.id} className="min-w-max lg:min-w-0">
               <h2 className="mb-1 px-2 text-[10px] font-semibold tracking-[0.08em] text-text-muted">

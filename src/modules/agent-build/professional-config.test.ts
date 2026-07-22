@@ -3,6 +3,10 @@ import { DEMO_COMIC_DRAFTS } from "@/fixtures/demo-media-assets";
 import type { Agent } from "@/modules/agents/types";
 import { resolveBuildPreviewLayout } from "./build-layout";
 import {
+  buildDraftSimulationPayload,
+  latestPreviewExchange,
+} from "./build-preview-model";
+import {
   latestRuntimeExchange,
   mapAgentMediaAssets,
   reduceMediaGenerationState,
@@ -69,13 +73,13 @@ describe("professional Build contracts", () => {
   it("uses deterministic desktop widths for the collapsible preview", () => {
     expect(resolveBuildPreviewLayout(false)).toMatchObject({
       collapsed: false,
-      desktopWidth: 340,
-      gridClass: "xl:grid-cols-[196px_minmax(0,1fr)_340px]",
+      desktopWidth: 280,
+      gridClass: "lg:grid-cols-[184px_minmax(0,1fr)_280px]",
     });
     expect(resolveBuildPreviewLayout(true)).toMatchObject({
       collapsed: true,
-      desktopWidth: 64,
-      gridClass: "xl:grid-cols-[196px_minmax(0,1fr)_64px]",
+      desktopWidth: 56,
+      gridClass: "lg:grid-cols-[184px_minmax(0,1fr)_56px]",
     });
   });
 
@@ -137,6 +141,31 @@ describe("professional Build contracts", () => {
     expect(
       latestRuntimeExchange(messages).map((message) => message.id),
     ).toEqual(["u2", "a2"]);
+  });
+
+  it("previews the saved draft through simulation without creating a session", () => {
+    const draft = createBuildDraft(agent);
+    draft.examples = [{ role: "assistant", content: "欢迎提问" }];
+    draft.skills = ["gpt_image"];
+    const messages = [
+      { id: "u1", role: "user" as const, content: "旧问题" },
+      { id: "a1", role: "assistant" as const, content: "旧回答" },
+      { id: "u2", role: "user" as const, content: "最近问题" },
+      { id: "a2", role: "assistant" as const, content: "最近回答" },
+    ];
+
+    const latest = latestPreviewExchange(messages);
+    expect(latest.map((message) => message.id)).toEqual(["u2", "a2"]);
+    expect(buildDraftSimulationPayload(draft, "继续", latest)).toEqual({
+      content: "继续",
+      messages: [
+        { role: "user", content: "最近问题" },
+        { role: "assistant", content: "最近回答" },
+      ],
+      system_prompt: "用安全、积极的方式讲科普故事。",
+      examples: [{ role: "assistant", content: "欢迎提问" }],
+      skills: ["gpt_image"],
+    });
   });
 
   it("keeps candidates pending until an explicit successful confirmation", () => {

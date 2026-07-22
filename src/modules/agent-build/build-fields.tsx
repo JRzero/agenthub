@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Info, LockKey, MagicWand, Plus, Trash, X } from "@phosphor-icons/react";
+import { CaretDown, Info, MagicWand, Plus, Trash, X } from "@phosphor-icons/react";
 import type { KnowledgeBaseOption } from "./api";
 import { NarrativeOptimizerPanel } from "./narrative-optimizer-panel";
 import {
@@ -71,6 +71,30 @@ function CheckSetting({
   );
 }
 
+function SwitchSetting({
+  checked,
+  label,
+  description,
+  onChange,
+}: {
+  checked: boolean;
+  label: string;
+  description: string;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-5 rounded-xl border border-border p-4">
+      <div>
+        <strong className="block text-sm">{label}</strong>
+        <p className="mt-1 text-sm leading-6 text-text-muted">{description}</p>
+      </div>
+      <button type="button" role="switch" aria-checked={checked} onClick={() => onChange(!checked)} className={`relative h-6 w-11 shrink-0 rounded-full transition ${checked ? "bg-primary" : "bg-slate-300"}`}>
+        <span className={`absolute top-1 size-4 rounded-full bg-white shadow-sm transition ${checked ? "left-6" : "left-1"}`} />
+      </button>
+    </div>
+  );
+}
+
 export function BasicSectionFields({
   agentId,
   section,
@@ -89,6 +113,7 @@ export function BasicSectionFields({
   onPatch: (patch: Partial<AgentBuildDraft>) => void;
 }) {
   const [optimizerOpen, setOptimizerOpen] = useState(false);
+  const [runtimeAdvancedOpen, setRuntimeAdvancedOpen] = useState(false);
   const providersQuery = useLLMProviders(
     section === "runtime" && draft.agentType === "cloud",
   );
@@ -139,7 +164,7 @@ export function BasicSectionFields({
             />
           </Field>
         </div>
-        <Field label="资产简介" hint={`${draft.description.length}/240`}>
+        <Field label="Agent 简介" hint={`${draft.description.length}/240`}>
           <textarea
             className={`${inputClass} min-h-28 resize-y`}
             maxLength={240}
@@ -166,7 +191,7 @@ export function BasicSectionFields({
   if (section === "persona") {
     return (
       <div className="space-y-5">
-        <p className="text-sm leading-6 text-text-muted">定义角色定位、表达风格和行为边界。</p>
+        <p className="text-sm leading-6 text-text-muted">定义角色定位、表达方式和行为边界。</p>
         <div>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -180,7 +205,7 @@ export function BasicSectionFields({
               className="button-secondary h-9 px-3 text-sm disabled:cursor-not-allowed disabled:opacity-50"
             >
               <MagicWand size={16} />
-              优化叙事
+              优化角色人格
             </button>
           </div>
           <textarea
@@ -203,10 +228,10 @@ export function BasicSectionFields({
             >
               <header className="flex shrink-0 items-start justify-between gap-4 border-b border-border px-5 py-4">
                 <div>
-                  <h3 id="system-prompt-optimizer-title" className="text-lg font-semibold">优化角色设定</h3>
-                  <p className="mt-1 text-sm text-text-muted">让 Motherland 帮你润色当前角色设定；生成后可先预览和调整，确认应用后再保存。</p>
+                  <h3 id="system-prompt-optimizer-title" className="text-lg font-semibold">优化角色人格</h3>
+                  <p className="mt-1 text-sm text-text-muted">让 Motherland 帮你完善角色表达。生成结果可先检查和调整，应用后再保存草稿。</p>
                 </div>
-                <button type="button" onClick={() => setOptimizerOpen(false)} aria-label="关闭优化角色设定" className="rounded-md p-2 text-text-muted hover:bg-subtle">
+                <button type="button" onClick={() => setOptimizerOpen(false)} aria-label="关闭优化角色人格" className="rounded-md p-2 text-text-muted hover:bg-subtle">
                   <X size={18} />
                 </button>
               </header>
@@ -221,78 +246,43 @@ export function BasicSectionFields({
   }
 
   if (section === "knowledge") {
+    const selectedKnowledge = knowledgeBases.find((item) => item.id === draft.knowledgeBaseId);
     return (
       <div className="space-y-5">
-        <Field label="绑定知识库" hint="沿用现有 Agent 单知识库绑定契约">
-          <select
-            className={inputClass}
-            disabled={knowledgeLoading}
-            value={draft.knowledgeBaseId ?? ""}
-            onChange={(e) =>
-              onPatch({
-                knowledgeBaseId: e.target.value ? Number(e.target.value) : null,
-              })
-            }
-          >
+        <div>
+          <h3 className="font-semibold">已绑定知识库</h3>
+          <p className="mt-1 text-sm text-text-muted">当前 Agent 可绑定一个知识库。</p>
+        </div>
+        {selectedKnowledge ? (
+          <div className="rounded-xl border border-primary/30 bg-primary-soft/30 p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div><strong>{selectedKnowledge.name}</strong><p className="mt-1 text-sm leading-6 text-text-muted">{selectedKnowledge.description || "已用于当前 Agent 的知识检索。"}</p></div>
+              <span className="rounded-full bg-success/10 px-2.5 py-1 text-xs font-medium text-success">已绑定</span>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-xl border border-dashed border-border p-7 text-center text-sm text-text-muted">尚未绑定知识库。</div>
+        )}
+        <Field label={selectedKnowledge ? "更换知识库" : "选择知识库"}>
+          <select className={inputClass} disabled={knowledgeLoading} value={draft.knowledgeBaseId ?? ""} onChange={(event) => {
+            const next = event.target.value ? Number(event.target.value) : null;
+            if (draft.knowledgeBaseId !== null && next !== draft.knowledgeBaseId && !window.confirm(next === null ? "确定解除当前知识库绑定吗？" : "确定更换当前知识库吗？")) return;
+            onPatch({ knowledgeBaseId: next });
+          }}>
             <option value="">不绑定知识库</option>
-            {knowledgeBases.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
+            {knowledgeBases.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
           </select>
         </Field>
-        {knowledgeBases.find((item) => item.id === draft.knowledgeBaseId)
-          ?.description && (
-          <p className="rounded-lg bg-subtle p-4 text-sm text-text-muted">
-            {
-              knowledgeBases.find((item) => item.id === draft.knowledgeBaseId)
-                ?.description
-            }
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  if (section === "skills") {
-    return (
-      <div className="space-y-5">
-        <Field label="技能标识" hint="使用英文逗号分隔，保存到现有 skills 字段">
-          <textarea
-            className={`${inputClass} min-h-32 resize-y font-mono`}
-            value={draft.skills.join(", ")}
-            onChange={(e) =>
-              onPatch({
-                skills: e.target.value
-                  .split(",")
-                  .map((item) => item.trim())
-                  .filter(Boolean),
-              })
-            }
-            placeholder="realtime_weather, image_generation"
-          />
-        </Field>
-        <div className="flex flex-wrap gap-2">
-          {draft.skills.map((skill) => (
-            <span
-              key={skill}
-              className="status-badge bg-primary-soft text-primary"
-            >
-              {skill}
-            </span>
-          ))}
-        </div>
       </div>
     );
   }
 
   if (section === "memory") {
     return (
-      <CheckSetting
+      <SwitchSetting
         checked={draft.memoryEnabled}
         label="启用长期记忆"
-        description="使用现有 memory_enabled 开关。摘要、保留周期和隐私策略需要后续后端契约。"
+        description="开启后，Agent 可在后续对话中延续已记录的信息。"
         onChange={(memoryEnabled) => onPatch({ memoryEnabled })}
       />
     );
@@ -377,49 +367,26 @@ export function BasicSectionFields({
             </select>
           </Field>
         </div>
-        <Field label="Base URL" hint="不在这里编辑 Provider 密钥">
-          <input
-            className={`${inputClass} font-mono`}
-            value={draft.llmBaseUrl}
-            onChange={(e) => onPatch({ llmBaseUrl: e.target.value })}
-            placeholder="留空使用 Provider 默认地址"
-          />
-        </Field>
-        <Field label="Temperature" error={errors.llmTemperature}>
-          <label className="mt-3 flex items-center justify-end gap-2 text-sm text-text-muted">
-            <input
-              type="checkbox"
-              checked={draft.llmTemperature === null}
-              disabled={skipsTemperature}
-              onChange={(e) =>
-                onPatch({ llmTemperature: e.target.checked ? null : 0.7 })
-              }
-              className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
-            />
-            {skipsTemperature
-              ? "当前 Provider 不使用 Temperature"
-              : "使用系统默认"}
-          </label>
-          <div className="mt-3 flex items-center gap-4">
-            <input
-              type="range"
-              min="0"
-              max="2"
-              step="0.1"
-              disabled={draft.llmTemperature === null || skipsTemperature}
-              value={draft.llmTemperature ?? 0.7}
-              onChange={(e) =>
-                onPatch({ llmTemperature: Number(e.target.value) })
-              }
-              className="min-w-0 flex-1 accent-primary disabled:cursor-not-allowed disabled:opacity-45"
-            />
-            <output className="min-w-20 rounded bg-primary-soft px-2 py-1 text-center font-semibold text-primary">
-              {draft.llmTemperature === null
-                ? "系统默认"
-                : draft.llmTemperature.toFixed(1)}
-            </output>
-          </div>
-        </Field>
+        <button type="button" onClick={() => setRuntimeAdvancedOpen((current) => !current)} aria-expanded={runtimeAdvancedOpen} className="flex w-full items-center justify-between rounded-lg border border-border px-4 py-3 text-left text-sm font-medium hover:bg-subtle">
+          高级设置
+          <CaretDown size={17} className={`transition ${runtimeAdvancedOpen ? "rotate-180" : ""}`} />
+        </button>
+        {runtimeAdvancedOpen && <div className="space-y-5 rounded-xl border border-border bg-subtle/40 p-4">
+          <Field label="Base URL" hint="留空使用供应商默认地址">
+            <input className={`${inputClass} font-mono`} value={draft.llmBaseUrl} onChange={(e) => onPatch({ llmBaseUrl: e.target.value })} placeholder="使用默认地址" />
+          </Field>
+          <Field label="Temperature" error={errors.llmTemperature}>
+            <label className="mt-3 flex items-center justify-end gap-2 text-sm text-text-muted">
+              <input type="checkbox" checked={draft.llmTemperature === null} disabled={skipsTemperature} onChange={(e) => onPatch({ llmTemperature: e.target.checked ? null : 0.7 })} className="h-4 w-4 rounded border-border text-primary focus:ring-primary" />
+              {skipsTemperature ? "当前供应商不使用 Temperature" : "使用系统默认"}
+            </label>
+            <div className="mt-3 flex items-center gap-4">
+              <input type="range" min="0" max="2" step="0.1" disabled={draft.llmTemperature === null || skipsTemperature} value={draft.llmTemperature ?? 0.7} onChange={(e) => onPatch({ llmTemperature: Number(e.target.value) })} className="min-w-0 flex-1 accent-primary disabled:cursor-not-allowed disabled:opacity-45" />
+              <output className="min-w-20 rounded bg-primary-soft px-2 py-1 text-center font-semibold text-primary">{draft.llmTemperature === null ? "系统默认" : draft.llmTemperature.toFixed(1)}</output>
+            </div>
+          </Field>
+          <RuntimeDisplaySettings draft={draft} onPatch={onPatch} />
+        </div>}
       </div>
     );
   }
@@ -427,16 +394,12 @@ export function BasicSectionFields({
   if (section === "safety") {
     return (
       <div className="space-y-3">
-        <CheckSetting
+        <SwitchSetting
           checked={draft.hidden}
           label="从发现页隐藏"
-          description="保留 Agent，但不在面向用户的发现入口展示。"
+          description="隐藏后，用户无法从发现页找到该 Agent。"
           onChange={(hidden) => onPatch({ hidden })}
         />
-        <div className="flex gap-3 rounded-lg border border-dashed border-border p-4 text-sm text-text-muted">
-          <LockKey size={20} />
-          内容分级、工具权限和合规策略尚无统一后端契约，本纵切不提供伪写入。
-        </div>
       </div>
     );
   }
@@ -540,13 +503,13 @@ export function RuntimeDisplaySettings({
       <CheckSetting
         checked={draft.showReasoning}
         label="显示推理过程"
-        description="沿用 show_reasoning 配置；具体可见范围由运行端决定。"
+        description="允许支持该能力的运行端展示推理过程。"
         onChange={(showReasoning) => onPatch({ showReasoning })}
       />
       <CheckSetting
         checked={draft.showTools}
         label="显示工具调用"
-        description="沿用 show_tools 配置，便于调试 Agent 的技能执行。"
+        description="在支持的运行端展示技能调用信息。"
         onChange={(showTools) => onPatch({ showTools })}
       />
     </div>

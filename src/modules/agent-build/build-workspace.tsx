@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowCounterClockwise,
   FloppyDisk,
@@ -21,6 +21,7 @@ import { BUILD_HEADER_ACTIONS_ID } from "@/modules/agent-assets/asset-workspace-
 export function BuildWorkspace() {
   const params = useParams<{ agentId: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const agentId = Number(params.agentId);
   const editor = useBuildEditor(Number.isFinite(agentId) ? agentId : null);
   const [section, setSection] = useState<BuildSectionId>("identity");
@@ -29,7 +30,25 @@ export function BuildWorkspace() {
   const previewLayout = resolveBuildPreviewLayout(previewCollapsed);
 
   useEffect(() => {
+    const requestedSection = searchParams.get("section");
+    if (
+      requestedSection &&
+      ["identity", "persona", "runtime", "skills", "knowledge", "memory", "media", "moments", "safety"].includes(requestedSection)
+    ) {
+      setSection(requestedSection as BuildSectionId);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     setActionsTarget(document.getElementById(BUILD_HEADER_ACTIONS_ID));
+  }, []);
+
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 1024px) and (max-width: 1279px)");
+    const sync = () => setPreviewCollapsed(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
   }, []);
 
   if (editor.isLoading || !editor.draft)
@@ -85,7 +104,7 @@ export function BuildWorkspace() {
               className="button-secondary min-h-9 px-3"
             >
               <Play size={16} />
-              测试草稿
+              测试当前草稿
             </button>
             <button
               type="button"
@@ -95,14 +114,14 @@ export function BuildWorkspace() {
               title={editor.dirty ? "请先保存当前草稿" : "前往版本管理发布"}
             >
               <PaperPlaneTilt size={16} />
-              发布草稿
+              发布为新版本
             </button>
           </div>,
           actionsTarget,
         )}
-      <div className="-mx-4 min-w-0 sm:-mx-6 lg:-mx-7">
+      <div className="-mx-4 h-full min-w-0 sm:-mx-6 lg:-mx-7">
         <div
-          className={`grid min-w-0 grid-cols-1 border-b border-border transition-[grid-template-columns] duration-200 lg:grid-cols-[196px_minmax(0,1fr)] ${previewLayout.gridClass}`}
+          className={`grid h-full min-w-0 grid-cols-1 border-b border-border transition-[grid-template-columns] duration-200 lg:grid-cols-[184px_minmax(0,1fr)] lg:overflow-hidden ${previewLayout.gridClass}`}
         >
           <BuildSectionRail
             agentId={agentId}

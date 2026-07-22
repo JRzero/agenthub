@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Copy,
   DownloadSimple,
   PencilSimple,
   Play,
@@ -14,14 +13,9 @@ import { AgentAvatar } from "@/modules/agents/agent-avatar";
 import { resolveDraftBaseVersionNumber } from "@/modules/agent-versions/model";
 import { useAgentVersions } from "@/modules/agent-versions/queries";
 import { assetNavigation } from "@/shared/layout/navigation";
-import { SourceBadge } from "@/shared/ui/source-badge";
 import { AssetActions } from "./asset-actions";
 
 export const BUILD_HEADER_ACTIONS_ID = "agent-build-header-actions";
-
-function shortHash(value?: string | null) {
-  return value ? value.slice(0, 12) : "发布后生成";
-}
 
 export function AssetWorkspaceHeader({
   overview,
@@ -93,18 +87,6 @@ export function AssetWorkspaceHeader({
             </span>
             {buildRoute ? (
               <>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1 font-mono text-text-strong"
-                  title="复制当前草稿 Hash"
-                  onClick={() =>
-                    agent.draft_content_hash &&
-                    void navigator.clipboard.writeText(agent.draft_content_hash)
-                  }
-                >
-                  {shortHash(agent.draft_content_hash)}
-                  <Copy size={14} />
-                </button>
                 <span className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 font-medium text-amber-700">
                   当前草稿 · {draftBaseLabel}
                 </span>
@@ -116,19 +98,6 @@ export function AssetWorkspaceHeader({
                     ? "平台当前版本 v" + agent.version
                     : "当前草稿"}
                 </span>
-                <span className="inline-flex items-center gap-2">
-                  <span>准备度</span>
-                  <strong className="text-success">
-                    {overview.completeness}%
-                  </strong>
-                  <span className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-slate-200 sm:block">
-                    <span
-                      className="block h-full rounded-full bg-success"
-                      style={{ width: `${overview.completeness}%` }}
-                    />
-                  </span>
-                </span>
-                <SourceBadge source={overview.completenessSource} />
               </>
             )}
           </div>

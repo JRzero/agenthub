@@ -3,7 +3,6 @@ import type { KnowledgeBaseOption } from "./api";
 import {
   BasicSectionFields,
   ExamplesEditor,
-  RuntimeDisplaySettings,
 } from "./build-fields";
 import { MediaAssetsPanel } from "./media-assets-panel";
 import { MomentsPanel } from "./moments-panel";
@@ -60,20 +59,8 @@ export function BuildEditorPanel({
   const special = section === "media" || section === "moments";
 
   return (
-    <section className="min-w-0 bg-surface">
-      <div className="p-5 sm:p-7">
-        <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-          <span className="font-medium">
-            {agent.current_version_id
-              ? "平台仍运行 v" +
-                agent.version +
-                "；草稿发布前不会影响 Client 或已有会话"
-              : "当前尚未发布；草稿发布前不会被 Client 或新会话使用"}
-          </span>
-          <span className="ml-auto text-xs text-blue-600">
-            草稿 Hash：发布后生成
-          </span>
-        </div>
+    <section className="scrollbar-hidden min-h-0 min-w-0 bg-surface lg:h-full lg:overflow-y-auto lg:overscroll-contain">
+      <div className="p-5 sm:p-6">
         <div className="mb-5">
           <h2 className="text-xl font-semibold">
             {BUILD_SECTION_LABELS[section]}
@@ -94,15 +81,17 @@ export function BuildEditorPanel({
 
         {!special && (
           <>
-            <BasicSectionFields
-              agentId={agent.id}
-              section={section}
-              draft={draft}
-              errors={errors}
-              knowledgeBases={knowledgeBases}
-              knowledgeLoading={knowledgeLoading}
-              onPatch={onPatch}
-            />
+            {section !== "skills" && (
+              <BasicSectionFields
+                agentId={agent.id}
+                section={section}
+                draft={draft}
+                errors={errors}
+                knowledgeBases={knowledgeBases}
+                knowledgeLoading={knowledgeLoading}
+                onPatch={onPatch}
+              />
+            )}
 
             {section === "persona" && (
               <SectionGroup
@@ -121,17 +110,11 @@ export function BuildEditorPanel({
                   onPatch={onPatch}
                   onAgentUpdated={onAgentUpdated}
                 />
-                <SectionGroup
-                  title="输出与调试显示"
-                  description="控制运行端是否展示推理过程和工具调用，不改变模型本身的生成能力。"
-                >
-                  <RuntimeDisplaySettings draft={draft} onPatch={onPatch} />
-                </SectionGroup>
               </>
             )}
 
             {section === "skills" && (
-              <div className="mt-7 border-t border-border pt-7">
+              <div>
                 <StagedSkillsPanel agentId={agent.id} />
               </div>
             )}

@@ -1,12 +1,13 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { useAssetOverview } from "@/modules/agent-assets/use-asset-overview";
 import { AssetWorkspaceHeader } from "@/modules/agent-assets/asset-workspace-header";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 
 export default function AssetWorkspaceLayout({ children }: { children: React.ReactNode }) {
   const params = useParams<{ agentId: string }>();
+  const pathname = usePathname();
   const agentId = Number(params.agentId);
   const query = useAssetOverview(Number.isFinite(agentId) ? agentId : null);
 
@@ -20,10 +21,12 @@ export default function AssetWorkspaceLayout({ children }: { children: React.Rea
     );
   }
 
+  const buildRoute = pathname === `/assets/${agentId}/build`;
+
   return (
-    <div>
+    <div className={buildRoute ? "flex h-full min-h-0 flex-col" : undefined}>
       <AssetWorkspaceHeader overview={query.overview} />
-      <div className="pt-4">{children}</div>
+      <div className={buildRoute ? "min-h-0 min-w-0 flex-1 pt-4" : "pt-4"}>{children}</div>
     </div>
   );
 }

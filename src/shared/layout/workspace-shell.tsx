@@ -15,6 +15,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const shellLayout = resolveWorkspaceShellLayout(pathname);
   const compactShell = shellLayout.sidebarCollapsed;
+  const fixedBuildWorkspace = /^\/assets\/[^/]+\/build$/.test(pathname);
 
   useEffect(() => {
     if (ready && !session) {
@@ -47,12 +48,12 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           onOpenNavigation={() => setMobileOpen(true)}
         />
         <main
-          className={`min-h-screen transition-[padding] duration-200 ${shellLayout.mainTopPaddingClass} ${shellLayout.mainDesktopPaddingClass}`}
+          className={`${fixedBuildWorkspace ? "box-border h-screen overflow-hidden" : "min-h-screen"} transition-[padding] duration-200 ${shellLayout.mainTopPaddingClass} ${shellLayout.mainDesktopPaddingClass}`}
         >
           <div
             className={
               shellLayout.agentAssetMode
-                ? "w-full px-4 py-6 sm:px-6 lg:px-7"
+                ? `w-full px-4 py-6 sm:px-6 lg:px-7 ${fixedBuildWorkspace ? "h-full" : ""}`
                 : "mx-auto w-full max-w-[1510px] px-4 py-6 sm:px-6 lg:px-7"
             }
           >

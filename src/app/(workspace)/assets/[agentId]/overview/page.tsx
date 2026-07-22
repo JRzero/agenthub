@@ -24,7 +24,7 @@ export default function AgentAssetOverviewPage() {
 
   return (
     <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(380px,0.8fr)]">
-      <AssetCompositionPanel sections={query.overview.sections} />
+      <AssetCompositionPanel agentId={agentId} sections={query.overview.sections} />
       <AdapterPanel adapters={query.overview.adapters} source={query.overview.adapterSource} />
       <ActivityPanel activities={query.overview.activities} />
     </div>
