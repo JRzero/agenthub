@@ -172,18 +172,6 @@ export function BasicSectionFields({
             onChange={(e) => onPatch({ description: e.target.value })}
           />
         </Field>
-        <Field label="运行形态">
-          <select
-            className={inputClass}
-            value={draft.agentType}
-            onChange={(e) =>
-              onPatch({ agentType: e.target.value as "cloud" | "edge" })
-            }
-          >
-            <option value="cloud">Cloud Agent</option>
-            <option value="edge">Edge Agent</option>
-          </select>
-        </Field>
       </div>
     );
   }
@@ -291,6 +279,18 @@ export function BasicSectionFields({
   if (section === "runtime") {
     return (
       <div className="space-y-5">
+        <Field label="部署形态">
+          <select
+            className={inputClass}
+            value={draft.agentType}
+            onChange={(e) =>
+              onPatch({ agentType: e.target.value as "cloud" | "edge" })
+            }
+          >
+            <option value="cloud">Cloud Agent</option>
+            <option value="edge">Edge Agent</option>
+          </select>
+        </Field>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field
             label="供应商"
@@ -433,60 +433,82 @@ export function ExamplesEditor({
     onPatch({ examples });
   };
   return (
-    <div className="space-y-4">
-      {draft.examples.map((item, index) => (
-        <div
-          key={`${item.role}-${index}`}
-          className="rounded-lg border border-border p-4"
-        >
-          <div className="mb-2 flex items-center justify-between">
-            <select
-              value={item.role}
-              onChange={(e) =>
-                update(
-                  index,
-                  e.target.value as "user" | "assistant",
-                  item.content,
-                )
-              }
-              className="rounded border border-border bg-surface px-2 py-1 text-xs"
-            >
-              <option value="user">用户</option>
-              <option value="assistant">Agent</option>
-            </select>
-            <button
-              type="button"
-              aria-label={`删除示例 ${index + 1}`}
-              onClick={() =>
-                onPatch({
-                  examples: draft.examples.filter((_, i) => i !== index),
-                })
-              }
-              className="rounded p-1.5 text-text-muted hover:bg-subtle hover:text-danger"
-            >
-              <Trash size={16} />
-            </button>
-          </div>
-          <textarea
-            value={item.content}
-            onChange={(e) => update(index, item.role, e.target.value)}
-            className={`${inputClass} min-h-24 resize-y`}
-            placeholder="输入示例内容"
-          />
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={() =>
-          onPatch({
-            examples: [...draft.examples, { role: "user", content: "" }],
-          })
-        }
-        className="button-secondary w-full"
+    <div className="space-y-6">
+      <Field
+        label="开场白"
+        hint="用户开始新对话时首先看到的内容"
       >
-        <Plus size={16} />
-        添加示例消息
-      </button>
+        <textarea
+          value={draft.openingMessage}
+          onChange={(event) =>
+            onPatch({ openingMessage: event.target.value })
+          }
+          className={`${inputClass} min-h-24 resize-y`}
+          placeholder="例如：今天想从哪里聊起？"
+        />
+      </Field>
+
+      <div className="space-y-4">
+        <div>
+          <h4 className="font-medium text-text-strong">示例对话</h4>
+          <p className="mt-1 text-xs leading-5 text-text-muted">
+            添加典型对话，帮助 Agent 保持预期的表达方式。
+          </p>
+        </div>
+        {draft.examples.map((item, index) => (
+          <div
+            key={`${item.role}-${index}`}
+            className="rounded-lg border border-border p-4"
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <select
+                value={item.role}
+                onChange={(e) =>
+                  update(
+                    index,
+                    e.target.value as "user" | "assistant",
+                    item.content,
+                  )
+                }
+                className="rounded border border-border bg-surface px-2 py-1 text-xs"
+              >
+                <option value="user">用户</option>
+                <option value="assistant">Agent</option>
+              </select>
+              <button
+                type="button"
+                aria-label={`删除示例 ${index + 1}`}
+                onClick={() =>
+                  onPatch({
+                    examples: draft.examples.filter((_, i) => i !== index),
+                  })
+                }
+                className="rounded p-1.5 text-text-muted hover:bg-subtle hover:text-danger"
+              >
+                <Trash size={16} />
+              </button>
+            </div>
+            <textarea
+              value={item.content}
+              onChange={(e) => update(index, item.role, e.target.value)}
+              className={`${inputClass} min-h-24 resize-y`}
+              placeholder="输入示例内容"
+            />
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() =>
+            onPatch({
+              examples: [...draft.examples, { role: "user", content: "" }],
+            })
+          }
+          className="button-secondary w-full"
+        >
+          <Plus size={16} />
+          添加示例消息
+        </button>
+      </div>
     </div>
   );
 }

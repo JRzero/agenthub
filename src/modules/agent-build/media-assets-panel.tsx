@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { ClockCounterClockwise, ImageSquare, MagicWand, Plus } from "@phosphor-icons/react";
+import { useEffect, useMemo, useState } from "react";
+import { ClockCounterClockwise, ImageSquare, MagicWand, Plus, X } from "@phosphor-icons/react";
 import { DATA_MODE } from "@/config/capabilities";
 import { DEMO_CHARACTER_SHEETS, DEMO_COMIC_DRAFTS } from "@/fixtures/demo-media-assets";
 import type { Agent } from "@/modules/agents/types";
@@ -114,38 +114,52 @@ function AssetSection({
 }) {
   const unavailable = actionSource === "unavailable";
   const specAsset = assets.find((asset) => asset.specText?.trim());
+  const [previewAsset, setPreviewAsset] = useState<MediaAsset | null>(null);
+
+  useEffect(() => {
+    if (!previewAsset) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setPreviewAsset(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [previewAsset]);
 
   return (
-    <section className="rounded-xl border border-border bg-surface p-5">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h3 className="font-semibold">{title}</h3>
-          <p className="mt-1 text-sm leading-6 text-text-muted">{description}</p>
-        </div>
-        <button
-          type="button"
-          onClick={onGenerate}
-          disabled={unavailable}
-          className="button-secondary disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <MagicWand size={17} />{actionLabel}
-        </button>
-      </header>
-
-      {assets.length > 0 ? (
-        <div className={specAsset ? "mt-5 grid gap-5 xl:grid-cols-[minmax(0,0.95fr)_minmax(300px,1fr)]" : "mt-5"}>
-          <div className={specAsset ? "grid gap-4" : "grid gap-4 sm:grid-cols-2 2xl:grid-cols-3"}>
-            {assets.slice(0, 3).map((asset) => <MediaAssetCard key={asset.id} asset={asset} />)}
+    <>
+      <section className="rounded-xl border border-border bg-surface p-5">
+        <header className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h3 className="font-semibold">{title}</h3>
+            <p className="mt-1 text-sm leading-6 text-text-muted">{description}</p>
           </div>
-          {specAsset?.specText && <MediaAssetSpecPanel asset={specAsset} />}
-        </div>
-      ) : (
-        <div className="mt-5 rounded-lg border border-dashed border-border bg-subtle px-4 py-8 text-center">
-          <ImageSquare size={25} className="mx-auto text-text-muted" />
-          <p className="mt-2 text-sm font-medium">{emptyCopy}</p>
-        </div>
-      )}
-    </section>
+          <button
+            type="button"
+            onClick={onGenerate}
+            disabled={unavailable}
+            className="button-secondary disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <MagicWand size={17} />{actionLabel}
+          </button>
+        </header>
+
+        {assets.length > 0 ? (
+          <div className={specAsset ? "mt-5 grid gap-5 xl:grid-cols-[minmax(0,0.95fr)_minmax(300px,1fr)]" : "mt-5"}>
+            <div className={specAsset ? "grid gap-4" : "grid gap-4 sm:grid-cols-2 2xl:grid-cols-3"}>
+              {assets.slice(0, 3).map((asset) => <MediaAssetCard key={asset.id} asset={asset} onPreview={() => setPreviewAsset(asset)} />)}
+            </div>
+            {specAsset?.specText && <MediaAssetSpecPanel asset={specAsset} />}
+          </div>
+        ) : (
+          <div className="mt-5 rounded-lg border border-dashed border-border bg-subtle px-4 py-8 text-center">
+            <ImageSquare size={25} className="mx-auto text-text-muted" />
+            <p className="mt-2 text-sm font-medium">{emptyCopy}</p>
+          </div>
+        )}
+      </section>
+
+      {previewAsset ? <MediaAssetPreview asset={previewAsset} onClose={() => setPreviewAsset(null)} /> : null}
+    </>
   );
 }
 
@@ -163,13 +177,18 @@ function MediaAssetSpecPanel({ asset }: { asset: MediaAsset }) {
   );
 }
 
-function MediaAssetCard({ asset }: { asset: MediaAsset }) {
+function MediaAssetCard({ asset, onPreview }: { asset: MediaAsset; onPreview: () => void }) {
   return (
     <article className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface">
-      <div className="aspect-[4/3] overflow-hidden bg-subtle">
+      <button
+        type="button"
+        onClick={onPreview}
+        aria-label={`查看${asset.name}大图`}
+        className="group block aspect-[4/3] w-full cursor-zoom-in overflow-hidden bg-subtle outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={asset.url} alt={asset.name} className={`h-full w-full ${asset.kind === "character-sheet" ? "object-contain" : "object-cover"}`} />
-      </div>
+        <img src={asset.url} alt={asset.name} className={`h-full w-full transition duration-200 group-hover:scale-[1.01] ${asset.kind === "character-sheet" ? "object-contain" : "object-cover"}`} />
+      </button>
       <div className="p-3">
         <div className="flex items-center justify-between gap-2">
           <h4 className="truncate text-sm font-semibold">{asset.name}</h4>
@@ -184,5 +203,32 @@ function MediaAssetCard({ asset }: { asset: MediaAsset }) {
         {asset.demoOnly && <p className="mt-2 text-xs text-text-muted"><Plus size={13} className="mr-1 inline" />{"\u6f14\u793a\u8d44\u4ea7\uff0c\u4e0d\u5199\u5165\u540e\u7aef"}</p>}
       </div>
     </article>
+  );
+}
+
+function MediaAssetPreview({ asset, onClose }: { asset: MediaAsset; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[70] grid place-items-center bg-slate-950/70 p-4 sm:p-6" onMouseDown={onClose}>
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="media-asset-preview-title"
+        onMouseDown={(event) => event.stopPropagation()}
+        className="flex max-h-full w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-surface shadow-2xl"
+      >
+        <header className="flex shrink-0 items-center justify-between border-b border-border px-5 py-4">
+          <h2 id="media-asset-preview-title" className="font-semibold">{asset.name}</h2>
+          <button type="button" onClick={onClose} aria-label="关闭大图预览" className="rounded-lg p-2 text-text-muted transition hover:bg-subtle hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+            <X size={20} />
+          </button>
+        </header>
+        <div className="min-h-0 flex-1 overflow-auto bg-subtle p-4 sm:p-6">
+          <div className="mx-auto flex min-h-[20rem] w-full items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={asset.url} alt={asset.name} className="max-h-[calc(100vh-10rem)] max-w-full object-contain" />
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }

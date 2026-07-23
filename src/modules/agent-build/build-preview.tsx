@@ -45,9 +45,7 @@ export function BuildPreview({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const savedGreeting =
-    draft.examples.find(
-      (message) => message.role === "assistant" && message.content.trim(),
-    )?.content ||
+    draft.openingMessage ||
     draft.description ||
     "你好，我会按照当前已保存的角色配置与你交流。";
   const interactionDisabled = dirty || sending;

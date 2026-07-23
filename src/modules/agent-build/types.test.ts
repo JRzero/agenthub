@@ -25,6 +25,7 @@ const agent: BuildAgent = {
   llm_model_name: "qwen-max",
   llm_temperature: 0.6,
   config: {
+    opening_message: "今天想聊些什么？",
     examples: [{ role: "user", content: "今天有点累" }],
     skills: ["realtime_weather"],
     show_reasoning: false,
@@ -38,6 +39,7 @@ describe("Agent build draft", () => {
     expect(draft.name).toBe("林月");
     expect(draft.knowledgeBaseId).toBe(8);
     expect(draft.llmTemperature).toBe(0.6);
+    expect(draft.openingMessage).toBe("今天想聊些什么？");
     expect(draft.showReasoning).toBe(false);
   });
 
@@ -62,6 +64,7 @@ describe("Agent build draft", () => {
     expect(payload).not.toHaveProperty("code");
     expect(payload).toMatchObject({
       skills: ["realtime_weather"],
+      opening_message: "今天想聊些什么？",
       status: "draft",
       knowledge_base_id: 8,
     });

@@ -4,10 +4,13 @@ import {
   BookOpenText,
   CaretRight,
   CheckCircle,
+  Circle,
+  CircleHalf,
   Database,
   IdentificationCard,
   ImageSquare,
   MagicWand,
+  MinusCircle,
   ShieldCheck,
   SlidersHorizontal,
 } from "@phosphor-icons/react";
@@ -25,7 +28,12 @@ const icons: Record<AssetSectionId, Icon> = {
 
 function Score({ section }: { section: AssetSection }) {
   if (section.score === null) {
-    return <span className="status-badge bg-slate-100 text-slate-600">待接入</span>;
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted">
+        <MinusCircle size={17} />
+        待接入
+      </span>
+    );
   }
   if (section.state === "complete") {
     return (
@@ -36,9 +44,15 @@ function Score({ section }: { section: AssetSection }) {
     );
   }
   return section.score > 0 ? (
-    <span className="status-badge bg-amber-50 text-amber-700">部分配置</span>
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700">
+      <CircleHalf size={17} weight="fill" />
+      待完善
+    </span>
   ) : (
-    <span className="status-badge bg-slate-100 text-slate-600">未配置</span>
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted">
+      <Circle size={17} />
+      未配置
+    </span>
   );
 }
 
@@ -59,7 +73,7 @@ export function AssetCompositionPanel({
             <Link
               key={section.id}
               href={`/assets/${agentId}/build?section=${section.id}`}
-              className={`grid min-h-[58px] w-full grid-cols-[36px_minmax(110px,0.55fr)_minmax(190px,1.2fr)_130px_20px] items-center gap-3 px-4 text-left transition hover:bg-subtle ${index > 0 ? "border-t border-border" : ""}`}
+              className={`grid min-h-[58px] w-full grid-cols-[36px_minmax(110px,0.55fr)_minmax(190px,1.2fr)_max-content_20px] items-center gap-3 px-4 text-left transition hover:bg-subtle ${index > 0 ? "border-t border-border" : ""}`}
             >
               <Icon size={23} className={section.state === "unavailable" ? "text-text-muted" : "text-primary"} />
               <span className="font-medium">{section.label}</span>

@@ -33,6 +33,7 @@ const agent: Agent = {
   version: 3,
   system_prompt: "用安全、积极的方式讲科普故事。",
   config: {
+    opening_message: "今天想听什么故事？",
     metadata: {
       avatar: "avatar.png",
       character_design_spec: "蓝紫色科普角色",

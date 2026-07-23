@@ -19,6 +19,7 @@ export interface AgentBuildDraft {
   name: string;
   description: string;
   systemPrompt: string;
+  openingMessage: string;
   examples: ExampleMessage[];
   skills: string[];
   knowledgeBaseId: number | null;
@@ -39,6 +40,7 @@ export interface AgentBuildUpdateInput {
   name: string;
   description: string;
   system_prompt: string;
+  opening_message: string;
   examples: ExampleMessage[];
   skills: string[];
   knowledge_base_id: number | null;
@@ -63,6 +65,7 @@ export function createBuildDraft(agent: BuildAgent): AgentBuildDraft {
     name: agent.name || "",
     description: agent.description || "",
     systemPrompt: agent.system_prompt || agent.config?.system_prompt || "",
+    openingMessage: agent.config?.opening_message || "",
     examples: Array.isArray(agent.config?.examples) ? agent.config.examples : [],
     skills: Array.isArray(agent.config?.skills) ? agent.config.skills : [],
     knowledgeBaseId: agent.knowledge_base_id ?? null,
@@ -88,7 +91,7 @@ export function validateBuildDraft(draft: AgentBuildDraft): DraftValidationError
 }
 
 export function serializeBuildDraft(draft: AgentBuildDraft, expectedDraftRevision: number, status?: string): AgentBuildUpdateInput {
-  return { expected_draft_revision: expectedDraftRevision, name: draft.name.trim(), description: draft.description.trim(), system_prompt: draft.systemPrompt, examples: draft.examples.filter((item) => item.content.trim()), skills: draft.skills.map((item) => item.trim()).filter(Boolean), knowledge_base_id: draft.knowledgeBaseId, memory_enabled: draft.memoryEnabled, agent_type: draft.agentType, llm_provider: draft.llmProvider, llm_provider_type: draft.llmProviderType.trim(), llm_base_url: draft.llmBaseUrl.trim(), llm_model_name: draft.llmModelName.trim(), llm_temperature: draft.llmTemperature, show_reasoning: draft.showReasoning, show_tools: draft.showTools, hidden: draft.hidden, ...(status ? { status } : {}) };
+  return { expected_draft_revision: expectedDraftRevision, name: draft.name.trim(), description: draft.description.trim(), system_prompt: draft.systemPrompt, opening_message: draft.openingMessage.trim(), examples: draft.examples.filter((item) => item.content.trim()), skills: draft.skills.map((item) => item.trim()).filter(Boolean), knowledge_base_id: draft.knowledgeBaseId, memory_enabled: draft.memoryEnabled, agent_type: draft.agentType, llm_provider: draft.llmProvider, llm_provider_type: draft.llmProviderType.trim(), llm_base_url: draft.llmBaseUrl.trim(), llm_model_name: draft.llmModelName.trim(), llm_temperature: draft.llmTemperature, show_reasoning: draft.showReasoning, show_tools: draft.showTools, hidden: draft.hidden, ...(status ? { status } : {}) };
 }
 
 export function draftsEqual(a: AgentBuildDraft, b: AgentBuildDraft): boolean {

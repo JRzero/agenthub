@@ -130,3 +130,40 @@ final result: blocked
 ## 最终结果
 
 前端流程、布局和 Demo 验证通过；生产 Live 闭环因后端契约尚未提供而处于阻塞状态。
+
+---
+
+# Agent 概览状态样式 QA
+
+## 对照范围
+
+- Source visual truth：`/var/folders/rk/rlxc7qzd2xz55_fls_ftnyrm0000gn/T/codex-clipboard-c246dbdd-bdab-4f37-af1e-0c3900e0fd30.png`
+- Source pixels：`1872 × 1282`
+- Implementation route：`http://localhost:3002/assets/28/overview`
+- Intended state：Agent 概览页“资产组成”列表，桌面端
+- Density normalization：未执行；缺少同状态的浏览器实现截图
+
+## Full-view comparison evidence
+
+- 源图显示状态列使用大面积浅色矩形背景，和同表格中“已配置”的轻量图标文字样式不一致。
+- 实现已统一为语义图标加短文本：已配置、部分配置、未配置、待接入均不再使用整块背景。
+
+## Focused region comparison evidence
+
+- 聚焦区域为资产组成列表最右侧状态列。
+- 静态代码检查确认四种状态均使用相同的行内布局、`17px` 图标和 `text-xs` 文本；部分配置保留琥珀色，其余状态使用成功色或弱化文本色。
+
+## Findings
+
+- [P2] 缺少修改后的浏览器截图，无法确认真实渲染下的列对齐、字色和状态间视觉一致性。
+  - Fix：恢复 Chrome 连接后，在同一桌面视口重新加载 Agent 概览并截图复核。
+
+## Comparison history
+
+1. Earlier finding：状态标签整块底色过重，和“已配置”样式不统一。
+2. Fix：移除“部分配置 / 未配置 / 待接入”的块状背景，改为语义图标 + 状态文字。
+3. Post-fix evidence：lint、typecheck 与 diff check 通过；浏览器连接中断，未取得渲染截图。
+
+## Final result
+
+final result: blocked

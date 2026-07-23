@@ -95,8 +95,8 @@ export function BuildEditorPanel({
 
             {section === "persona" && (
               <SectionGroup
-                title="示例对话"
-                description="用典型的用户与 Agent 对话示范表达方式。"
+                title="对话设定"
+                description="配置新对话开场白，并用示例对话示范表达方式。"
               >
                 <ExamplesEditor draft={draft} onPatch={onPatch} />
               </SectionGroup>
