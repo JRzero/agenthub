@@ -58,6 +58,10 @@ describe("Agent version model", () => {
     ).toBe(3);
   });
 
+  it("treats null skill collections from legacy version data as empty", () => {
+    expect(countSkillReferences(null, null)).toBe(0);
+  });
+
   it("reads knowledge, stage skills, and media from a version resource manifest", () => {
     expect(
       resolveVersionResourceCounts({

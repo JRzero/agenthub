@@ -35,17 +35,17 @@ function normalizeSkillName(value?: string) {
 }
 
 export function countSkillReferences(
-  configuredSkills: readonly string[] = [],
-  boundSkills: readonly SkillReference[] = [],
+  configuredSkills: readonly string[] | null | undefined = [],
+  boundSkills: readonly SkillReference[] | null | undefined = [],
 ): number {
   const references = new Set<string>();
 
-  configuredSkills.forEach((skill) => {
+  (configuredSkills ?? []).forEach((skill) => {
     const name = normalizeSkillName(skill);
     if (name) references.add(`name:${name}`);
   });
 
-  boundSkills.forEach((skill) => {
+  (boundSkills ?? []).forEach((skill) => {
     const name = normalizeSkillName(skill.skill_name || skill.name);
     if (name) {
       references.add(`name:${name}`);
