@@ -59,12 +59,12 @@ const semanticVisuals: Array<{ keywords: string[]; visual: SkillVisual }> = [
 ];
 
 const stagePresentations: Record<string, SkillStagePresentation> = {
-  pre: { label: "前置", className: "bg-sky-50 text-sky-700 ring-sky-200" },
-  pre_conversation: { label: "前置", className: "bg-sky-50 text-sky-700 ring-sky-200" },
-  mid: { label: "对话中", className: "bg-violet-50 text-violet-700 ring-violet-200" },
-  mid_conversation: { label: "对话中", className: "bg-violet-50 text-violet-700 ring-violet-200" },
-  post: { label: "后置", className: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
-  post_conversation: { label: "后置", className: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
+  pre: { label: "前置", className: "text-sky-700 before:bg-sky-500 dark:text-sky-300" },
+  pre_conversation: { label: "前置", className: "text-sky-700 before:bg-sky-500 dark:text-sky-300" },
+  mid: { label: "对话中", className: "text-violet-700 before:bg-violet-500 dark:text-violet-300" },
+  mid_conversation: { label: "对话中", className: "text-violet-700 before:bg-violet-500 dark:text-violet-300" },
+  post: { label: "后置", className: "text-emerald-700 before:bg-emerald-500 dark:text-emerald-300" },
+  post_conversation: { label: "后置", className: "text-emerald-700 before:bg-emerald-500 dark:text-emerald-300" },
 };
 
 export function getSkillVisual(skill: MarketplaceSkill): SkillVisual {
@@ -79,7 +79,7 @@ export function getSkillVisual(skill: MarketplaceSkill): SkillVisual {
 export function getSkillStagePresentation(stage: string): SkillStagePresentation {
   return stagePresentations[stage.toLowerCase()] || {
     label: stage || "未设置",
-    className: "bg-slate-100 text-slate-600 ring-slate-200",
+    className: "text-slate-600 before:bg-slate-400 dark:text-slate-300",
   };
 }
 export function getSkillCategoryLabel(category: string): string {

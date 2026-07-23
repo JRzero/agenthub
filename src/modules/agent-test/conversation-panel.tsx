@@ -76,7 +76,7 @@ export function ConversationPanel({
                 </span>
               )}
             </div>
-            {message.role === "user" && <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-slate-600"><User size={18} weight="fill" /></span>}
+            {message.role === "user" && <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300"><User size={18} weight="fill" /></span>}
           </div>
         ))}
         {sending && (
@@ -87,7 +87,7 @@ export function ConversationPanel({
         )}
       </div>
 
-      {error && <p className="border-t border-danger/20 bg-red-50 px-5 py-2 text-sm text-danger">{error}</p>}
+      {error && <p className="border-t border-danger/20 bg-red-50 px-5 py-2 text-sm text-danger dark:bg-red-400/10 dark:text-red-200">{error}</p>}
       <form className="border-t border-border p-4" onSubmit={(event) => { event.preventDefault(); void submit(); }}>
         <textarea
           aria-label="测试消息"

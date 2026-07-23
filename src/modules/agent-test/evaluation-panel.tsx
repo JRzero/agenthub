@@ -69,7 +69,7 @@ export function EvaluationPanel({
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-lg font-semibold">综合得分</h3>
-                  <span className={`status-badge ${result.status === "good" ? "bg-green-50 text-success" : "bg-amber-50 text-warning"}`}>
+                  <span className={`status-badge ${result.status === "good" ? "status-success" : "status-warning"}`}>
                     {result.status === "good" ? "良好" : "需优化"}
                   </span>
                 </div>

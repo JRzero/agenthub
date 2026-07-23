@@ -166,7 +166,7 @@ export function BasicSectionFields({
         </div>
         <Field label="Agent 简介" hint={`${draft.description.length}/240`}>
           <textarea
-            className={`${inputClass} min-h-28 resize-y`}
+            className={`${inputClass} min-h-64 resize-y`}
             maxLength={240}
             value={draft.description}
             onChange={(e) => onPatch({ description: e.target.value })}

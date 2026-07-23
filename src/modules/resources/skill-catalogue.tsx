@@ -18,8 +18,8 @@ export function SkillCatalogue({ skills, selectedId, creatorSkills, onSelect }: 
         <span className="flex min-w-0 items-center gap-3"><span className={`flex size-10 shrink-0 items-center justify-center rounded-lg ${meta.className}`}><SkillIcon className="size-5 shrink-0" /></span><span className="min-w-0"><strong className="block break-words text-sm">{skill.name}</strong><span className="text-xs text-primary">{skill.implementation_type}</span></span></span>
         <span className="text-sm leading-5 text-text-muted">{skill.description}</span>
         <span className="text-xs text-text-muted">{skill.category === "内容生成" ? "OyiiOyii" : "AgentHub"}</span>
-        <span className={`status-badge justify-self-start ring-1 ring-inset ${stage.className}`}>{stage.label}</span>
-        <span className={`status-badge justify-self-start ${isOwned ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>{isOwned ? "已添加" : "可添加"}</span>
+        <span className={`inline-flex items-center gap-2 justify-self-start text-xs font-medium before:size-1.5 before:shrink-0 before:rounded-full ${stage.className}`}>{stage.label}</span>
+        <span className={`inline-flex items-center gap-2 justify-self-start text-xs font-medium before:size-1.5 before:shrink-0 before:rounded-full ${isOwned ? "text-emerald-700 before:bg-emerald-500 dark:text-emerald-300" : "text-slate-600 before:bg-slate-400 dark:text-slate-300 dark:before:bg-slate-500"}`}>{isOwned ? "已添加" : "可添加"}</span>
       </button>;
     })}
     {!skills.length && <p className="px-6 py-20 text-center text-sm text-text-muted">没有匹配的技能</p>}

@@ -143,7 +143,7 @@ export function AgentAvatarEditor({
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="font-semibold">当前头像</h3>
-              <span className="status-badge bg-emerald-50 text-emerald-700"><CheckCircle size={13} />已保存</span>
+              <span className="status-badge status-success"><CheckCircle size={13} />已保存</span>
             </div>
             <p className="mt-1 text-sm leading-6 text-text-muted">用于 Agent 资料、预览和已接入的客户端。</p>
           </div>

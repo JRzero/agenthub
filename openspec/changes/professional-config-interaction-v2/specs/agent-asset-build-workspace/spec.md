@@ -22,6 +22,11 @@ Until automatic save is implemented, editable Agent fields SHALL continue to use
 
 The workspace SHALL hide unavailable actions and engineering explanations. Runtime advanced options SHALL be collapsed by default. Skills SHALL be selected from installed Workspace resources without an editable identifier field. Knowledge SHALL remain a single-library binding. Memory and safety SHALL expose only their supported switches. Media SHALL use peer tabs and omit unsupported tabs. Moments SHALL remain in Build and SHALL state that operational content is excluded from Agent versions.
 
+#### Scenario: Configure installed resources
+- **WHEN** a creator opens the Skills or Knowledge configuration
+- **THEN** the workspace presents installed resources by product-facing information rather than editable identifiers
+- **AND** unavailable controls and engineering explanations are not shown
+
 ### Requirement: Current saved draft preview
 
 The preview SHALL be labeled `预览当前草稿`, use the current saved Agent draft, retain only the latest exchange, and avoid formal session-management controls. The frontend SHALL use the simulation contract where available and SHALL not represent the running published version as the preview source.
@@ -34,3 +39,8 @@ The preview SHALL be labeled `预览当前草稿`, use the current saved Agent d
 ### Requirement: Clear lifecycle actions
 
 The Build header SHALL use `测试当前草稿` and `发布为新版本` for its primary next steps. Draft Version Hash SHALL not be shown. The running version and draft base version SHALL remain visibly distinct.
+
+#### Scenario: Review draft lifecycle state
+- **WHEN** a creator views the Build header with an existing published Agent
+- **THEN** the header distinguishes the running version from the current draft base
+- **AND** the next actions are labeled `测试当前草稿` and `发布为新版本`

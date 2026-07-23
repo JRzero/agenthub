@@ -39,6 +39,5 @@ export function ResourcesWorkspace() {
 }
 
 function UnavailableResource({ icon: Icon, title, description }: { icon: typeof ImageSquare; title: string; description: string }) {
-  return <div className="flex min-h-[560px] items-center justify-center p-6"><div className="max-w-lg text-center"><span className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary-soft text-primary"><Icon size={28} /></span><h2 className="mt-4 text-xl font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-text-muted">{description}</p><div className="mt-5 inline-flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"><LockKey size={18} />等待真实资源契约</div></div></div>;
+  return <div className="flex min-h-[560px] items-center justify-center p-6"><div className="max-w-lg text-center"><span className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary-soft text-primary"><Icon size={28} /></span><h2 className="mt-4 text-xl font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-text-muted">{description}</p><div className="mt-5 inline-flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200"><LockKey size={18} />等待真实资源契约</div></div></div>;
 }
-

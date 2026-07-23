@@ -28,9 +28,9 @@ const compatibilityStyles: Record<CompatibilityStatus, string> = {
 };
 
 const statusStyles: Record<DistributionStatus, string> = {
-  running: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  unpublished: "bg-slate-50 text-slate-600 ring-slate-200",
-  paused: "bg-rose-50 text-rose-700 ring-rose-200",
+  running: "bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-400/25",
+  unpublished: "bg-slate-50 text-slate-600 ring-slate-200 dark:bg-slate-700/50 dark:text-slate-300 dark:ring-slate-600",
+  paused: "bg-rose-50 text-rose-700 ring-rose-200 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-400/25",
 };
 
 const desktopGridColumns =

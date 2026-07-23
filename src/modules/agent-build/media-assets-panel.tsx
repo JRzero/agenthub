@@ -192,7 +192,7 @@ function MediaAssetCard({ asset, onPreview }: { asset: MediaAsset; onPreview: ()
       <div className="p-3">
         <div className="flex items-center justify-between gap-2">
           <h4 className="truncate text-sm font-semibold">{asset.name}</h4>
-          <span className="status-badge bg-emerald-50 text-emerald-700">{"\u5df2\u4fdd\u5b58"}</span>
+          <span className="status-badge status-success">{"\u5df2\u4fdd\u5b58"}</span>
         </div>
         <div className="mt-2 flex items-center gap-2 text-xs text-text-muted">
           <ClockCounterClockwise size={14} />

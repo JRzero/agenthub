@@ -104,6 +104,22 @@ select:not([multiple]):not([size]) {
     @apply inline-flex items-center gap-1.5 rounded px-2 py-1 text-xs font-medium;
   }
 
+  .status-success {
+    @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-1 dark:ring-inset dark:ring-emerald-400/20;
+  }
+
+  .status-info {
+    @apply bg-blue-50 text-blue-700 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-1 dark:ring-inset dark:ring-blue-400/20;
+  }
+
+  .status-warning {
+    @apply bg-amber-50 text-amber-700 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-1 dark:ring-inset dark:ring-amber-400/20;
+  }
+
+  .status-neutral {
+    @apply bg-slate-100 text-slate-600 dark:bg-slate-700/50 dark:text-slate-300 dark:ring-1 dark:ring-inset dark:ring-slate-600;
+  }
+
   .loading-spin {
     display: inline-flex;
     transform-origin: 50% 50%;

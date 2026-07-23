@@ -2,13 +2,15 @@ export const THEME_STORAGE_KEY = "linkyun-theme";
 export type ThemeMode = "light" | "dark" | "system";
 export interface ThemeState { themePackId: "default"; mode: ThemeMode }
 
-export const DEFAULT_THEME_STATE: ThemeState = { themePackId: "default", mode: "system" };
+export const DEFAULT_THEME_STATE: ThemeState = { themePackId: "default", mode: "light" };
 
 export function parseThemeState(raw: string | null): ThemeState {
   if (!raw) return DEFAULT_THEME_STATE;
   try {
     const value = JSON.parse(raw) as Partial<ThemeState>;
-    const mode = value.mode === "light" || value.mode === "dark" || value.mode === "system" ? value.mode : "system";
+    const mode = value.mode === "light" || value.mode === "dark" || value.mode === "system"
+      ? value.mode
+      : DEFAULT_THEME_STATE.mode;
     return { themePackId: "default", mode };
   } catch { return DEFAULT_THEME_STATE; }
 }

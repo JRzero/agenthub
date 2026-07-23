@@ -2,8 +2,8 @@ import type { ActivityItem } from "./model";
 
 const toneClass = {
   update: "bg-primary-soft text-primary",
-  publish: "bg-emerald-50 text-emerald-700",
-  warning: "bg-amber-50 text-amber-700",
+  publish: "status-success",
+  warning: "status-warning",
 };
 
 export function ActivityPanel({ activities }: { activities: ActivityItem[] }) {

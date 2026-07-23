@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 function ThemeScript() {
-  const script = `(function(){try{var raw=localStorage.getItem('linkyun-theme');var mode=raw?(JSON.parse(raw).mode||'system'):'system';var dark=mode==='dark'||(mode==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',dark);}catch(e){}})();`;
+  const script = `(function(){try{var raw=localStorage.getItem('linkyun-theme');var saved=raw?JSON.parse(raw):null;var mode=saved&&(saved.mode==='light'||saved.mode==='dark'||saved.mode==='system')?saved.mode:'light';var dark=mode==='dark'||(mode==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',dark);}catch(e){document.documentElement.classList.remove('dark');}})();`;
   return <script dangerouslySetInnerHTML={{ __html: script }} />;
 }
 

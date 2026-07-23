@@ -70,13 +70,13 @@ export function NarrativeOptimizerPanel({ agentId, draft, onPatch }: { agentId: 
 
         {optimized && (
           <div className="mt-5 rounded-lg border border-border bg-canvas/30 p-4">
-            <div className="flex flex-wrap items-center justify-between gap-2"><h4 className="text-sm font-semibold">优化后的角色设定</h4><span className={`status-badge ${applied ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{applied ? "已应用" : "待确认"}</span></div>
+            <div className="flex flex-wrap items-center justify-between gap-2"><h4 className="text-sm font-semibold">优化后的角色设定</h4><span className={`status-badge ${applied ? "status-success" : "status-warning"}`}>{applied ? "已应用" : "待确认"}</span></div>
             <textarea value={optimized} onChange={(event) => { setOptimized(event.target.value); setApplied(false); }} rows={10} aria-label="优化后的角色系统提示词" className="mt-3 w-full resize-y rounded-lg border border-border bg-surface p-3 leading-6 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
             <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p className="text-xs leading-5 text-text-muted">应用后会更新上方草稿，仍需点击页面顶部“保存草稿”才会正式保存。</p><button type="button" onClick={apply} disabled={!optimized.trim() || applied} className="button-primary shrink-0 disabled:cursor-not-allowed disabled:opacity-60"><CheckCircle size={17} />{applied ? "已应用" : "应用到草稿"}</button></div>
           </div>
         )}
 
-        {feedback && <p className={`mt-4 rounded-md border px-4 py-3 text-sm ${feedback.tone === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-danger/20 bg-red-50 text-danger"}`}>{feedback.text}</p>}
+        {feedback && <p className={`mt-4 rounded-md border px-4 py-3 text-sm ${feedback.tone === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-200" : "border-danger/20 bg-red-50 text-danger dark:bg-red-400/10 dark:text-red-200"}`}>{feedback.text}</p>}
       </div>
     </section>
   );

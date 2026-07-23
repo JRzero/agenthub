@@ -87,7 +87,7 @@ export function AssetWorkspaceHeader({
             </span>
             {buildRoute ? (
               <>
-                <span className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 font-medium text-amber-700">
+                <span className="status-badge status-warning">
                   当前草稿 · {draftBaseLabel}
                 </span>
               </>

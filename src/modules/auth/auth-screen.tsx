@@ -105,7 +105,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
       </section>
 
       <section className="flex min-h-screen items-center justify-center bg-surface px-6 py-10 sm:px-10">
-        <div className="w-full max-w-[480px] rounded-[28px] border border-border bg-white p-8 shadow-2xl shadow-slate-200/70 sm:p-10">
+        <div className="w-full max-w-[480px] rounded-[28px] border border-border bg-white p-8 shadow-2xl shadow-slate-200/70 dark:bg-surface dark:shadow-black/30 sm:p-10">
           <Link href="/" className="mb-8 inline-flex items-center gap-3 lg:hidden" aria-label="AgentHub 首页">
             <Image src="/images/agenthub-logo.png" alt="" width={36} height={36} priority />
             <span className="text-2xl font-bold tracking-tight">AgentHub</span>
@@ -122,9 +122,9 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           </p>
 
           {demo ? (
-            <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-4">
-              <p className="text-sm font-semibold text-amber-900">当前运行在演示数据模式</p>
-              <p className="mt-1 text-xs leading-5 text-amber-700">不会向登录或注册接口发送请求。</p>
+            <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-400/20 dark:bg-amber-400/10">
+              <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">当前运行在演示数据模式</p>
+              <p className="mt-1 text-xs leading-5 text-amber-700 dark:text-amber-200/80">不会向登录或注册接口发送请求。</p>
               <button type="button" className="button-primary mt-4 w-full" onClick={() => void enterDemo()}>
                 进入演示工作区 <ArrowRight size={18} />
               </button>
@@ -214,7 +214,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
               </details>
 
               {error && (
-                <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+                <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-400/10 dark:text-red-200">
                   {error}
                 </p>
               )}

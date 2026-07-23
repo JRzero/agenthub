@@ -151,13 +151,13 @@ export function MotherlandChatPanel({ agentId, draft, onPatch }: { agentId: numb
   };
 
   if (status.isLoading) {
-    return <div className="rounded-xl border border-border p-6"><div className="h-5 w-40 animate-pulse rounded bg-slate-200/70" /><div className="mt-3 h-4 w-72 max-w-full animate-pulse rounded bg-slate-200/70" /></div>;
+    return <div className="rounded-xl border border-border p-6"><div className="h-5 w-40 animate-pulse rounded bg-slate-200/70 dark:bg-slate-700/60" /><div className="mt-3 h-4 w-72 max-w-full animate-pulse rounded bg-slate-200/70 dark:bg-slate-700/60" /></div>;
   }
   if (status.isError) {
-    return <div className="rounded-xl border border-danger/20 bg-red-50 p-5"><h3 className="font-semibold text-danger">Motherland 暂时无法连接</h3><p className="mt-1 text-sm text-danger/80">请检查服务状态后重试。</p><button type="button" onClick={() => void status.refetch()} className="button-secondary mt-4">重新检查</button></div>;
+    return <div className="rounded-xl border border-danger/20 bg-red-50 p-5 dark:bg-red-400/10"><h3 className="font-semibold text-danger dark:text-red-200">Motherland 暂时无法连接</h3><p className="mt-1 text-sm text-danger/80 dark:text-red-200/80">请检查服务状态后重试。</p><button type="button" onClick={() => void status.refetch()} className="button-secondary mt-4">重新检查</button></div>;
   }
   if (!status.data?.configured) {
-    return <div className="rounded-lg border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">Motherland 尚未配置，请联系管理员配置系统 Motherland Agent。</div>;
+    return <div className="rounded-lg border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200">Motherland 尚未配置，请联系管理员配置系统 Motherland Agent。</div>;
   }
 
   return (
@@ -177,7 +177,7 @@ export function MotherlandChatPanel({ agentId, draft, onPatch }: { agentId: numb
         </header>
 
         <div ref={historyViewport} className="min-h-64 max-h-[420px] space-y-4 overflow-y-auto bg-canvas/35 p-5 sm:p-6" aria-live="polite">
-          {history.isLoading && <div className="space-y-3"><div className="h-16 w-3/4 animate-pulse rounded-xl bg-slate-200/70" /><div className="ml-auto h-16 w-2/3 animate-pulse rounded-xl bg-primary-soft" /></div>}
+          {history.isLoading && <div className="space-y-3"><div className="h-16 w-3/4 animate-pulse rounded-xl bg-slate-200/70 dark:bg-slate-700/60" /><div className="ml-auto h-16 w-2/3 animate-pulse rounded-xl bg-primary-soft" /></div>}
           {history.isError && <div className="mx-auto max-w-sm py-10 text-center"><p className="text-sm text-danger">共创记录加载失败</p><button type="button" onClick={() => void history.refetch()} className="button-secondary mt-4">重新加载</button></div>}
           {!history.isLoading && !history.isError && !messages.length && (
             <div className="mx-auto flex max-w-xl flex-col items-center py-7 text-center">
@@ -220,7 +220,7 @@ export function MotherlandChatPanel({ agentId, draft, onPatch }: { agentId: numb
             </div>
           )}
 
-          {message && <p className="mt-3 rounded-md border border-danger/20 bg-red-50 px-4 py-3 text-sm text-danger">{message}</p>}
+          {message && <p className="mt-3 rounded-md border border-danger/20 bg-red-50 px-4 py-3 text-sm text-danger dark:bg-red-400/10 dark:text-red-200">{message}</p>}
         </div>
       </section>
 

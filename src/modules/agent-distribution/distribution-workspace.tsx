@@ -426,10 +426,10 @@ function ClientDetail({
         <div>
           <h3 className="text-lg font-semibold">{client.name}</h3>
           <div className="mt-1 flex gap-2 text-xs">
-            <span className="status-badge bg-emerald-50 text-emerald-700">
+            <span className="status-badge status-success">
               {client.status === "enabled" ? "在线" : "已停用"}
             </span>
-            <span className="status-badge bg-emerald-50 text-emerald-700">
+            <span className="status-badge status-success">
               跟随平台当前版本
             </span>
           </div>
@@ -440,8 +440,8 @@ function ClientDetail({
           className={
             "grid grid-cols-3 rounded-md border px-4 py-3 text-sm " +
             (synced
-              ? "border-emerald-200 bg-emerald-50/70"
-              : "border-amber-200 bg-amber-50/70")
+              ? "border-emerald-200 bg-emerald-50/70 dark:border-emerald-400/20 dark:bg-emerald-400/10"
+              : "border-amber-200 bg-amber-50/70 dark:border-amber-400/20 dark:bg-amber-400/10")
           }
         >
           <InfoItem
@@ -499,7 +499,7 @@ function ClientDetail({
           <InfoGrid label="Client 类型" value={client.client_type} />
         </DetailCard>
 
-        <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-xs text-blue-700">
+        <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-xs text-blue-700 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-200">
           <Info size={16} className="mr-2 inline" />新 Session
           使用平台当前版本；已有 Session 继续使用创建时绑定的版本。
         </div>
@@ -545,7 +545,7 @@ function ExportDialog({
           </button>
         </header>
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-6 py-5">
-          <div className="rounded-md border border-emerald-200 bg-emerald-50/60 p-4">
+          <div className="rounded-md border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-400/20 dark:bg-emerald-400/10">
             <p className="text-xs text-success">平台当前版本</p>
             <div className="mt-2 flex items-center justify-between">
               <strong className="text-lg">v{currentVersionNo}</strong>
@@ -555,7 +555,7 @@ function ExportDialog({
             </div>
             <p className="mt-2 text-xs text-text-muted">只能导出平台当前版本</p>
           </div>
-          <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+          <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-200">
             生成通用 Agent 版本包，无需关联 Client。包内包含平台当前版本冻结的配置、技能与媒体资源。
           </div>
           <div>
@@ -567,7 +567,7 @@ function ExportDialog({
               <PackageRow label="Client 配置" value="不包含" />
             </div>
           </div>
-          <div className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs text-emerald-700">
+          <div className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-200">
             检查通过，可以导出。导出内容固定为当前版本，不会随后续发布自动更新。
           </div>
         </div>

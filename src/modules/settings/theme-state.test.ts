@@ -4,8 +4,10 @@ import { isEffectiveDark, loadThemeState, parseThemeState, saveThemeState } from
 describe("AgentHub theme state", () => {
   it("loads the legacy JSON shape and rejects unknown modes", () => {
     expect(parseThemeState('{"themePackId":"default","mode":"dark"}').mode).toBe("dark");
-    expect(parseThemeState('{"mode":"sepia"}').mode).toBe("system");
-    expect(parseThemeState("broken").mode).toBe("system");
+    expect(parseThemeState('{"mode":"system"}').mode).toBe("system");
+    expect(parseThemeState('{"mode":"sepia"}').mode).toBe("light");
+    expect(parseThemeState("broken").mode).toBe("light");
+    expect(parseThemeState(null).mode).toBe("light");
   });
 
   it("persists the compatible key shape", () => {

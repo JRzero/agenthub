@@ -5,9 +5,9 @@ import type { ClientAdapter } from "./model";
 import { SourceBadge } from "@/shared/ui/source-badge";
 
 const statusCopy = {
-  running: { label: "运行中", className: "bg-emerald-50 text-emerald-700" },
-  outdated: { label: "待更新", className: "bg-amber-50 text-amber-700" },
-  draft: { label: "草稿", className: "bg-slate-100 text-slate-600" },
+  running: { label: "运行中", className: "status-success" },
+  outdated: { label: "待更新", className: "status-warning" },
+  draft: { label: "草稿", className: "status-neutral" },
 };
 
 function AdapterIcon({ id, core }: { id: string; core?: boolean }) {
@@ -16,11 +16,11 @@ function AdapterIcon({ id, core }: { id: string; core?: boolean }) {
   if (id.includes("oyiioyii")) Icon = ChatCircleDots;
   if (id.includes("web")) {
     Icon = Globe;
-    className = "bg-emerald-50 text-emerald-600";
+    className = "bg-emerald-50 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-300";
   }
   if (id.includes("api")) {
     Icon = Code;
-    className = "bg-orange-50 text-orange-600";
+    className = "bg-orange-50 text-orange-600 dark:bg-orange-400/10 dark:text-orange-300";
   }
   return (
     <span className={`flex h-9 w-9 items-center justify-center rounded-md ${className}`}>

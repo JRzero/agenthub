@@ -92,16 +92,16 @@ export function DistributionDialog({
               <ExportRow title="Persona Package" description="角色设定、口吻、禁区与示例对话" />
               <ExportRow title="Runtime Package" description="运行配置、工具声明与 RAG 引用" />
               <ExportRow title="License Manifest" description="授权对象、期限、范围与商用限制" />
-              <p className="rounded-lg bg-amber-50 px-4 py-3 text-xs leading-5 text-amber-900">受控资产包需要后端导出、授权签名与审计接口；当前不在浏览器内拼装伪生产包。</p>
+              <p className="rounded-lg bg-amber-50 px-4 py-3 text-xs leading-5 text-amber-900 dark:bg-amber-400/10 dark:text-amber-200">受控资产包需要后端导出、授权签名与审计接口；当前不在浏览器内拼装伪生产包。</p>
             </div>
           )}
 
           {kind === "unsupported" && (
-            <div className="flex gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-4 text-amber-950">
+            <div className="flex gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-4 text-amber-950 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200">
               <LockKey className="mt-0.5 shrink-0" size={21} />
               <div>
                 <p className="font-medium">当前操作未连接生产端点</p>
-                <p className="mt-2 text-sm leading-6 text-amber-900/80">{unsupportedMessage}</p>
+                <p className="mt-2 text-sm leading-6 text-amber-900/80 dark:text-amber-200/80">{unsupportedMessage}</p>
               </div>
             </div>
           )}

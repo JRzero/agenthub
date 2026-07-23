@@ -298,7 +298,7 @@ export function MotherlandAssetDrawer({
                 </>
               )}
               <div className="flex items-center justify-between gap-3 border-t border-border bg-surface px-4 py-3">
-                <span className={`status-badge ${state === "saved" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
+                <span className={`status-badge ${state === "saved" ? "status-success" : "status-warning"}`}>
                   {state === "saved" ? "已确认保存" : "候选 · 待确认"}
                 </span>
                 {candidate.demoOnly && <span className="text-xs text-text-muted">仅演示会话</span>}
