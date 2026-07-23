@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
@@ -15,12 +15,15 @@ import {
   MagicWand,
   MagnifyingGlass,
   UploadSimple,
-  WarningCircle,
   X,
 } from "@phosphor-icons/react";
 import { capabilitySource } from "@/config/capabilities";
 import { useAuth } from "@/modules/auth/auth-provider";
 import { listCreatorSkills } from "@/modules/resources/api";
+import { listStageSkills } from "@/modules/agent-build/advanced-api";
+import { resolveGeneratedMediaUrl } from "@/modules/agent-build/media-assets";
+import { getAgent } from "@/modules/agents/api";
+import type { Agent } from "@/modules/agents/types";
 import type { CreatorSkill } from "@/modules/resources/types";
 import { useWorkspace } from "@/modules/workspace/workspace-provider";
 import { createAgentReducer, canOpenStep, shouldProtectExit, validateBasicRole } from "./reducer";
@@ -33,6 +36,19 @@ import {
   type ImageCandidate,
 } from "./types";
 import { loadDemoCreateDraft, saveDemoCreateDraft } from "./storage";
+import {
+  confirmAvatarCandidate,
+  confirmCharacterSheetCandidate,
+  completeAgentCreation,
+  generateAvatarCandidate,
+  generateBasicProfile,
+  generateCharacterSheetCandidate,
+  getAgentCreationProgress,
+  mapAgentToBasicRoleContent,
+  regenerateBasicRoleContent,
+  saveBasicRoleContent,
+  saveGuidedCreationSkills,
+} from "./api";
 
 const PERSONALITY_OPTIONS = ["温和", "理性", "活泼", "幽默", "耐心", "专业", "简洁", "有同理心"];
 const STEP_ORDER: Array<Exclude<CreateStep, "complete">> = ["basic", "avatar", "character-sheet", "skills"];
@@ -47,6 +63,53 @@ function delay(milliseconds: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 }
 
+function restoredCreationState(agent: Agent, progress: Awaited<ReturnType<typeof getAgentCreationProgress>>, selectedSkillIds: number[]): CreateAgentState {
+  const metadata = agent.config?.metadata;
+  const input = metadata?.guided_creation_input;
+  const basic = mapAgentToBasicRoleContent(agent);
+  const avatar = progress.steps.avatar && metadata?.avatar ? {
+    id: `saved-avatar-${agent.id}`,
+    url: resolveGeneratedMediaUrl(metadata.avatar, "avatar"),
+    sourceUrl: metadata.avatar,
+    alt: `${agent.name} 的已确认头像`,
+  } : null;
+  const sheet = progress.steps.character_sheet && metadata?.character_design_sheet ? {
+    id: `saved-sheet-${agent.id}`,
+    url: resolveGeneratedMediaUrl(metadata.character_design_sheet, "character-sheet"),
+    sourceUrl: metadata.character_design_sheet,
+    specText: metadata.character_design_spec,
+    alt: `${agent.name} 的已确认角色设定稿`,
+  } : null;
+  const step: CreateStep = progress.creation_completed
+    ? "complete"
+    : progress.current_step === "character_sheet"
+      ? "character-sheet"
+      : progress.current_step;
+  return {
+    ...INITIAL_CREATE_AGENT_STATE,
+    lifecycle: progress.creation_completed ? "complete" : "creating",
+    step,
+    agentId: agent.id,
+    draftRevision: progress.draft_revision,
+    input: {
+      name: agent.name,
+      identity: input?.role_identity || "",
+      relationship: input?.user_relationship || "",
+      primaryInteraction: input?.primary_interactions || "",
+      personalityTags: input?.personality_tags || [],
+    },
+    basicCandidate: basic,
+    confirmedBasic: basic,
+    avatarCandidates: avatar ? [avatar] : [],
+    selectedAvatarId: avatar?.id || null,
+    confirmedAvatar: avatar,
+    sheetCandidate: sheet,
+    confirmedSheet: sheet,
+    selectedSkillIds,
+    saveState: "saved",
+  };
+}
+
 function stepComplete(state: CreateAgentState, step: Exclude<CreateStep, "complete">): boolean {
   if (step === "basic") return Boolean(state.confirmedBasic);
   if (step === "avatar") return Boolean(state.confirmedAvatar && state.avatarFreshness === "current");
@@ -54,11 +117,23 @@ function stepComplete(state: CreateAgentState, step: Exclude<CreateStep, "comple
   return state.lifecycle === "complete";
 }
 
-function CandidateImage({ candidate, className = "" }: { candidate: ImageCandidate; className?: string }) {
+function CandidateImage({
+  candidate,
+  className = "",
+  fit = "cover",
+}: {
+  candidate: ImageCandidate;
+  className?: string;
+  fit?: "cover" | "contain";
+}) {
   return (
     // Demo and backend candidate URLs are dynamic and intentionally bypass Next image optimization.
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={candidate.url} alt={candidate.alt} className={`h-full w-full object-cover ${className}`} />
+    <img
+      src={candidate.url}
+      alt={candidate.alt}
+      className={`h-full w-full ${fit === "contain" ? "object-contain" : "object-cover"} ${className}`}
+    />
   );
 }
 
@@ -84,27 +159,6 @@ function ProgressRail({ state, onStep }: { state: CreateAgentState; onStep: (ste
       </ol>
       <div className="mt-6 rounded-lg bg-subtle px-3 py-3 text-xs leading-5 text-text-muted">
         {state.lifecycle === "before-draft" ? "基础设定生成成功后才会建立创建中草稿。" : state.saveState === "saving" ? "正在保存当前草稿…" : state.saveState === "error" || state.saveState === "conflict" ? "当前更改尚未保存。" : "创建结果确认后自动保存。"}
-      </div>
-    </aside>
-  );
-}
-
-function CreatePreview({ state, skills }: { state: CreateAgentState; skills: CreatorSkill[] }) {
-  const base = state.basicCandidate || state.confirmedBasic;
-  const avatar = state.confirmedAvatar || state.avatarCandidates.find((item) => item.id === state.selectedAvatarId) || null;
-  const selectedSkills = skills.filter((skill) => state.selectedSkillIds.includes(skill.id));
-  return (
-    <aside className="min-h-0 border-l border-border bg-surface" aria-label="创建预览">
-      <header className="border-b border-border px-5 py-4"><h2 className="font-semibold">创建预览</h2><p className="mt-1 text-xs text-text-muted">随当前步骤逐步补全</p></header>
-      <div className="flex h-[calc(100%-69px)] min-h-0 flex-col items-center overflow-hidden px-5 py-6 text-center">
-        <div className="grid size-24 shrink-0 place-items-center overflow-hidden rounded-2xl bg-primary-soft text-3xl font-bold text-primary">
-          {avatar ? <CandidateImage candidate={avatar} /> : state.input.name.slice(0, 1) || "A"}
-        </div>
-        <h3 className="mt-4 text-xl font-semibold">{state.input.name || "你的 Agent"}</h3>
-        <p className="mt-2 line-clamp-2 text-sm leading-6 text-text-muted">{base?.description || state.input.identity || "完成基础设定后，这里会显示 Agent 简介。"}</p>
-        {base?.opening ? <div className="mt-5 w-full rounded-xl bg-subtle px-4 py-3 text-left text-sm leading-6"><span className="mb-1 block text-xs text-text-muted">开场白</span>{base.opening}</div> : null}
-        {state.confirmedSheet ? <div className="mt-4 h-28 w-full overflow-hidden rounded-xl border border-border"><CandidateImage candidate={state.confirmedSheet} className="object-contain" /></div> : null}
-        {selectedSkills.length ? <div className="mt-4 w-full text-left"><span className="text-xs text-text-muted">已选技能</span><div className="mt-2 flex flex-wrap gap-2">{selectedSkills.map((skill) => <span key={skill.id} className="rounded-full bg-primary-soft px-2.5 py-1 text-xs text-primary">{skill.name}</span>)}</div></div> : null}
       </div>
     </aside>
   );
@@ -222,8 +276,8 @@ function AvatarStep({ state, dispatch, onGenerate, generating, fileInput }: { st
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex items-center justify-between gap-4 rounded-lg bg-subtle px-4 py-3 text-sm"><span><strong>{state.input.name}</strong> · {state.input.identity}</span>{state.avatarFreshness === "stale" ? <span className="status-badge bg-amber-50 text-amber-700">待更新</span> : null}</div>
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {state.avatarCandidates.length ? state.avatarCandidates.map((candidate) => { const selected = candidate.id === state.selectedAvatarId; return <button key={candidate.id} type="button" onClick={() => dispatch({ type: "select-avatar", candidateId: candidate.id })} className={`relative aspect-square min-w-0 overflow-hidden rounded-xl border-2 bg-subtle transition ${selected ? "border-primary ring-2 ring-primary/15" : "border-transparent hover:border-primary/40"}`}><CandidateImage candidate={candidate} /><span className={`absolute right-2 top-2 grid size-6 place-items-center rounded-full ${selected ? "bg-primary text-white" : "bg-white/90 text-transparent"}`}><Check size={14} weight="bold" /></span></button>; }) : <div className="col-span-full grid min-h-64 place-items-center rounded-xl border border-dashed border-border text-center text-sm text-text-muted"><div><ImageIcon size={32} className="mx-auto text-primary" /><p className="mt-2">生成后在这里选择头像候选</p></div></div>}
+      <div className="mt-4 flex min-h-0 flex-1 justify-center">
+        {state.avatarCandidates.length ? state.avatarCandidates.map((candidate) => { const selected = candidate.id === state.selectedAvatarId; return <button key={candidate.id} type="button" onClick={() => dispatch({ type: "select-avatar", candidateId: candidate.id })} className={`relative aspect-square h-full max-h-[420px] w-full max-w-[420px] overflow-hidden rounded-xl border-2 bg-subtle transition ${selected ? "border-primary ring-2 ring-primary/15" : "border-transparent hover:border-primary/40"}`}><CandidateImage candidate={candidate} /><span className={`absolute right-2 top-2 grid size-6 place-items-center rounded-full ${selected ? "bg-primary text-white" : "bg-white/90 text-transparent"}`}><Check size={14} weight="bold" /></span></button>; }) : <div className="grid min-h-64 w-full place-items-center rounded-xl border border-dashed border-border text-center text-sm text-text-muted"><div><ImageIcon size={32} className="mx-auto text-primary" /><p className="mt-2">生成后在这里预览头像候选</p></div></div>}
       </div>
       <div className="mt-4 flex flex-wrap gap-2"><button type="button" onClick={onGenerate} disabled={generating} className="button-secondary"><MagicWand size={17} />{generating ? "正在生成…" : state.avatarCandidates.length ? "重新生成" : "生成头像候选"}</button><button type="button" onClick={() => fileInput.current?.click()} className="button-secondary"><UploadSimple size={17} />上传图片</button><button type="button" disabled title="媒体素材库接口尚未接入" className="button-secondary opacity-50"><ImageIcon size={17} />从素材选择</button><input ref={fileInput} type="file" accept="image/*" className="hidden" onChange={(event) => { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.addEventListener("load", () => { if (typeof reader.result !== "string") return; dispatch({ type: "set-upload-candidate", candidate: { id: `upload-${file.name}-${file.lastModified}`, url: reader.result, alt: `上传的头像 ${file.name}` } }); }); reader.readAsDataURL(file); event.target.value = ""; }} /></div>
     </div>
@@ -231,12 +285,70 @@ function AvatarStep({ state, dispatch, onGenerate, generating, fileInput }: { st
 }
 
 function CharacterSheetStep({ state, onGenerate, generating }: { state: CreateAgentState; onGenerate: () => void; generating: boolean }) {
+  const candidate = state.sheetCandidate;
+  const [largePreviewOpen, setLargePreviewOpen] = useState(false);
+
+  useEffect(() => {
+    if (!largePreviewOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setLargePreviewOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [largePreviewOpen]);
+
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-center gap-3 rounded-lg bg-subtle px-4 py-3 text-sm">{state.confirmedAvatar ? <span className="size-10 overflow-hidden rounded-lg"><CandidateImage candidate={state.confirmedAvatar} /></span> : null}<span><strong>{state.input.name}</strong><span className="ml-2 text-text-muted">基于已确认头像生成</span></span>{state.sheetFreshness === "stale" ? <span className="status-badge ml-auto bg-amber-50 text-amber-700">待更新</span> : null}</div>
-      <div className="mt-4 min-h-0 flex-1 overflow-hidden rounded-xl border border-dashed border-border bg-subtle">{state.sheetCandidate ? <CandidateImage candidate={state.sheetCandidate} className="object-contain" /> : <div className="grid h-full place-items-center text-center text-sm text-text-muted"><div><ImageIcon size={34} className="mx-auto text-primary" /><p className="mt-2">角色设定稿候选将在这里预览</p></div></div>}</div>
-      <div className="mt-4 flex gap-2"><button type="button" onClick={onGenerate} disabled={generating} className="button-secondary"><MagicWand size={17} />{generating ? "正在生成…" : state.sheetCandidate ? "重新生成" : "生成角色设定稿"}</button>{state.sheetCandidate ? <a href={state.sheetCandidate.url} target="_blank" rel="noreferrer" className="button-secondary">查看大图</a> : null}</div>
-    </div>
+    <>
+      <div className="mx-auto flex min-h-0 w-full max-w-[1320px] flex-1 flex-col">
+        <div className="flex items-center gap-3 rounded-lg bg-subtle px-4 py-3 text-sm">{state.confirmedAvatar ? <span className="size-10 overflow-hidden rounded-lg"><CandidateImage candidate={state.confirmedAvatar} /></span> : null}<span><strong>{state.input.name}</strong><span className="ml-2 text-text-muted">基于已确认头像生成</span></span>{state.sheetFreshness === "stale" ? <span className="status-badge ml-auto bg-amber-50 text-amber-700">待更新</span> : null}</div>
+        <div className="mt-4 grid min-h-0 flex-1 gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(22rem,2fr)]">
+          <section className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-surface" aria-labelledby="character-sheet-image-title">
+            <div className="border-b border-border px-4 py-3">
+              <h3 id="character-sheet-image-title" className="text-sm font-semibold">图片设定稿</h3>
+              <p className="mt-0.5 text-xs text-text-muted">预览角色正侧背视图、表情、动作与配色。</p>
+            </div>
+            <div className="min-h-0 flex-1 overflow-hidden bg-subtle p-3">
+              {candidate ? <CandidateImage candidate={candidate} fit="contain" /> : <div className="grid h-full min-h-52 place-items-center text-center text-sm text-text-muted"><div><ImageIcon size={34} className="mx-auto text-primary" /><p className="mt-2">图片设定稿将在这里预览</p></div></div>}
+            </div>
+          </section>
+          <section className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-surface" aria-labelledby="character-sheet-text-title">
+            <div className="border-b border-border px-4 py-3">
+              <h3 id="character-sheet-text-title" className="text-sm font-semibold">文字设定稿</h3>
+              <p className="mt-0.5 text-xs text-text-muted">确认后将与图片设定稿一并保存。</p>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3 text-sm leading-6 text-text-muted">
+              {candidate?.specText ? <p className="whitespace-pre-wrap break-words text-text">{candidate.specText}</p> : <div className="grid h-full min-h-36 place-items-center text-center"><div><MagicWand size={28} className="mx-auto text-primary" /><p className="mt-2">生成后在这里查看文字设定稿</p></div></div>}
+            </div>
+          </section>
+        </div>
+        <div className="mt-4 flex gap-2"><button type="button" onClick={onGenerate} disabled={generating} className="button-secondary"><MagicWand size={17} />{generating ? "正在生成…" : candidate ? "重新生成" : "生成角色设定稿"}</button>{candidate ? <button type="button" onClick={() => setLargePreviewOpen(true)} className="button-secondary">查看大图</button> : null}</div>
+      </div>
+      {largePreviewOpen && candidate ? (
+        <div className="fixed inset-0 z-[70] grid place-items-center bg-slate-950/70 p-4 sm:p-6" onMouseDown={() => setLargePreviewOpen(false)}>
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="character-sheet-preview-title"
+            onMouseDown={(event) => event.stopPropagation()}
+            className="flex max-h-full w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-surface shadow-2xl"
+          >
+            <header className="flex shrink-0 items-center justify-between border-b border-border px-5 py-4">
+              <div>
+                <h2 id="character-sheet-preview-title" className="font-semibold">角色设定稿</h2>
+              </div>
+              <button type="button" onClick={() => setLargePreviewOpen(false)} aria-label="关闭角色设定稿" className="rounded-lg p-2 text-text-muted transition hover:bg-subtle hover:text-text">
+                <X size={20} />
+              </button>
+            </header>
+            <div className="min-h-0 flex-1 overflow-auto bg-subtle p-4 sm:p-6">
+              <div className="mx-auto flex min-h-[20rem] w-full items-center justify-center">
+                <CandidateImage candidate={candidate} fit="contain" className="max-h-[calc(100vh-10rem)] max-w-full" />
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : null}
+    </>
   );
 }
 
@@ -262,6 +374,7 @@ function CompleteStep({ state, skills }: { state: CreateAgentState; skills: Crea
 
 export function AgentCreateWorkspace() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { session } = useAuth();
   const { workspaceCode } = useWorkspace();
   const source = capabilitySource("guidedAgentCreation");
@@ -271,11 +384,30 @@ export function AgentCreateWorkspace() {
     return loadDemoCreateDraft(window.sessionStorage) || initial;
   });
   const [submitted, setSubmitted] = useState(false);
-  const [busy, setBusy] = useState<"basic" | "avatar" | "sheet" | "" >("");
+  const [busy, setBusy] = useState<"basic" | "confirm-basic" | "avatar" | "confirm-avatar" | "sheet" | "confirm-sheet" | "skills" | "" >("");
+  const [restoring, setRestoring] = useState(false);
+  const restoredAgentId = useRef<number | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const validation = useMemo(() => validateBasicRole(state.input), [state.input]);
   const skillsQuery = useQuery({ queryKey: ["agent-create-skills", workspaceCode, demo], queryFn: () => demo ? Promise.resolve(DEMO_CREATOR_SKILLS) : listCreatorSkills(session?.apiKey || "", workspaceCode), enabled: Boolean((demo || session?.apiKey) && state.step === "skills") });
   const skills = skillsQuery.data || [];
+
+  useEffect(() => {
+    const agentId = Number(searchParams.get("agentId"));
+    if (demo || !session?.apiKey || !Number.isInteger(agentId) || agentId <= 0 || restoredAgentId.current === agentId) return;
+    restoredAgentId.current = agentId;
+    setRestoring(true);
+    void Promise.all([
+      getAgent(session.apiKey, agentId, workspaceCode),
+      getAgentCreationProgress(session.apiKey, workspaceCode, agentId),
+      ...(["pre", "mid", "post"] as const).map((stage) => listStageSkills(session.apiKey, agentId, stage)),
+    ]).then(([agent, progress, ...stageSkills]) => {
+      dispatch({ type: "restore", state: restoredCreationState(agent, progress, stageSkills.flat().map((skill) => skill.id)) });
+    }).catch((error) => {
+      restoredAgentId.current = null;
+      dispatch({ type: "save-failed", message: error instanceof Error ? error.message : "创建进度读取失败，请重试。" });
+    }).finally(() => setRestoring(false));
+  }, [demo, searchParams, session?.apiKey, workspaceCode]);
 
   useEffect(() => {
     if (!demo || state.lifecycle === "before-draft" || state.saveState !== "dirty") return;
@@ -300,27 +432,124 @@ export function AgentCreateWorkspace() {
 
   async function generateBasic() {
     setSubmitted(true);
-    if (Object.keys(validation).length || !demo) return;
+    if (Object.keys(validation).length || (!demo && !session?.apiKey)) return;
     setBusy("basic"); dispatch({ type: "basic-generation-started" });
-    try { await delay(600); dispatch({ type: "basic-generation-succeeded", candidate: createDemoBasicContent(state.input), agentId: Date.now(), draftRevision: 1 }); }
-    catch { dispatch({ type: "basic-generation-failed", message: "基础设定生成失败，请重试。" }); }
-    finally { setBusy(""); }
+    try {
+      if (demo) {
+        await delay(600);
+        dispatch({ type: "basic-generation-succeeded", candidate: createDemoBasicContent(state.input), agentId: Date.now(), draftRevision: 1 });
+      } else if (state.agentId && state.basicCandidate) {
+        const candidate = await regenerateBasicRoleContent(session!.apiKey, state.agentId, state.input, state.basicCandidate);
+        dispatch({ type: "basic-generation-succeeded", candidate, agentId: state.agentId, draftRevision: state.draftRevision || 1 });
+      } else {
+        const agent = await generateBasicProfile(session!.apiKey, workspaceCode, state.input);
+        dispatch({
+          type: "basic-generation-succeeded",
+          candidate: mapAgentToBasicRoleContent(agent),
+          agentId: agent.id,
+          draftRevision: agent.draft_revision || 1,
+        });
+        // Updating the URL must not immediately restore server progress and skip
+        // the local review of the newly generated basic profile.
+        restoredAgentId.current = agent.id;
+        router.replace(`/assets/create?agentId=${agent.id}`);
+      }
+    } catch (error) {
+      dispatch({ type: "basic-generation-failed", message: error instanceof Error ? error.message : "基础设定生成失败，请重试。" });
+    } finally {
+      setBusy("");
+    }
   }
 
   async function generateAvatars() {
-    if (!demo) return;
+    if (!state.agentId || !state.confirmedBasic || (!demo && !session?.apiKey)) return;
     setBusy("avatar"); dispatch({ type: "avatar-generation-started" });
-    try { await delay(700); dispatch({ type: "avatar-generation-succeeded", candidates: DEMO_AVATAR_CANDIDATES }); }
-    catch { dispatch({ type: "avatar-generation-failed", message: "头像生成失败，请重试或上传图片。" }); }
+    try {
+      const candidate = demo
+        ? (await delay(700), DEMO_AVATAR_CANDIDATES[0])
+        : await generateAvatarCandidate(session!.apiKey, state.agentId, state.input, state.confirmedBasic);
+      dispatch({ type: "avatar-generation-succeeded", candidates: [candidate] });
+    } catch (error) { dispatch({ type: "avatar-generation-failed", message: error instanceof Error ? error.message : "头像生成失败，请重试或上传图片。" }); }
     finally { setBusy(""); }
   }
 
   async function generateSheet() {
-    if (!demo) return;
+    if (!state.agentId || !state.confirmedBasic || (!demo && !session?.apiKey)) return;
     setBusy("sheet"); dispatch({ type: "sheet-generation-started" });
-    try { await delay(700); dispatch({ type: "sheet-generation-succeeded", candidate: DEMO_SHEET_CANDIDATE }); }
-    catch { dispatch({ type: "sheet-generation-failed", message: "角色设定稿生成失败，请重试。" }); }
+    try {
+      const candidate = demo
+        ? (await delay(700), DEMO_SHEET_CANDIDATE)
+        : await generateCharacterSheetCandidate(session!.apiKey, state.agentId, state.input, state.confirmedBasic);
+      dispatch({ type: "sheet-generation-succeeded", candidate });
+    } catch (error) { dispatch({ type: "sheet-generation-failed", message: error instanceof Error ? error.message : "角色设定稿生成失败，请重试。" }); }
     finally { setBusy(""); }
+  }
+
+  async function confirmBasic() {
+    if (!state.basicCandidate || !state.agentId || !state.draftRevision || (!demo && !session?.apiKey)) return;
+    setBusy("confirm-basic");
+    dispatch({ type: "save-started" });
+    try {
+      if (demo) {
+        dispatch({ type: "confirm-basic" });
+        dispatch({ type: "save-succeeded", draftRevision: state.draftRevision + 1 });
+      } else {
+        const updated = await saveBasicRoleContent(session!.apiKey, workspaceCode, state.agentId, state.draftRevision, state.input.name, state.basicCandidate);
+        dispatch({ type: "confirm-basic" });
+        dispatch({ type: "save-succeeded", draftRevision: updated.draft_revision || state.draftRevision + 1 });
+      }
+    } catch (error) {
+      dispatch({ type: "save-failed", message: error instanceof Error ? error.message : "基础设定保存失败，请重试。" });
+    } finally { setBusy(""); }
+  }
+
+  async function confirmAvatar() {
+    const candidate = state.avatarCandidates.find((item) => item.id === state.selectedAvatarId);
+    if (!candidate || !state.agentId || (!demo && !session?.apiKey)) return;
+    setBusy("confirm-avatar");
+    dispatch({ type: "save-started" });
+    try {
+      const updated = demo ? null : await confirmAvatarCandidate(session!.apiKey, state.agentId, candidate);
+      dispatch({ type: "confirm-avatar" });
+      dispatch({ type: "save-succeeded", draftRevision: updated?.draft_revision || state.draftRevision || 1 });
+    } catch (error) {
+      dispatch({ type: "save-failed", message: error instanceof Error ? error.message : "头像保存失败，请重试。" });
+    } finally { setBusy(""); }
+  }
+
+  async function confirmSheet() {
+    if (!state.sheetCandidate || !state.agentId || (!demo && !session?.apiKey)) return;
+    setBusy("confirm-sheet");
+    dispatch({ type: "save-started" });
+    try {
+      const updated = demo ? null : await confirmCharacterSheetCandidate(session!.apiKey, state.agentId, state.sheetCandidate);
+      dispatch({ type: "confirm-sheet" });
+      dispatch({ type: "save-succeeded", draftRevision: updated?.draft_revision || state.draftRevision || 1 });
+    } catch (error) {
+      dispatch({ type: "save-failed", message: error instanceof Error ? error.message : "角色设定稿保存失败，请重试。" });
+    } finally { setBusy(""); }
+  }
+
+  async function completeCreation(skipSkills = false) {
+    if (!state.agentId || (!demo && !session?.apiKey)) return;
+    setBusy("skills");
+    dispatch({ type: "save-started" });
+    try {
+      let savedRevision = state.draftRevision || 1;
+      if (!demo) {
+        if (!skipSkills) {
+          const selected = skills.filter((skill) => state.selectedSkillIds.includes(skill.id));
+          await saveGuidedCreationSkills(session!.apiKey, state.agentId, selected);
+        }
+        const progress = await getAgentCreationProgress(session!.apiKey, workspaceCode, state.agentId);
+        const completed = await completeAgentCreation(session!.apiKey, workspaceCode, state.agentId, progress.draft_revision);
+        savedRevision = completed.draft_revision || progress.draft_revision;
+      }
+      dispatch({ type: "complete" });
+      dispatch({ type: "save-succeeded", draftRevision: savedRevision });
+    } catch (error) {
+      dispatch({ type: "save-failed", message: error instanceof Error ? error.message : "完成创建失败，请检查必填内容后重试。" });
+    } finally { setBusy(""); }
   }
 
   function exit() {
@@ -338,8 +567,6 @@ export function AgentCreateWorkspace() {
 
   const title = state.step === "complete" ? "Agent 创建完成" : STEP_COPY[state.step].title;
   const helper = state.step === "complete" ? "当前 Agent 仍是未发布草稿。" : STEP_COPY[state.step].helper;
-  const liveUnavailable = source === "unavailable";
-
   return (
       <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
       <header className="flex min-h-[72px] shrink-0 items-center justify-between gap-4 border-b border-border px-5">
@@ -347,32 +574,32 @@ export function AgentCreateWorkspace() {
         <div className="flex items-center gap-2">{state.lifecycle !== "before-draft" && state.step !== "complete" ? <button type="button" onClick={exit} className="button-secondary"><FloppyDisk size={17} />保存并退出</button> : <button type="button" onClick={exit} className="button-secondary">退出</button>}</div>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[210px_minmax(0,1fr)_310px]">
+      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[210px_minmax(0,1fr)]">
         <ProgressRail state={state} onStep={(step) => dispatch({ type: "go-to-step", step })} />
         <main className="flex min-h-0 min-w-0 flex-col bg-white px-6 py-5">
-          <div className="shrink-0"><h2 className="text-xl font-bold">{title}</h2><p className="mt-1 text-sm text-text-muted">{helper}</p></div>
-          {liveUnavailable && state.step === "basic" ? <div className="mt-4 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"><WarningCircle size={20} className="mt-0.5 shrink-0" /><div><strong>基础生成与创建草稿接口待接入</strong><p className="mt-1 leading-6">当前不会先创建空 Agent，也不会用本地内容冒充生成成功。接口接入后即可启用完整向导。</p></div></div> : null}
+          <div className="mx-auto w-full max-w-[1320px] shrink-0"><h2 className="text-xl font-bold">{title}</h2><p className="mt-1 text-sm text-text-muted">{helper}</p></div>
+          {busy === "basic" ? <div role="status" className="mt-4 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-800"><CircleNotch size={17} className="mr-2 inline animate-spin" />正在生成基础设定，成功后将建立创建中草稿…</div> : null}
           {state.error ? <div role="alert" className="mt-4 rounded-lg border border-danger/20 bg-red-50 px-4 py-3 text-sm text-danger">{state.error}</div> : null}
-          <div className="mt-5 flex min-h-0 flex-1 flex-col">
-            {state.step === "basic" && !state.basicCandidate ? <BasicInputStep state={state} dispatch={dispatch} errors={submitted ? validation : {}} /> : null}
-            {state.step === "basic" && state.basicCandidate ? <GeneratedBasicReview state={state} dispatch={dispatch} /> : null}
-            {state.step === "avatar" ? <AvatarStep state={state} dispatch={dispatch} onGenerate={() => void generateAvatars()} generating={busy === "avatar"} fileInput={fileInput} /> : null}
-            {state.step === "character-sheet" ? <CharacterSheetStep state={state} onGenerate={() => void generateSheet()} generating={busy === "sheet"} /> : null}
-            {state.step === "skills" ? <SkillsStep state={state} dispatch={dispatch} skills={skills} loading={skillsQuery.isLoading} /> : null}
-            {state.step === "complete" ? <CompleteStep state={state} skills={skills} /> : null}
+          <div className="mx-auto mt-5 flex min-h-0 w-full max-w-[1320px] flex-1 flex-col">
+            {restoring ? <div className="grid h-full place-items-center text-sm text-text-muted"><span><CircleNotch size={20} className="mr-2 inline animate-spin" />正在恢复创建进度…</span></div> : null}
+            {!restoring && state.step === "basic" && !state.basicCandidate ? <BasicInputStep state={state} dispatch={dispatch} errors={submitted ? validation : {}} /> : null}
+            {!restoring && state.step === "basic" && state.basicCandidate ? <GeneratedBasicReview state={state} dispatch={dispatch} /> : null}
+            {!restoring && state.step === "avatar" ? <AvatarStep state={state} dispatch={dispatch} onGenerate={() => void generateAvatars()} generating={busy === "avatar"} fileInput={fileInput} /> : null}
+            {!restoring && state.step === "character-sheet" ? <CharacterSheetStep state={state} onGenerate={() => void generateSheet()} generating={busy === "sheet"} /> : null}
+            {!restoring && state.step === "skills" ? <SkillsStep state={state} dispatch={dispatch} skills={skills} loading={skillsQuery.isLoading} /> : null}
+            {!restoring && state.step === "complete" ? <CompleteStep state={state} skills={skills} /> : null}
           </div>
 
-          <footer className="mt-4 flex min-h-12 shrink-0 items-center justify-between border-t border-border pt-4">
+          <footer className="mx-auto mt-4 flex min-h-12 w-full max-w-[1320px] shrink-0 items-center justify-between border-t border-border pt-4">
             {state.step !== "basic" && state.step !== "complete" ? <button type="button" onClick={() => { const currentStep = state.step as Exclude<CreateStep, "complete">; const index = STEP_ORDER.indexOf(currentStep); dispatch({ type: "go-to-step", step: STEP_ORDER[Math.max(0, index - 1)] }); }} className="button-secondary"><ArrowLeft size={17} />返回</button> : <span />}
-            {state.step === "basic" && !state.basicCandidate ? <button type="button" disabled={busy === "basic" || liveUnavailable} onClick={() => void generateBasic()} className="button-primary"><MagicWand size={17} />{busy === "basic" ? "正在生成…" : "生成基础设定"}</button> : null}
-            {state.step === "basic" && state.basicCandidate ? <div className="flex gap-2"><button type="button" onClick={() => void generateBasic()} disabled={busy === "basic" || liveUnavailable} className="button-secondary">重新生成</button><button type="button" onClick={() => dispatch({ type: "confirm-basic" })} className="button-primary">确认并创建头像<ArrowRight size={17} /></button></div> : null}
-            {state.step === "avatar" ? <button type="button" disabled={!state.selectedAvatarId} onClick={() => dispatch({ type: "confirm-avatar" })} className="button-primary">使用此头像，继续<ArrowRight size={17} /></button> : null}
-            {state.step === "character-sheet" ? <button type="button" disabled={!state.sheetCandidate} onClick={() => dispatch({ type: "confirm-sheet" })} className="button-primary">使用此设定稿，继续<ArrowRight size={17} /></button> : null}
-            {state.step === "skills" ? <div className="flex gap-2"><button type="button" onClick={() => dispatch({ type: "complete" })} className="button-secondary">跳过</button><button type="button" onClick={() => dispatch({ type: "complete" })} className="button-primary">完成创建<Check size={17} /></button></div> : null}
+            {state.step === "basic" && !state.basicCandidate ? <button type="button" disabled={busy === "basic"} onClick={() => void generateBasic()} className="button-primary"><MagicWand size={17} />{busy === "basic" ? "正在生成…" : "生成基础设定"}</button> : null}
+            {state.step === "basic" && state.basicCandidate ? <div className="flex gap-2"><button type="button" onClick={() => void generateBasic()} disabled={Boolean(busy)} className="button-secondary">重新生成</button><button type="button" onClick={() => void confirmBasic()} disabled={Boolean(busy)} className="button-primary">{busy === "confirm-basic" ? "正在保存…" : "确认并创建头像"}<ArrowRight size={17} /></button></div> : null}
+            {state.step === "avatar" ? <button type="button" disabled={!state.selectedAvatarId || Boolean(busy)} onClick={() => void confirmAvatar()} className="button-primary">{busy === "confirm-avatar" ? "正在保存…" : "使用此头像，继续"}<ArrowRight size={17} /></button> : null}
+            {state.step === "character-sheet" ? <button type="button" disabled={!state.sheetCandidate || Boolean(busy)} onClick={() => void confirmSheet()} className="button-primary">{busy === "confirm-sheet" ? "正在保存…" : "使用此设定稿，继续"}<ArrowRight size={17} /></button> : null}
+            {state.step === "skills" ? <div className="flex gap-2"><button type="button" disabled={Boolean(busy)} onClick={() => void completeCreation(true)} className="button-secondary">跳过</button><button type="button" disabled={Boolean(busy)} onClick={() => void completeCreation(false)} className="button-primary">{busy === "skills" ? "正在保存…" : "完成创建"}<Check size={17} /></button></div> : null}
             {state.step === "complete" ? <div className="ml-auto flex gap-2"><button type="button" onClick={() => state.agentId && router.push(`/assets/${state.agentId}/test`)} className="button-secondary">测试 Agent</button><button type="button" onClick={() => state.agentId && router.push(`/assets/${state.agentId}/build`)} className="button-primary">进入专业配置<ArrowRight size={17} /></button></div> : null}
           </footer>
         </main>
-        <CreatePreview state={state} skills={skills} />
       </div>
     </div>
   );

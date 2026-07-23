@@ -2,7 +2,7 @@
 
 ### Requirement: Four-step full-page creation workspace
 
-AgentHub SHALL create Agents through a full-page four-step wizard ordered as Basic Setup, Create Avatar, Character Sheet, and Configure Skills. The desktop workspace SHALL retain the normal labeled workspace navigation and SHALL fit the main creation interaction without a browser-page vertical scrollbar.
+AgentHub SHALL create Agents through a full-page four-step wizard ordered as Basic Setup, Create Avatar, Character Sheet, and Configure Skills. The desktop workspace SHALL retain workspace navigation as a compact icon rail and SHALL fit the main creation interaction without a browser-page vertical scrollbar. The creation preview SHALL remain hidden until the product flow explicitly enables it.
 
 #### Scenario: Start creating an Agent
 - **WHEN** the creator activates a new-Agent action from the Asset Library or Workbench
@@ -12,7 +12,8 @@ AgentHub SHALL create Agents through a full-page four-step wizard ordered as Bas
 
 #### Scenario: Keep the main interaction in one viewport
 - **WHEN** the wizard is shown at the approved desktop viewport
-- **THEN** progress, the active task, preview, and bottom actions remain visible without browser-page vertical scrolling
+- **THEN** progress, the active task, and bottom actions remain visible without browser-page vertical scrolling
+- **AND** the creation preview is not displayed
 - **AND** only bounded editors or lists may scroll internally
 
 ### Requirement: Generate basic setup before establishing a draft
@@ -31,7 +32,7 @@ Before generation, the wizard SHALL collect only Agent name, role identity, user
 
 ### Requirement: Confirm candidates before replacing draft content
 
-Generated basic content, avatar images, and character sheets SHALL remain candidates until explicit confirmation. Regeneration MUST NOT overwrite confirmed content.
+Generated basic content, the single avatar preview, and character sheets SHALL remain candidates until explicit confirmation. Regeneration MUST NOT overwrite confirmed content.
 
 #### Scenario: Regenerate confirmed content
 - **WHEN** the creator requests a new result after a previous result was confirmed
@@ -54,6 +55,14 @@ The wizard SHALL require a confirmed avatar and a confirmed character sheet. Con
 #### Scenario: Skip skills
 - **WHEN** the creator activates Skip in Configure Skills
 - **THEN** AgentHub preserves an empty skill selection and completes creation
+
+#### Scenario: Review a generated character sheet
+- **WHEN** character-sheet generation succeeds
+- **THEN** AgentHub displays the image sheet and its generated textual specification together
+- **AND** the image sheet is displayed proportionally without cropping
+- **AND** activating View Large Image opens an in-product modal preview without navigating to or downloading the source asset
+- **AND** the textual specification remains readable in a bounded scrollable area
+- **AND** confirming the candidate saves both outputs without changing the creation flow
 
 ### Requirement: Select skills from the Workspace resource catalog
 

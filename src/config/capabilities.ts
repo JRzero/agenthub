@@ -28,7 +28,7 @@ const liveCapabilities: Record<CapabilityId, CapabilitySource> = {
   auth: "live",
   workspaces: "live",
   agentAssets: "live",
-  guidedAgentCreation: "unavailable",
+  guidedAgentCreation: "live",
   assetCompleteness: "derived",
   clientAdapters: "live",
   versionHistory: "live",

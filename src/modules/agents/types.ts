@@ -5,6 +5,7 @@ export interface ExampleMessage {
 
 export interface AgentConfig {
   system_prompt?: string;
+  opening_message?: string;
   temperature?: number;
   examples?: ExampleMessage[];
   skills?: string[];
@@ -12,6 +13,12 @@ export interface AgentConfig {
     avatar?: string;
     character_design_spec?: string;
     character_design_sheet?: string;
+    guided_creation_input?: {
+      role_identity?: string;
+      user_relationship?: string;
+      primary_interactions?: string;
+      personality_tags?: string[];
+    };
   };
   show_reasoning?: boolean;
   show_tools?: boolean;
@@ -23,6 +30,7 @@ export interface Agent {
   code: string;
   name: string;
   description: string;
+  tagline?: string;
   model: string;
   status: string;
   agent_type: "cloud" | "edge";
@@ -36,6 +44,8 @@ export interface Agent {
   current_version_id?: number | null;
   draft_base_version_id?: number | null;
   draft_revision?: number;
+  creation_step?: "avatar" | "character_sheet" | "skills" | "complete";
+  creation_completed?: boolean;
   draft_content_hash?: string;
   published_at?: string | null;
   system_prompt?: string;

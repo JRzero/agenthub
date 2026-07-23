@@ -15,6 +15,11 @@ function versionLabel(version: number | undefined, currentVersionId: number | nu
   return `v${version}`;
 }
 
+function creationStatusLabel(creationStep: string | undefined): string {
+  const step = creationStep === "avatar" ? 2 : creationStep === "character_sheet" ? 3 : creationStep === "skills" ? 4 : 1;
+  return `创建中 · 第 ${step}/4 步`;
+}
+
 export default function AssetLibraryPage() {
   const query = useAgents();
   const router = useRouter();
@@ -68,10 +73,10 @@ export default function AssetLibraryPage() {
         ) : (
           <div className="divide-y divide-border">
             {agents.map((agent) => (
-              <Link key={agent.id} href={`/assets/${agent.id}/overview`} className="grid min-h-[86px] grid-cols-[minmax(0,1.5fr)_100px_110px_minmax(140px,0.7fr)_24px] items-center gap-4 px-5 transition hover:bg-subtle">
+              <Link key={agent.id} href={agent.creation_completed === false ? `/assets/create?agentId=${agent.id}` : `/assets/${agent.id}/overview`} className="grid min-h-[86px] grid-cols-[minmax(0,1.5fr)_100px_110px_minmax(140px,0.7fr)_24px] items-center gap-4 px-5 transition hover:bg-subtle">
                 <span className="flex min-w-0 items-center gap-3"><AgentAvatar agent={agent} size={48} /><span className="min-w-0"><strong className="block truncate text-sm font-semibold">{agent.name}</strong><span className="mt-1 block truncate text-xs text-text-muted">{agent.description || agent.code}</span></span></span>
                 <span className="text-sm text-text-muted">{versionLabel(agent.version, agent.current_version_id)}</span>
-                <span><span className={`status-badge ${agent.status === "active" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{agent.status === "active" ? "已发布" : agent.status === "archived" ? "已归档" : "草稿"}</span></span>
+                <span><span className={`status-badge ${agent.status === "active" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{agent.creation_completed === false ? creationStatusLabel(agent.creation_step) : agent.status === "active" ? "已发布" : agent.status === "archived" ? "已归档" : "草稿"}</span></span>
                 <span className="truncate text-sm text-text-muted">{agent.llm_model_name || agent.model || "-"}</span>
                 <CaretRight size={18} className="text-text-muted" />
               </Link>

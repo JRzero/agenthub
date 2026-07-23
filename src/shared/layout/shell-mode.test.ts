@@ -24,6 +24,7 @@ describe("isAgentAssetWorkspacePath", () => {
 
 describe("shouldCollapseWorkspaceSidebar", () => {
   it.each([
+    "/assets/create",
     "/assets/32/overview",
     "/assets/32/build",
     "/operations",
@@ -72,11 +73,11 @@ describe("resolveWorkspaceShellLayout", () => {
     });
   });
 
-  it("keeps the creation wizard in the workspace shell", () => {
+  it("keeps the creation wizard in the workspace shell with compact navigation", () => {
     expect(resolveWorkspaceShellLayout("/assets/create")).toEqual({
       agentAssetMode: false,
-      sidebarCollapsed: false,
-      mainDesktopPaddingClass: "lg:pl-[224px]",
+      sidebarCollapsed: true,
+      mainDesktopPaddingClass: "lg:pl-[88px]",
       mainTopPaddingClass: "pt-[60px]",
     });
   });

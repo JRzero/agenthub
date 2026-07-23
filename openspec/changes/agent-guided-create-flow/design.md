@@ -1,6 +1,6 @@
 ## Context
 
-The approved product plan and six guided-wizard references define one desktop creation workspace inside the normal AgentHub workspace shell. The existing frontend has a direct creation modal, a revision-aware generic Agent draft update, single-candidate Motherland media generation, avatar upload, character-design confirmation, and Workspace skill catalog queries. It does not have a persisted creation workflow or a pre-Agent generation contract.
+The approved product plan and six guided-wizard references define one desktop creation workspace inside the normal AgentHub workspace shell. The backend now provides atomic basic-profile generation, persisted creation progress, completion validation, single-candidate Motherland media generation, avatar upload, character-design confirmation, and Workspace skill APIs.
 
 ## Goals / Non-Goals
 
@@ -23,7 +23,9 @@ The approved product plan and six guided-wizard references define one desktop cr
 
 ### 1. Use one dedicated creation route and module
 
-`/assets/create` hosts the wizard. It keeps the full labeled workspace navigation, unlike an existing Agent lifecycle route, while using a fixed viewport budget so the browser page does not scroll. The progress rail, task surface, preview, and bottom actions remain mounted while the active step changes.
+`/assets/create` hosts the wizard. It keeps workspace navigation available as the compact icon rail, matching the space-saving behavior of Agent lifecycle routes, while using a fixed viewport budget so the browser page does not scroll. The progress rail, task surface, and bottom actions remain mounted while the active step changes. The creation preview is temporarily hidden so the task surface can use the available width.
+
+The active task surface uses a bounded desktop content width instead of stretching forms and media across the full remaining viewport. Character-sheet review uses a balanced image/text split; the image is contained without cropping, while long textual specifications scroll only inside their bounded panel.
 
 ### 2. Model the flow as a reducer with confirmed and candidate values
 
@@ -51,9 +53,9 @@ The UI may ship structural states behind shared capability declarations while a 
 
 ## Risks / Trade-offs
 
-- [Atomic generation and create contract is missing] -> Keep generation submission unavailable in Live until the backend contract is declared; do not create an empty Agent first.
-- [Specialized writes do not consistently return draft revisions] -> Do not claim autosave completion for those writes until revision-aware contracts are available.
-- [Current avatar endpoint returns one candidate] -> Reuse it only if the backend declares safe batch behavior; otherwise keep four-candidate generation unavailable.
+- [Basic generation request is not declared idempotent] -> Disable duplicate submission while a request is active and retain the entered form on failure; do not automatically replay an ambiguous timed-out request.
+- [Specialized media writes may not advance draft revision] -> Refresh `/creation-progress` before completion and use its latest revision.
+- [Current avatar endpoint returns one candidate] -> Render exactly one transient preview and call the endpoint again for regeneration; never batch calls to imitate multiple candidates.
 - [Media library is unavailable in Live] -> Keep the asset-selection action explicitly unavailable while upload and supported generation remain real.
 - [Existing Agent list assumes a version] -> Add explicit creating/unpublished rendering and remove v1 fallback for creation records.
 

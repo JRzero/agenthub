@@ -26,7 +26,9 @@ export interface BasicRoleContent {
 export interface ImageCandidate {
   id: string;
   url: string;
+  sourceUrl?: string;
   alt: string;
+  specText?: string;
 }
 
 export interface CreateAgentState {

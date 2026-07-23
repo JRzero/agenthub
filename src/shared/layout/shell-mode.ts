@@ -3,7 +3,10 @@ export function isAgentAssetWorkspacePath(pathname: string): boolean {
 }
 
 export function shouldCollapseWorkspaceSidebar(pathname: string): boolean {
-  return isAgentAssetWorkspacePath(pathname) || pathname === "/operations" || pathname.startsWith("/operations/");
+  return pathname === "/assets/create"
+    || isAgentAssetWorkspacePath(pathname)
+    || pathname === "/operations"
+    || pathname.startsWith("/operations/");
 }
 
 export type WorkspaceShellLayout = {
