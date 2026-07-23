@@ -16,7 +16,7 @@ describe("isAgentAssetWorkspacePath", () => {
     expect(isAgentAssetWorkspacePath(pathname)).toBe(true);
   });
 
-  it.each(["/assets", "/resources", "/operations"])(
+  it.each(["/assets", "/assets/create", "/resources", "/operations"])(
     "does not treat %s as an Agent asset workspace",
     (pathname) => expect(isAgentAssetWorkspacePath(pathname)).toBe(false),
   );
@@ -65,6 +65,15 @@ describe("resolveWorkspaceShellLayout", () => {
 
   it("keeps workspace routes labeled", () => {
     expect(resolveWorkspaceShellLayout("/assets")).toEqual({
+      agentAssetMode: false,
+      sidebarCollapsed: false,
+      mainDesktopPaddingClass: "lg:pl-[224px]",
+      mainTopPaddingClass: "pt-[60px]",
+    });
+  });
+
+  it("keeps the creation wizard in the workspace shell", () => {
+    expect(resolveWorkspaceShellLayout("/assets/create")).toEqual({
       agentAssetMode: false,
       sidebarCollapsed: false,
       mainDesktopPaddingClass: "lg:pl-[224px]",

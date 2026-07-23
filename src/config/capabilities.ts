@@ -4,6 +4,7 @@ export type CapabilityId =
   | "auth"
   | "workspaces"
   | "agentAssets"
+  | "guidedAgentCreation"
   | "assetCompleteness"
   | "clientAdapters"
   | "versionHistory"
@@ -27,6 +28,7 @@ const liveCapabilities: Record<CapabilityId, CapabilitySource> = {
   auth: "live",
   workspaces: "live",
   agentAssets: "live",
+  guidedAgentCreation: "unavailable",
   assetCompleteness: "derived",
   clientAdapters: "live",
   versionHistory: "live",
@@ -43,6 +45,7 @@ const liveCapabilities: Record<CapabilityId, CapabilitySource> = {
 
 const demoCapabilities: Record<CapabilityId, CapabilitySource> = {
   ...liveCapabilities,
+  guidedAgentCreation: "demo",
   clientAdapters: "demo",
   versionHistory: "demo",
   avatarUpload: "demo",

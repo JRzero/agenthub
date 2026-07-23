@@ -1,20 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
 import { ArrowRight, Clock, Plus, Warning } from "@phosphor-icons/react";
 import { DATA_MODE } from "@/config/capabilities";
 import { useAgents } from "@/modules/agents/queries";
-import type { Agent } from "@/modules/agents/types";
 import { AgentAvatar } from "@/modules/agents/agent-avatar";
-import { useAuth } from "@/modules/auth/auth-provider";
-import { useWorkspace } from "@/modules/workspace/workspace-provider";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 import { SourceBadge } from "@/shared/ui/source-badge";
-import { createAgent, type CreateAgentInput } from "./api";
-import { CreateAgentDialog } from "./create-agent-dialog";
 import { deriveWorkbenchTasks, readiness } from "./model";
 
 const demoMetrics = [
@@ -25,14 +19,8 @@ const demoMetrics = [
 
 export function Workbench() {
   const query = useAgents();
-  const { session } = useAuth();
-  const { workspaceCode } = useWorkspace();
-  const queryClient = useQueryClient();
   const router = useRouter();
   const demo = DATA_MODE === "demo";
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [createError, setCreateError] = useState("");
   const agents = useMemo(() => query.data || [], [query.data]);
   const focusAgent = agents.find((agent) => agent.status !== "active") || agents[0];
   const tasks = useMemo(() => deriveWorkbenchTasks(agents), [agents]);
@@ -40,32 +28,11 @@ export function Workbench() {
   if (query.isLoading) return <LoadingState label="正在加载工作台…" />;
   if (query.isError) return <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />;
 
-  async function submitCreate(input: CreateAgentInput) {
-    if (!session?.apiKey) return;
-    setSaving(true); setCreateError("");
-    try {
-      let created: Agent;
-      if (demo) {
-        created = { id: Math.max(0, ...agents.map((agent) => agent.id)) + 1, uuid: `demo-${Date.now()}`, code: input.code, name: input.name, description: input.description, model: input.model, status: "draft", agent_type: "cloud", edge_status: "online", memory_enabled: false, version: 1, system_prompt: "你是一个有帮助的助手。", config: {} };
-      } else {
-        created = await createAgent(session.apiKey, workspaceCode, input);
-      }
-      queryClient.setQueryData<Agent[]>(["agents", workspaceCode, demo], (current) => [created, ...(current || [])]);
-      queryClient.setQueryData(["agent", created.id, workspaceCode, demo], created);
-      setDialogOpen(false);
-      router.push(`/assets/${created.id}/build`);
-    } catch (error) {
-      setCreateError(error instanceof Error ? error.message : "创建 Agent 失败");
-    } finally {
-      setSaving(false);
-    }
-  }
-
   return (
     <div className="space-y-7">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-baseline gap-4"><h1 className="text-3xl font-bold tracking-tight">工作台</h1><span className="text-sm text-text-muted">{new Date().toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" })}</span></div>
-        <button type="button" onClick={() => setDialogOpen(true)} className="button-primary"><Plus size={18} weight="bold" />新建 Agent</button>
+        <button type="button" onClick={() => router.push("/assets/create")} className="button-primary"><Plus size={18} weight="bold" />新建 Agent</button>
       </div>
 
       {focusAgent ? (
@@ -79,7 +46,7 @@ export function Workbench() {
           </div>
         </section>
       ) : (
-        <section className="panel px-6 py-12 text-center"><h2 className="font-semibold">从第一个 Agent Asset 开始</h2><p className="mt-2 text-sm text-text-muted">创建基础身份后即可进入构建、测试和发行流程。</p><button type="button" onClick={() => setDialogOpen(true)} className="button-primary mt-4"><Plus size={17} />新建 Agent</button></section>
+        <section className="panel px-6 py-12 text-center"><h2 className="font-semibold">从第一个 Agent Asset 开始</h2><p className="mt-2 text-sm text-text-muted">通过四步向导完成基础设定、头像、角色设定稿和技能。</p><button type="button" onClick={() => router.push("/assets/create")} className="button-primary mt-4"><Plus size={17} />新建 Agent</button></section>
       )}
 
       <div className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_minmax(360px,0.85fr)]">
@@ -90,9 +57,6 @@ export function Workbench() {
 
         <section className="border-t border-border pt-5 xl:border-l xl:border-t-0 xl:pl-7 xl:pt-0"><div className="flex items-center justify-between"><h2 className="text-lg font-semibold">今日表现</h2><SourceBadge source={demo ? "demo" : "unavailable"} /></div>{demo ? <><div className="mt-5 grid grid-cols-3 divide-x divide-border">{demoMetrics.map((metric) => <div key={metric.label} className="px-3 first:pl-0"><p className="text-xs text-text-muted">{metric.label}</p><strong className="mt-2 block text-2xl font-medium">{metric.value}</strong><span className="mt-1 block text-xs text-success">较昨日 {metric.change}</span></div>)}</div><div className="mt-7 space-y-4">{[["OyiiOyii App",86,"bg-indigo-500"],["网页聊天",64,"bg-emerald-500"],["API 接入",38,"bg-orange-500"]].map(([label,value,color]) => <div key={String(label)}><div className="flex justify-between text-xs text-text-muted"><span>{label}</span><span>{value}%</span></div><span className="mt-2 block h-2 rounded-full bg-slate-200"><span className={`block h-full rounded-full ${color}`} style={{ width: `${value}%` }} /></span></div>)}</div></> : <div className="mt-5 rounded-lg border border-dashed border-border px-5 py-10 text-center"><p className="font-medium">分析接口尚未接入</p><p className="mt-2 text-sm leading-6 text-text-muted">工作台只展示真实 Agent 与派生待办，不会将设计稿指标冒充线上数据。</p></div>}</section>
       </div>
-
-      <CreateAgentDialog open={dialogOpen} saving={saving} error={createError} onClose={() => setDialogOpen(false)} onSubmit={(input) => void submitCreate(input)} />
     </div>
   );
 }
-

@@ -1,5 +1,5 @@
 export function isAgentAssetWorkspacePath(pathname: string): boolean {
-  return /^\/assets\/[^/]+(?:\/|$)/.test(pathname);
+  return pathname !== "/assets/create" && /^\/assets\/[^/]+(?:\/|$)/.test(pathname);
 }
 
 export function shouldCollapseWorkspaceSidebar(pathname: string): boolean {

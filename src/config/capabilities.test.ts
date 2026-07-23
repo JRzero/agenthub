@@ -12,6 +12,8 @@ describe("capability registry", () => {
     expect(capabilitySource("revenue")).toBe("unavailable");
     expect(capabilitySource("avatarUpload")).toBe("live");
     expect(capabilitySource("mediaAssetLibrary")).toBe("unavailable");
+    expect(capabilitySource("guidedAgentCreation")).toBe("unavailable");
+    expect(capabilitySource("guidedAgentCreation", "demo")).toBe("demo");
     expect(capabilitySource("comicDrafts", "demo")).toBe("demo");
   });
 });
