@@ -1,6 +1,6 @@
 import type { Agent, ExampleMessage } from "@/modules/agents/types";
 
-export type BuildSectionId = "identity" | "persona" | "runtime" | "skills" | "knowledge" | "memory" | "media" | "moments" | "safety";
+export type BuildSectionId = "identity" | "persona" | "runtime" | "skills" | "knowledge" | "memory" | "media" | "safety";
 export type BuildLifecycleDestination = "test" | "versions";
 
 export type BuildNavigationItem =

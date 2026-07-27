@@ -5,7 +5,6 @@ import {
   ExamplesEditor,
 } from "./build-fields";
 import { MediaAssetsPanel } from "./media-assets-panel";
-import { MomentsPanel } from "./moments-panel";
 import { BUILD_SECTION_LABELS } from "./professional-navigation";
 import { RuntimeCapabilitiesPanel } from "./runtime-capabilities-panel";
 import { StagedSkillsPanel } from "./staged-skills-panel";
@@ -56,7 +55,7 @@ export function BuildEditorPanel({
   onPatch,
   onAgentUpdated,
 }: BuildEditorPanelProps) {
-  const special = section === "media" || section === "moments";
+  const special = section === "media";
 
   return (
     <section className="scrollbar-hidden min-h-0 min-w-0 bg-surface lg:h-full lg:overflow-y-auto lg:overscroll-contain">
@@ -73,10 +72,6 @@ export function BuildEditorPanel({
             draft={draft}
             onAgentUpdated={onAgentUpdated}
           />
-        )}
-
-        {section === "moments" && (
-          <MomentsPanel agentId={agent.id} agentName={agent.name} />
         )}
 
         {!special && (

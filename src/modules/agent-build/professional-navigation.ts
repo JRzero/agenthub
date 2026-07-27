@@ -27,7 +27,6 @@ export const PROFESSIONAL_BUILD_GROUPS: BuildNavigationGroup[] = [
       { kind: "editor", id: "knowledge", label: "知识" },
       { kind: "editor", id: "memory", label: "记忆策略" },
       { kind: "editor", id: "media", label: "媒体资产" },
-      { kind: "editor", id: "moments", label: "朋友圈" },
     ],
   },
   {
@@ -46,6 +45,30 @@ export const BUILD_SECTION_LABELS = Object.fromEntries(
     .filter((item): item is Extract<BuildNavigationItem, { kind: "editor" }> => item.kind === "editor")
     .map((item) => [item.id, item.label]),
 ) as Record<BuildSectionId, string>;
+
+const BUILD_SECTION_IDS = PROFESSIONAL_BUILD_GROUPS.flatMap((group) =>
+  group.items
+    .filter(
+      (item): item is Extract<BuildNavigationItem, { kind: "editor" }> =>
+        item.kind === "editor",
+    )
+    .map((item) => item.id),
+);
+
+export function resolveRequestedBuildSection(value: string | null): {
+  section: BuildSectionId | null;
+  momentsMigrated: boolean;
+} {
+  if (value === "moments") {
+    return { section: "media", momentsMigrated: true };
+  }
+  return {
+    section: BUILD_SECTION_IDS.includes(value as BuildSectionId)
+      ? (value as BuildSectionId)
+      : null,
+    momentsMigrated: false,
+  };
+}
 
 export function getBuildLifecyclePath(
   agentId: number,

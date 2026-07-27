@@ -61,6 +61,22 @@ export interface AgentClientList {
   clients: AgentClient[];
 }
 
+export interface CreateAgentClientInput {
+  client_key: string;
+  client_type: string;
+  name: string;
+  config?: Record<string, unknown> | null;
+  capability_manifest?: AgentClient["capability_manifest"];
+}
+
+export interface UpdateAgentClientInput {
+  expected_capability_hash: string;
+  name?: string;
+  status?: AgentClient["status"];
+  config?: Record<string, unknown> | null;
+  capability_manifest?: AgentClient["capability_manifest"];
+}
+
 export interface AgentClientRuntimeVersion {
   version: AgentVersion;
   client_config: Record<string, unknown> | null;

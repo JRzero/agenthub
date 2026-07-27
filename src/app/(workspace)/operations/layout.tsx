@@ -1,5 +1,9 @@
-import { OperationsWorkspace } from "@/modules/operations/operations-workspace";
+import type { ReactNode } from "react";
 
-export default function OperationsRouteLayout() {
-  return <OperationsWorkspace />;
+export default function OperationsRouteLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return children;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
   ArrowRight,
@@ -178,13 +179,21 @@ export function DistributionWorkspace() {
 
   return (
     <section className="space-y-4 pb-5">
-      <header>
+      <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold tracking-tight">Client 运行</h1>
           <p className="mt-1 text-sm text-text-muted">
             管理 Client 关联、同步状态与本地运行包
           </p>
         </div>
+        <Link
+          href={`/operations?module=moments&agentId=${agentId}`}
+          className="button-secondary min-h-9 px-3"
+        >
+          <ChatCircle size={17} />
+          管理朋友圈
+          <ArrowRight size={15} />
+        </Link>
       </header>
 
       {message && (

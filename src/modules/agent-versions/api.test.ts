@@ -1,14 +1,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { apiRequest } from "@/shared/api/http-client";
 import {
+  createAgentClient,
   createAgentExport,
   createAgentClientExport,
   createDraftFromVersion,
+  disableAgentClient,
   downloadAgentExport,
+  enableAgentClient,
   getAgentVersion,
   listAgentClients,
   listAgentVersions,
   publishAgentVersion,
+  updateAgentClient,
 } from "./api";
 
 vi.mock("@/shared/api/http-client", async (importOriginal) => ({
@@ -97,6 +101,58 @@ describe("Agent version API contracts", () => {
       "/agent-clients/7/exports",
       expect.objectContaining({ method: "POST" }),
     );
+  });
+
+  it("creates, updates, disables and re-enables AgentClient records", async () => {
+    const client = {
+      id: 51,
+      capability_hash: "cap-old",
+    } as import("./types").AgentClient;
+    vi.mocked(apiRequest).mockResolvedValue(client as never);
+
+    await createAgentClient(auth, 12, {
+      client_key: "web-primary",
+      client_type: "web_chat",
+      name: "官网聊天",
+      config: { theme: "light" },
+    });
+    await updateAgentClient(auth, 51, {
+      expected_capability_hash: "cap-old",
+      name: "官网聊天 v2",
+    });
+    await disableAgentClient(auth, 51);
+    await enableAgentClient(auth, client);
+
+    expect(apiRequest).toHaveBeenNthCalledWith(1, "/agents/12/clients", {
+      ...auth,
+      method: "POST",
+      body: JSON.stringify({
+        client_key: "web-primary",
+        client_type: "web_chat",
+        name: "官网聊天",
+        config: { theme: "light" },
+      }),
+    });
+    expect(apiRequest).toHaveBeenNthCalledWith(2, "/agent-clients/51", {
+      ...auth,
+      method: "PATCH",
+      body: JSON.stringify({
+        expected_capability_hash: "cap-old",
+        name: "官网聊天 v2",
+      }),
+    });
+    expect(apiRequest).toHaveBeenNthCalledWith(3, "/agent-clients/51", {
+      ...auth,
+      method: "DELETE",
+    });
+    expect(apiRequest).toHaveBeenNthCalledWith(4, "/agent-clients/51", {
+      ...auth,
+      method: "PATCH",
+      body: JSON.stringify({
+        expected_capability_hash: "cap-old",
+        status: "enabled",
+      }),
+    });
   });
 
   it("downloads the generated export as ZIP bytes", async () => {

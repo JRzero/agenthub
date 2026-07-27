@@ -5,13 +5,16 @@ import {
 } from "@/shared/api/http-client";
 import type {
   AgentClientExport,
+  AgentClient,
   AgentClientList,
   AgentClientRuntimeVersion,
   AgentVersion,
   AgentVersionList,
+  CreateAgentClientInput,
   CreateDraftFromVersionInput,
   PublishAgentVersionInput,
   PublishAgentVersionResult,
+  UpdateAgentClientInput,
 } from "./types";
 
 type Auth = { apiKey: string; workspaceCode: string };
@@ -59,6 +62,47 @@ export function createDraftFromVersion(
 
 export function listAgentClients(auth: Auth, agentId: number) {
   return apiRequest<AgentClientList>(`/agents/${agentId}/clients`, auth);
+}
+
+export function createAgentClient(
+  auth: Auth,
+  agentId: number,
+  input: CreateAgentClientInput,
+) {
+  return apiRequest<AgentClient>(`/agents/${agentId}/clients`, {
+    ...auth,
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export function updateAgentClient(
+  auth: Auth,
+  clientId: number,
+  input: UpdateAgentClientInput,
+) {
+  return apiRequest<AgentClient>(`/agent-clients/${clientId}`, {
+    ...auth,
+    method: "PATCH",
+    body: JSON.stringify(input),
+  });
+}
+
+export function disableAgentClient(auth: Auth, clientId: number) {
+  return apiRequest<void>(`/agent-clients/${clientId}`, {
+    ...auth,
+    method: "DELETE",
+  });
+}
+
+export function enableAgentClient(
+  auth: Auth,
+  client: Pick<AgentClient, "id" | "capability_hash">,
+) {
+  return updateAgentClient(auth, client.id, {
+    expected_capability_hash: client.capability_hash,
+    status: "enabled",
+  });
 }
 
 export async function getAgentClientRuntimeVersion(auth: Auth, clientId: number): Promise<AgentClientRuntimeVersion> {

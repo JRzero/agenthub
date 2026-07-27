@@ -27,7 +27,10 @@ export function getApiBaseUrl(): string {
     process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080",
   );
   if (typeof window === "undefined") return fallback;
-  const override = window.localStorage.getItem(API_OVERRIDE_KEY);
+  const override =
+    typeof window.localStorage?.getItem === "function"
+      ? window.localStorage.getItem(API_OVERRIDE_KEY)
+      : null;
   return override?.trim() ? normalizeBaseUrl(override) : fallback;
 }
 

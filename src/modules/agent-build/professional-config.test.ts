@@ -16,6 +16,7 @@ import {
 import {
   PROFESSIONAL_BUILD_GROUPS,
   getBuildLifecyclePath,
+  resolveRequestedBuildSection,
 } from "./professional-navigation";
 import { createBuildDraft, serializeBuildDraft } from "./types";
 
@@ -61,7 +62,6 @@ describe("professional Build contracts", () => {
       "knowledge",
       "memory",
       "media",
-      "moments",
       "safety",
     ]);
     expect(
@@ -69,6 +69,17 @@ describe("professional Build contracts", () => {
     ).toEqual(["test", "versions"]);
     expect(items.map((item) => String(item.id))).not.toContain("motherland");
     expect(getBuildLifecyclePath(32, "test")).toBe("/assets/32/test");
+  });
+
+  it("safely migrates legacy Moments links to media assets", () => {
+    expect(resolveRequestedBuildSection("moments")).toEqual({
+      section: "media",
+      momentsMigrated: true,
+    });
+    expect(resolveRequestedBuildSection("unknown")).toEqual({
+      section: null,
+      momentsMigrated: false,
+    });
   });
 
   it("uses deterministic desktop widths for the collapsible preview", () => {

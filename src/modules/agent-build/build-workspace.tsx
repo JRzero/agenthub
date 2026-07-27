@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowCounterClockwise,
+  ChatCircle,
   FloppyDisk,
   PaperPlaneTilt,
   Play,
@@ -13,6 +14,7 @@ import { BuildEditorPanel } from "./build-editor-panel";
 import { resolveBuildPreviewLayout } from "./build-layout";
 import { BuildPreview } from "./build-preview";
 import { BuildSectionRail } from "./build-section-rail";
+import { resolveRequestedBuildSection } from "./professional-navigation";
 import { useBuildEditor } from "./use-build-editor";
 import type { BuildSectionId } from "./types";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
@@ -26,18 +28,20 @@ export function BuildWorkspace() {
   const editor = useBuildEditor(Number.isFinite(agentId) ? agentId : null);
   const [section, setSection] = useState<BuildSectionId>("identity");
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
+  const [momentsMigrated, setMomentsMigrated] = useState(false);
   const [actionsTarget, setActionsTarget] = useState<HTMLElement | null>(null);
   const previewLayout = resolveBuildPreviewLayout(previewCollapsed);
 
   useEffect(() => {
-    const requestedSection = searchParams.get("section");
-    if (
-      requestedSection &&
-      ["identity", "persona", "runtime", "skills", "knowledge", "memory", "media", "moments", "safety"].includes(requestedSection)
-    ) {
-      setSection(requestedSection as BuildSectionId);
+    const requested = resolveRequestedBuildSection(searchParams.get("section"));
+    if (requested.momentsMigrated) {
+      setSection(requested.section || "media");
+      setMomentsMigrated(true);
+      router.replace(`/assets/${agentId}/build?section=media`);
+      return;
     }
-  }, [searchParams]);
+    if (requested.section) setSection(requested.section);
+  }, [agentId, router, searchParams]);
 
   useEffect(() => {
     setActionsTarget(document.getElementById(BUILD_HEADER_ACTIONS_ID));
@@ -119,9 +123,24 @@ export function BuildWorkspace() {
           </div>,
           actionsTarget,
         )}
-      <div className="-mx-4 h-full min-w-0 sm:-mx-6 lg:-mx-7">
+      <div className="-mx-4 flex h-full min-w-0 flex-col sm:-mx-6 lg:-mx-7">
+        {momentsMigrated && (
+          <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-blue-700 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-200 sm:px-6">
+            <ChatCircle size={17} />
+            朋友圈已迁移至应用运营，不再影响 Agent 草稿和版本。
+            <button
+              type="button"
+              className="ml-auto font-semibold text-primary hover:underline"
+              onClick={() =>
+                router.push(`/operations?module=moments&agentId=${agentId}`)
+              }
+            >
+              前往朋友圈管理
+            </button>
+          </div>
+        )}
         <div
-          className={`grid h-full min-w-0 grid-cols-1 border-b border-border transition-[grid-template-columns] duration-200 lg:grid-cols-[184px_minmax(0,1fr)] lg:overflow-hidden ${previewLayout.gridClass}`}
+          className={`grid min-h-0 min-w-0 flex-1 grid-cols-1 border-b border-border transition-[grid-template-columns] duration-200 lg:grid-cols-[184px_minmax(0,1fr)] lg:overflow-hidden ${previewLayout.gridClass}`}
         >
           <BuildSectionRail
             agentId={agentId}

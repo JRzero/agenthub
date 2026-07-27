@@ -2,7 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { ChatCircleDots, LockKey } from "@phosphor-icons/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  ChatCircleDots,
+  DeviceMobile,
+  LockKey,
+} from "@phosphor-icons/react";
 import type { Agent } from "@/modules/agents/types";
 import { DATA_MODE } from "@/config/capabilities";
 import { useAuth } from "@/modules/auth/auth-provider";
@@ -22,18 +27,17 @@ import {
 } from "./api";
 import { ConversationPanel } from "./conversation-panel";
 import { DEMO_MESSAGES, DEMO_SHARED_SESSIONS } from "./fixtures";
-import { sessionLabel } from "./model";
+import {
+  OPERATIONS_TABS,
+  operationsModuleLabel,
+  resolveOperationsModule,
+  sessionLabel,
+  type OperationsModule,
+} from "./model";
 import { SessionInspector } from "./session-inspector";
 import { SessionList } from "./session-list";
+import { MomentsWorkspace } from "./moments/moments-workspace";
 import type { SessionMessage, SharedSessionRow, SharedUser } from "./types";
-
-const tabs = [
-  ["sessions", "会话管理"],
-  ["feedback", "用户反馈"],
-  ["memory", "记忆问题"],
-  ["campaign", "活动与渠道"],
-  ["binding", "应用端配置"],
-] as const;
 
 type ViewMode = "by-agent" | "all";
 
@@ -75,10 +79,12 @@ function usersForAgent(rows: SharedSessionRow[], agentId: number): SharedUser[] 
 }
 
 export function OperationsWorkspace() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { session } = useAuth();
   const { workspaceCode } = useWorkspace();
   const demo = DATA_MODE === "demo";
-  const [tab, setTab] = useState<(typeof tabs)[number][0]>("sessions");
+  const tab = resolveOperationsModule(searchParams.get("module"));
   const [viewMode, setViewMode] = useState<ViewMode>("by-agent");
   const [rows, setRows] = useState<SharedSessionRow[]>(demo ? DEMO_SHARED_SESSIONS : []);
   const [agents, setAgents] = useState<Agent[]>(demo ? uniqueDemoAgents(DEMO_SHARED_SESSIONS) : []);
@@ -102,7 +108,7 @@ export function OperationsWorkspace() {
   const [promptSaving, setPromptSaving] = useState(false);
 
   useEffect(() => {
-    if (demo || !session?.apiKey) return;
+    if (tab !== "sessions" || demo || !session?.apiKey) return;
     setLoading(true);
     Promise.all([listSharedSessions(session.apiKey, workspaceCode), listOperationAgents(session.apiKey, workspaceCode)])
       .then(([items, nextAgents]) => {
@@ -113,7 +119,7 @@ export function OperationsWorkspace() {
       })
       .catch((err: Error) => setError(err.message || "无法加载共享会话"))
       .finally(() => setLoading(false));
-  }, [demo, session?.apiKey, workspaceCode]);
+  }, [demo, session?.apiKey, tab, workspaceCode]);
 
   useEffect(() => {
     if (tab !== "sessions" || viewMode !== "by-agent") return;
@@ -158,11 +164,12 @@ export function OperationsWorkspace() {
   }, [agents, demo, rows, selectedAgentId, selectedUserId, session?.apiKey, sharedUsers, tab, viewMode, workspaceCode]);
 
   useEffect(() => {
-    if (viewMode !== "all") return;
+    if (tab !== "sessions" || viewMode !== "all") return;
     setSelected((current) => rows.find((row) => row.session.id === current?.session.id) || rows[0] || null);
-  }, [rows, viewMode]);
+  }, [rows, tab, viewMode]);
 
   useEffect(() => {
+    if (tab !== "sessions") return;
     if (!selected) { setMessages([]); return; }
     setSessionPrompt(selected.session.custom_prompt_patch || "");
     if (demo) { setMessages(DEMO_MESSAGES[selected.session.id] || []); setUserPrompt(""); return; }
@@ -174,7 +181,7 @@ export function OperationsWorkspace() {
     ]).then(([nextMessages, prompt]) => { setMessages(nextMessages); setUserPrompt(prompt?.prompt || ""); })
       .catch((err: Error) => setError(err.message || "无法读取会话详情"))
       .finally(() => setMessageLoading(false));
-  }, [demo, selected, session?.apiKey, workspaceCode]);
+  }, [demo, selected, session?.apiKey, tab, workspaceCode]);
 
   const counts = useMemo(() => ({ total: rows.length, review: rows.filter((row) => row.session.status === "review").length, verified: rows.filter((row) => row.session.verified).length }), [rows]);
 
@@ -224,13 +231,29 @@ export function OperationsWorkspace() {
     setSelectedUserId(row.human.id);
   }
 
+  function selectTab(next: OperationsModule) {
+    setError("");
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("module", next);
+    params.delete("view");
+    params.delete("step");
+    router.push(`/operations?${params.toString()}`);
+  }
+
   return (
     <div className="-mx-4 -mt-6 bg-surface sm:-mx-6 lg:-mx-7">
       <header className="border-b border-border px-4 pt-6 sm:px-6 lg:px-7">
-        <div className="flex items-center gap-3"><h1 className="text-2xl font-bold tracking-tight">应用运营</h1><SourceBadge source={demo ? "demo" : "live"} /></div>
-        <div className="mt-2 flex flex-wrap items-center justify-between gap-3"><nav className="flex gap-7 overflow-x-auto" aria-label="应用运营模块">{tabs.map(([id, label]) => <button key={id} type="button" onClick={() => setTab(id)} className={`whitespace-nowrap border-b-2 px-1 pb-3 text-sm font-medium ${tab === id ? "border-primary text-primary" : "border-transparent text-text-muted"}`}>{label}</button>)}</nav>{tab === "sessions" && <p className="pb-3 text-xs text-text-muted">{counts.total} 条共享 · {counts.review} 条需复核 · {counts.verified} 条已认证</p>}</div>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-2xl font-bold tracking-tight">应用运营</h1>
+          <SourceBadge source={demo ? "demo" : "live"} />
+          <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-subtle px-2.5 py-1 text-xs font-medium">
+            <DeviceMobile size={15} className="text-primary" />
+            OyiiOyii
+          </span>
+        </div>
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-3"><nav className="flex gap-7 overflow-x-auto" aria-label="应用运营模块">{OPERATIONS_TABS.map(([id, label]) => <button key={id} type="button" onClick={() => selectTab(id)} className={`whitespace-nowrap border-b-2 px-1 pb-3 text-sm font-medium ${tab === id ? "border-primary text-primary" : "border-transparent text-text-muted"}`}>{label}</button>)}</nav>{tab === "sessions" && <p className="pb-3 text-xs text-text-muted">{counts.total} 条共享 · {counts.review} 条需复核 · {counts.verified} 条已认证</p>}</div>
       </header>
-      {error && <div className="mx-4 mt-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-danger dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-200 sm:mx-6">{error}</div>}
+      {tab === "sessions" && error && <div className="mx-4 mt-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-danger dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-200 sm:mx-6">{error}</div>}
       {tab === "sessions" ? loading ? <div className="py-24 text-center text-text-muted">正在加载共享会话…</div> : <div>
         <div className="flex flex-wrap items-center gap-2 border-b border-border bg-surface px-4 py-3 sm:px-6 lg:px-7"><span className="text-xs text-text-muted">视图</span><button type="button" onClick={() => setViewMode("by-agent")} className={`rounded-md px-3 py-1.5 text-xs font-medium ${viewMode === "by-agent" ? "bg-primary text-white" : "border border-border text-text-muted hover:bg-subtle"}`}>按 Agent 查看</button><button type="button" onClick={() => setViewMode("all")} className={`rounded-md px-3 py-1.5 text-xs font-medium ${viewMode === "all" ? "bg-primary text-white" : "border border-border text-text-muted hover:bg-subtle"}`}>全部共享 H2A</button></div>
         <div className="overflow-hidden">
@@ -240,7 +263,9 @@ export function OperationsWorkspace() {
           <SessionInspector row={selected} demo={demo} sessionPrompt={sessionPrompt} userPrompt={userPrompt} saving={promptSaving} onSessionPromptChange={setSessionPrompt} onUserPromptChange={setUserPrompt} onSaveSessionPrompt={() => void savePrompt("session")} onSaveUserPrompt={() => void savePrompt("user")} />
           </div>
         </div>
-      </div> : <UnavailableOperation label={tabs.find(([id]) => id === tab)?.[1] || "运营模块"} />}
+      </div> : tab === "moments" ? <MomentsWorkspace /> : (
+        <UnavailableOperation label={operationsModuleLabel(tab)} />
+      )}
     </div>
   );
 }
@@ -266,5 +291,18 @@ function Empty({ label }: { label: string }) {
 }
 
 function UnavailableOperation({ label }: { label: string }) {
-  return <div className="flex min-h-[650px] items-center justify-center p-6"><div className="max-w-lg text-center"><span className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary-soft text-primary"><LockKey size={26} /></span><h2 className="mt-4 text-xl font-semibold">{label}</h2><p className="mt-2 text-sm leading-6 text-text-muted">旧 Creator 没有独立的工作空间级数据契约；当前保留产品入口，不把会话字段或演示样本扩张成生产事实。</p></div></div>;
+  return (
+    <div className="flex min-h-[650px] items-center justify-center p-6">
+      <div className="max-w-lg text-center">
+        <span className="mx-auto flex size-14 items-center justify-center rounded-xl bg-primary-soft text-primary">
+          <LockKey size={26} />
+        </span>
+        <span className="status-badge mt-4">规划中</span>
+        <h2 className="mt-3 text-xl font-semibold">{label}</h2>
+        <p className="mt-2 text-sm leading-6 text-text-muted">
+          该模块入口暂时保留，当前后端尚未提供稳定的数据契约。正式接入前不会请求不支持的接口，也不会使用演示数据冒充生产能力。
+        </p>
+      </div>
+    </div>
+  );
 }
