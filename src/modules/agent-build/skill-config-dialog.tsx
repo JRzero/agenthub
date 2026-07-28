@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowCounterClockwise, Info, X } from "@phosphor-icons/react";
 import type { ConfigProperty, CreatorSkill } from "@/modules/resources/types";
+import { Select } from "@/shared/ui/select";
 
 type ConfigScope = "global" | "agent";
 
@@ -146,20 +147,32 @@ export function SkillConfigDialog({ skill, agentConfig, saving, onClose, onSave 
                 const fieldClass = isLongTextField(key, property) || property.type === "object" || property.type === "array" ? "sm:col-span-2" : "";
 
                 return (
-                  <label key={key} className={`block text-sm font-medium ${fieldClass}`}>
+                  <div key={key} className={`text-sm font-medium ${fieldClass}`}>
                     <span>{label}{required && <span className="ml-1 text-danger">*</span>}</span>
                     <span className="ml-2 font-normal text-text-muted">{key}</span>
                     {property.enum?.length ? (
-                      <select value={displayValue(value)} onChange={(event) => updateField(key, event.target.value, property)} className="mt-2 w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm">
-                        <option value="">未设置{property.default !== undefined ? `（默认：${String(property.default)}）` : ""}</option>
-                        {property.enum.map((option) => <option key={option} value={option}>{property.enumLabels?.[option] || option}</option>)}
-                      </select>
+                      <Select
+                        ariaLabel={label}
+                        value={displayValue(value)}
+                        onValueChange={(nextValue) => updateField(key, nextValue, property)}
+                        options={[
+                          { value: "", label: `未设置${property.default !== undefined ? `（默认：${String(property.default)}）` : ""}` },
+                          ...property.enum.map((option) => ({ value: option, label: property.enumLabels?.[option] || option })),
+                        ]}
+                        className="mt-2 w-full"
+                      />
                     ) : property.type === "boolean" ? (
-                      <select value={value === undefined ? "" : String(value)} onChange={(event) => updateField(key, event.target.value, property)} className="mt-2 w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm">
-                        <option value="">未设置{property.default !== undefined ? `（默认：${String(property.default)}）` : ""}</option>
-                        <option value="true">开启</option>
-                        <option value="false">关闭</option>
-                      </select>
+                      <Select
+                        ariaLabel={label}
+                        value={value === undefined ? "" : String(value)}
+                        onValueChange={(nextValue) => updateField(key, nextValue, property)}
+                        options={[
+                          { value: "", label: `未设置${property.default !== undefined ? `（默认：${String(property.default)}）` : ""}` },
+                          { value: "true", label: "开启" },
+                          { value: "false", label: "关闭" },
+                        ]}
+                        className="mt-2 w-full"
+                      />
                     ) : property.type === "object" || property.type === "array" ? (
                       <textarea value={displayValue(value)} readOnly rows={3} className="mt-2 w-full cursor-not-allowed resize-none rounded-lg border border-border bg-subtle px-3 py-2.5 font-mono text-sm text-text-muted" aria-describedby={`${key}-hint`} />
                     ) : isLongTextField(key, property) ? (
@@ -176,7 +189,7 @@ export function SkillConfigDialog({ skill, agentConfig, saving, onClose, onSave 
                       />
                     )}
                     {(hint || property.type === "object" || property.type === "array") && <span id={`${key}-hint`} className="mt-1.5 block text-xs font-normal leading-5 text-text-muted">{property.type === "object" || property.type === "array" ? "该复杂字段仅展示现有值，暂不支持在表单中修改。" : hint}</span>}
-                  </label>
+                  </div>
                 );
               })}
             </div>

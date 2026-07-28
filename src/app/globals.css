@@ -74,6 +74,35 @@ select:not([multiple]):not([size]) {
   padding-right: 2.5rem;
 }
 
+select:not([multiple]):not([size]):not(.control-compact):not(.control-large) {
+  height: 2.25rem;
+  min-height: 2.25rem;
+  border-radius: 0.375rem;
+  padding-left: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+input:not([type]):not(.control-compact):not(.control-large):not(.control-native-large),
+input[type="text"]:not(.control-compact):not(.control-large):not(.control-native-large),
+input[type="email"]:not(.control-compact):not(.control-large):not(.control-native-large),
+input[type="password"]:not(.control-compact):not(.control-large):not(.control-native-large),
+input[type="search"]:not(.control-compact):not(.control-large):not(.control-native-large),
+input[type="tel"]:not(.control-compact):not(.control-large):not(.control-native-large),
+input[type="url"]:not(.control-compact):not(.control-large):not(.control-native-large),
+input[type="number"]:not(.control-compact):not(.control-large):not(.control-native-large) {
+  height: 2.25rem;
+  min-height: 2.25rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
 .dark select:not([multiple]):not([size]) {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%23a5adc0' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
@@ -93,11 +122,36 @@ select:not([multiple]):not([size]) {
   }
 
   .button-primary {
-    @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .button-secondary {
-    @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-border bg-surface px-5 text-sm font-medium text-text-strong transition hover:border-primary/40 hover:bg-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-9 items-center justify-center gap-2 rounded-md border border-border bg-surface px-4 text-sm font-medium text-text-strong transition hover:border-primary/40 hover:bg-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .button-danger {
+    @apply inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-danger px-4 text-sm font-semibold text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .control-field,
+  .control-select {
+    @apply h-9 rounded-md border border-border bg-surface px-3 text-sm text-text-strong outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .control-select {
+    @apply pr-10;
+  }
+
+  .control-compact {
+    @apply h-8 min-h-8 px-3 text-xs;
+  }
+
+  .control-large {
+    @apply h-10 min-h-10 px-4 text-sm;
+  }
+
+  .icon-button {
+    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-text-muted transition hover:bg-subtle hover:text-text-strong disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .status-badge {

@@ -6,6 +6,7 @@ import { capabilitySource } from "@/config/capabilities";
 import { SourceBadge } from "@/shared/ui/source-badge";
 import { FutureModulePage } from "@/shared/ui/future-module-page";
 import { TrendChart } from "@/shared/ui/trend-chart";
+import { Select } from "@/shared/ui/select";
 import { ANALYTICS_AGENTS, ANALYTICS_INSIGHTS, ANALYTICS_LABELS, ANALYTICS_SERIES } from "./fixtures";
 import { formatMetric, metricSummary, type AnalyticsMetric } from "./model";
 
@@ -56,15 +57,9 @@ export function AnalyticsWorkspace() {
       </header>
 
       <section className="flex flex-wrap gap-3" aria-label="分析筛选">
-        <select className="min-h-10 rounded-md border border-border bg-surface px-4" value={agent} onChange={(event) => setAgent(event.target.value)} aria-label="Agent 筛选">
-          <option value="all">全部 Agent</option><option value="32">林月</option><option value="19">知识向导</option>
-        </select>
-        <select className="min-h-10 rounded-md border border-border bg-surface px-4" value={client} onChange={(event) => setClient(event.target.value)} aria-label="应用端筛选">
-          <option value="all">全部应用端</option><option value="oyiioyii">OyiiOyii App</option><option value="web">网页聊天</option><option value="api">API 接入</option>
-        </select>
-        <select className="min-h-10 rounded-md border border-border bg-surface px-4" value={range} onChange={(event) => setRange(event.target.value)} aria-label="时间范围">
-          <option value="7">近 7 天</option><option value="30">近 30 天</option><option value="90">近 90 天</option>
-        </select>
+        <Select ariaLabel="Agent 筛选" value={agent} onValueChange={setAgent} options={[{ value: "all", label: "全部 Agent" }, { value: "32", label: "林月" }, { value: "19", label: "知识向导" }]} />
+        <Select ariaLabel="应用端筛选" value={client} onValueChange={setClient} options={[{ value: "all", label: "全部应用端" }, { value: "oyiioyii", label: "OyiiOyii App" }, { value: "web", label: "网页聊天" }, { value: "api", label: "API 接入" }]} />
+        <Select ariaLabel="时间范围" value={range} onValueChange={setRange} options={[{ value: "7", label: "近 7 天" }, { value: "30", label: "近 30 天" }, { value: "90", label: "近 90 天" }]} />
       </section>
 
       <section className="panel grid divide-y divide-border overflow-hidden md:grid-cols-4 md:divide-x md:divide-y-0">

@@ -15,6 +15,7 @@ import {
 import { useAuth } from "@/modules/auth/auth-provider";
 import { WorkspaceInviteDialog } from "@/modules/workspace/workspace-invite-dialog";
 import { useWorkspace } from "@/modules/workspace/workspace-provider";
+import { Select } from "@/shared/ui/select";
 
 export function Topbar({
   compact,
@@ -49,8 +50,8 @@ export function Topbar({
       <header
         className={`fixed left-0 right-0 top-0 z-30 flex items-center border-b border-border bg-surface/95 px-4 backdrop-blur ${
           compact
-            ? "h-[60px] lg:left-0 lg:px-4"
-            : "h-[60px] lg:left-[224px] lg:px-7"
+            ? "h-[50px] lg:left-0 lg:px-4"
+            : "h-[50px] lg:left-[224px] lg:px-7"
         }`}
       >
         {compact && (
@@ -79,24 +80,21 @@ export function Topbar({
         >
           <List size={21} />
         </button>
-        <label className="relative flex items-center">
-          <span className="sr-only">当前工作空间</span>
-          <select
-            value={workspaceCode}
-            onChange={(event) => setWorkspaceCode(event.target.value)}
-            disabled={loading || switching || workspaces.length === 0}
-            className="h-9 rounded-md border border-border bg-surface pl-3 pr-9 text-sm font-medium text-text-strong hover:border-primary/40 disabled:opacity-60"
-          >
-            {workspaces.length === 0 && (
-              <option value="default">当前工作空间</option>
-            )}
-            {workspaces.map((workspace) => (
-              <option key={workspace.code} value={workspace.code}>
-                {workspace.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <Select
+          ariaLabel="当前工作空间"
+          value={workspaceCode}
+          onValueChange={setWorkspaceCode}
+          disabled={loading || switching || workspaces.length === 0}
+          triggerClassName="font-medium hover:border-primary/40"
+          options={
+            workspaces.length === 0
+              ? [{ value: "default", label: "当前工作空间" }]
+              : workspaces.map((workspace) => ({
+                  value: workspace.code,
+                  label: workspace.name,
+                }))
+          }
+        />
         {switching && (
           <span className="ml-3 text-xs text-text-muted">正在切换…</span>
         )}
@@ -119,7 +117,7 @@ export function Topbar({
           <button
             type="button"
             onClick={() => setInviteOpen(true)}
-            className="rounded-md p-2 text-text-muted hover:bg-subtle"
+            className="icon-button"
             aria-label="邀请工作空间成员"
             title="邀请成员"
           >
@@ -127,7 +125,7 @@ export function Topbar({
           </button>
           <button
             type="button"
-            className="rounded-md p-2 text-text-muted hover:bg-subtle"
+            className="icon-button"
             aria-label="通知"
             title="通知中心将在后续迁移"
           >

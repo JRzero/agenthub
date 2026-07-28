@@ -263,14 +263,14 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
           </span>
           <Link
             href={"/assets/" + agent.id + "/build"}
-            className="button-secondary ml-auto min-h-9 px-4"
+            className="button-secondary ml-auto"
           >
             编辑当前版本
           </Link>
           {hasDraftChanges && (
             <button
               type="button"
-              className="button-primary min-h-9 px-4"
+              className="button-primary"
               onClick={openPublish}
             >
               发布草稿
@@ -291,13 +291,13 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
           <span className="text-text-muted">Version Hash：发布后生成</span>
           <Link
             href={"/assets/" + agent.id + "/build"}
-            className="button-secondary ml-auto min-h-9 px-4"
+            className="button-secondary ml-auto"
           >
             查看草稿
           </Link>
           <button
             type="button"
-            className="button-primary min-h-9 px-4"
+            className="button-primary"
             onClick={openPublish}
           >
             发布第一个版本
@@ -621,7 +621,7 @@ function VersionDetail({
       <div className="flex flex-wrap justify-end gap-2 border-t border-border px-5 py-3.5">
         <button
           type="button"
-          className="button-secondary min-h-9"
+          className="button-secondary"
           onClick={onToggleSnapshot}
         >
           {showSnapshot ? "收起版本内容" : "查看版本内容"}
@@ -629,7 +629,7 @@ function VersionDetail({
         {isCurrent ? (
           <Link
             href={"/assets/" + agent.id + "/distribution"}
-            className="button-secondary min-h-9"
+            className="button-secondary"
           >
             <DownloadSimple size={16} />
             导出当前版本
@@ -637,7 +637,7 @@ function VersionDetail({
         ) : (
           <button
             type="button"
-            className="button-secondary min-h-9 border-primary text-primary"
+            className="button-secondary border-primary text-primary"
             disabled={version.availability === "revoked"}
             onClick={onCreateDraft}
           >
@@ -743,7 +743,7 @@ function PublishDialog({
       <label className="mt-4 block text-sm font-medium">
         版本说明 <span className="font-normal text-text-muted">（选填）</span>
         <input
-          className="mt-2 h-10 w-full rounded-md border border-border bg-surface px-3 outline-none focus:border-primary"
+          className="control-field mt-2 w-full"
           value={releaseNote}
           onChange={(event) => onReleaseNote(event.target.value)}
           placeholder="例如：优化角色信息与媒体素材"

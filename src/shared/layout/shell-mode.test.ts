@@ -51,7 +51,7 @@ describe("resolveWorkspaceShellLayout", () => {
       agentAssetMode: true,
       sidebarCollapsed: true,
       mainDesktopPaddingClass: "lg:pl-[88px]",
-      mainTopPaddingClass: "pt-[60px]",
+      mainTopPaddingClass: "pt-[50px]",
     });
   });
 
@@ -60,7 +60,7 @@ describe("resolveWorkspaceShellLayout", () => {
       agentAssetMode: false,
       sidebarCollapsed: true,
       mainDesktopPaddingClass: "lg:pl-[88px]",
-      mainTopPaddingClass: "pt-[60px]",
+      mainTopPaddingClass: "pt-[50px]",
     });
   });
 
@@ -69,7 +69,7 @@ describe("resolveWorkspaceShellLayout", () => {
       agentAssetMode: false,
       sidebarCollapsed: false,
       mainDesktopPaddingClass: "lg:pl-[224px]",
-      mainTopPaddingClass: "pt-[60px]",
+      mainTopPaddingClass: "pt-[50px]",
     });
   });
 
@@ -78,7 +78,7 @@ describe("resolveWorkspaceShellLayout", () => {
       agentAssetMode: false,
       sidebarCollapsed: true,
       mainDesktopPaddingClass: "lg:pl-[88px]",
-      mainTopPaddingClass: "pt-[60px]",
+      mainTopPaddingClass: "pt-[50px]",
     });
   });
 });

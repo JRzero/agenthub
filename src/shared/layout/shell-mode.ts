@@ -13,7 +13,7 @@ export type WorkspaceShellLayout = {
   agentAssetMode: boolean;
   sidebarCollapsed: boolean;
   mainDesktopPaddingClass: "lg:pl-[88px]" | "lg:pl-[224px]";
-  mainTopPaddingClass: "pt-[60px]";
+  mainTopPaddingClass: "pt-[50px]";
 };
 
 export function resolveWorkspaceShellLayout(
@@ -26,6 +26,6 @@ export function resolveWorkspaceShellLayout(
     agentAssetMode,
     sidebarCollapsed,
     mainDesktopPaddingClass: sidebarCollapsed ? "lg:pl-[88px]" : "lg:pl-[224px]",
-    mainTopPaddingClass: "pt-[60px]",
+    mainTopPaddingClass: "pt-[50px]",
   };
 }

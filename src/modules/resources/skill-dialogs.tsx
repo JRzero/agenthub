@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Trash, X } from "@phosphor-icons/react";
 import type { Agent } from "@/modules/agents/types";
+import { Select } from "@/shared/ui/select";
 import { maskSensitiveConfig, restoreSensitiveConfig } from "./sensitive-config";
 import type { CreatorSkill, MarketplaceSkill } from "./types";
 
@@ -22,15 +23,18 @@ export function AttachSkillDialog({ skill, agents, agentId, busy, onAgentId, onC
           <h2 id="attach-title" className="font-semibold">添加“{skill.name}”到 Agent</h2>
           <p className="mt-1 text-xs text-text-muted">复用现有 Agent 更新接口，不改变其他技能。</p>
         </div>
-        <button onClick={onClose} aria-label="关闭绑定技能" className="p-2"><X size={18} /></button>
+        <button onClick={onClose} aria-label="关闭绑定技能" className="icon-button"><X size={18} /></button>
       </header>
       <div className="p-5">
-        <label className="text-sm font-medium">选择 Agent
-          <select value={agentId} onChange={(event) => onAgentId(Number(event.target.value) || "")} className="mt-2 h-10 w-full rounded-md border border-border bg-surface px-3">
-            <option value="">请选择</option>
-            {agents.map((agent) => <option key={agent.id} value={agent.id}>{agent.name}</option>)}
-          </select>
-        </label>
+        <div className="text-sm font-medium">选择 Agent
+          <Select
+            ariaLabel="选择 Agent"
+            value={String(agentId)}
+            onValueChange={(value) => onAgentId(Number(value) || "")}
+            options={[{ value: "", label: "请选择" }, ...agents.map((agent) => ({ value: String(agent.id), label: agent.name }))]}
+            className="mt-2 w-full"
+          />
+        </div>
         <button type="button" onClick={onSubmit} disabled={!agentId || busy} className="button-primary mt-5 w-full">{busy ? "添加中…" : "确认添加"}</button>
       </div>
     </section>
@@ -72,18 +76,21 @@ export function CreatorSkillDialog({ skill, busy, error, onClose, onSave, onDele
           <h2 id="creator-skill-title" className="font-semibold">管理工作空间技能</h2>
           <p className="mt-1 text-xs text-text-muted">{skill.skill_name || skill.name}</p>
         </div>
-        <button onClick={onClose} aria-label="关闭技能管理" className="p-2"><X size={18} /></button>
+        <button onClick={onClose} aria-label="关闭技能管理" className="icon-button"><X size={18} /></button>
       </header>
       <div className="space-y-4 p-5">
         <label className="block text-sm font-medium">显示名称
-          <input value={name} onChange={(event) => setName(event.target.value)} className="mt-2 h-10 w-full rounded-md border border-border bg-surface px-3" />
+          <input value={name} onChange={(event) => setName(event.target.value)} className="control-field mt-2 w-full" />
         </label>
-        <label className="block text-sm font-medium">状态
-          <select value={status} onChange={(event) => setStatus(event.target.value)} className="mt-2 h-10 w-full rounded-md border border-border bg-surface px-3">
-            <option value="active">启用</option>
-            <option value="inactive">停用</option>
-          </select>
-        </label>
+        <div className="text-sm font-medium">状态
+          <Select
+            ariaLabel="技能状态"
+            value={status}
+            onValueChange={setStatus}
+            options={[{ value: "active", label: "启用" }, { value: "inactive", label: "停用" }]}
+            className="mt-2 w-full"
+          />
+        </div>
         <label className="block text-sm font-medium">JSON 配置
           <textarea value={configText} onChange={(event) => setConfigText(event.target.value)} spellCheck={false} className="mt-2 min-h-48 w-full rounded-md border border-border bg-slate-950 p-3 font-mono text-xs text-slate-100" />
           <span className="mt-2 block text-xs leading-5 text-text-muted">敏感字段已隐藏。保留占位符会继续使用现有值，只有主动替换时才会更新。</span>

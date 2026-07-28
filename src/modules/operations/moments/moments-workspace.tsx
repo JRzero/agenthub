@@ -23,6 +23,7 @@ import { useAgents } from "@/modules/agents/queries";
 import type { Agent } from "@/modules/agents/types";
 import { useAuth } from "@/modules/auth/auth-provider";
 import { useWorkspace } from "@/modules/workspace/workspace-provider";
+import { Select } from "@/shared/ui/select";
 import {
   addMomentComment,
   deleteMoment,
@@ -255,41 +256,30 @@ export function MomentsWorkspace() {
   return (
     <div className="bg-canvas">
       <div className="flex flex-wrap items-center gap-2 border-b border-border bg-surface px-4 py-3 sm:px-6 lg:px-7">
-        <select
-          aria-label="按 Agent 筛选朋友圈"
-          value={agentId || "all"}
-          onChange={(event) => {
+        <Select
+          ariaLabel="按 Agent 筛选朋友圈"
+          value={String(agentId || "all")}
+          onValueChange={(value) => {
             setPage(0);
             updateLocation({
-              agentId:
-                event.target.value === "all" ? null : event.target.value,
+              agentId: value === "all" ? null : value,
             });
           }}
-          className="h-10 min-w-40 rounded-md border border-border bg-surface px-3"
-        >
-          <option value="all">全部 Agent</option>
-          {(agentsQuery.data || []).map((agent) => (
-            <option key={agent.id} value={agent.id}>
-              {agent.name}
-            </option>
-          ))}
-        </select>
-        <select
-          aria-label="按发布时间筛选朋友圈"
-          value={days}
-          onChange={(event) =>
+          className="min-w-40"
+          options={[{ value: "all", label: "全部 Agent" }, ...(agentsQuery.data || []).map((agent) => ({ value: String(agent.id), label: agent.name }))]}
+        />
+        <Select
+          ariaLabel="按发布时间筛选朋友圈"
+          value={String(days)}
+          onValueChange={(value) =>
             setDays(
-              event.target.value === "all"
+              value === "all"
                 ? "all"
-                : Number(event.target.value),
+                : Number(value),
             )
           }
-          className="h-10 rounded-md border border-border bg-surface px-3"
-        >
-          <option value={7}>近 7 天</option>
-          <option value={30}>近 30 天</option>
-          <option value="all">全部时间</option>
-        </select>
+          options={[{ value: "7", label: "近 7 天" }, { value: "30", label: "近 30 天" }, { value: "all", label: "全部时间" }]}
+        />
         <label className="relative min-w-[220px] flex-1 lg:max-w-sm">
           <MagnifyingGlass
             size={17}
@@ -299,7 +289,7 @@ export function MomentsWorkspace() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="搜索当前页动态正文"
-            className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 focus:border-primary"
+            className="control-field w-full pl-9"
           />
         </label>
         <button
@@ -364,7 +354,7 @@ export function MomentsWorkspace() {
                 <p className="mt-3 text-sm">朋友圈加载失败</p>
                 <button
                   type="button"
-                  className="button-secondary mt-4 min-h-9 px-3"
+                  className="button-secondary control-compact mt-4"
                   onClick={() => void momentsQuery.refetch()}
                 >
                   <ArrowClockwise size={16} />
@@ -549,7 +539,7 @@ export function MomentsWorkspace() {
                     type="button"
                     disabled={!comment.trim() || commenting}
                     onClick={() => void sendComment()}
-                    className="button-secondary mt-2 min-h-9 w-full px-3"
+                    className="button-secondary control-compact mt-2 w-full"
                   >
                     {commenting && (
                       <SpinnerGap size={16} className="loading-spin" />
@@ -564,7 +554,7 @@ export function MomentsWorkspace() {
                   type="button"
                   disabled={deleting}
                   onClick={() => setConfirmingDelete(true)}
-                  className="button-secondary min-h-9 w-full border-rose-200 px-3 text-danger hover:border-danger hover:bg-rose-50 dark:border-rose-400/20 dark:hover:bg-rose-400/10"
+                  className="button-secondary control-compact w-full border-rose-200 text-danger hover:border-danger hover:bg-rose-50 dark:border-rose-400/20 dark:hover:bg-rose-400/10"
                 >
                   <Trash size={17} />
                   {deleting ? "正在删除…" : "删除动态"}
@@ -618,7 +608,7 @@ export function MomentsWorkspace() {
               </button>
               <button
                 type="button"
-                className="button-primary bg-danger hover:bg-rose-700"
+                className="button-danger"
                 disabled={deleting}
                 onClick={() => void removeSelected()}
               >

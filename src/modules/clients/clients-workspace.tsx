@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { DATA_MODE } from "@/config/capabilities";
 import { AgentAvatar } from "@/modules/agents/agent-avatar";
+import { Select } from "@/shared/ui/select";
 import { SourceBadge } from "@/shared/ui/source-badge";
 import { ClientIcon } from "./client-icon";
 import {
@@ -141,80 +142,72 @@ export function ClientsWorkspace() {
                 }))
               }
               placeholder="搜索 Client、Agent 或 Client Key"
-              className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 outline-none transition focus:border-primary"
+              className="control-field w-full pl-9"
             />
           </label>
-          <select
-            aria-label="按 Agent 筛选"
-            value={filters.agentId}
-            onChange={(event) =>
+          <Select
+            ariaLabel="按 Agent 筛选"
+            value={String(filters.agentId)}
+            onValueChange={(value) =>
               setFilters((current) => ({
                 ...current,
-                agentId:
-                  event.target.value === "all"
-                    ? "all"
-                    : Number(event.target.value),
+                agentId: value === "all" ? "all" : Number(value),
               }))
             }
-            className="h-10 rounded-md border border-border bg-surface px-3"
-          >
-            <option value="all">全部 Agent</option>
-            {data.agents.map((agent) => (
-              <option key={agent.id} value={agent.id}>
-                {agent.name}
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label="按 Client 类型筛选"
+            options={[
+              { value: "all", label: "全部 Agent" },
+              ...data.agents.map((agent) => ({
+                value: String(agent.id),
+                label: agent.name,
+              })),
+            ]}
+          />
+          <Select
+            ariaLabel="按 Client 类型筛选"
             value={filters.clientType}
-            onChange={(event) =>
-              setFilters((current) => ({
-                ...current,
-                clientType: event.target.value,
-              }))
+            onValueChange={(value) =>
+              setFilters((current) => ({ ...current, clientType: value }))
             }
-            className="h-10 rounded-md border border-border bg-surface px-3"
-          >
-            <option value="all">全部类型</option>
-            {clientTypes.map((type) => (
-              <option key={type} value={type}>
-                {clientTypeLabel(type)}
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label="按启用状态筛选"
+            options={[
+              { value: "all", label: "全部类型" },
+              ...clientTypes.map((type) => ({
+                value: type,
+                label: clientTypeLabel(type),
+              })),
+            ]}
+          />
+          <Select
+            ariaLabel="按启用状态筛选"
             value={filters.status}
-            onChange={(event) =>
+            onValueChange={(value) =>
               setFilters((current) => ({
                 ...current,
-                status: event.target.value as ClientFilters["status"],
+                status: value as ClientFilters["status"],
               }))
             }
-            className="h-10 rounded-md border border-border bg-surface px-3"
-          >
-            <option value="all">全部状态</option>
-            <option value="enabled">已启用</option>
-            <option value="disabled">已停用</option>
-          </select>
-          <select
-            aria-label="按同步状态筛选"
+            options={[
+              { value: "all", label: "全部状态" },
+              { value: "enabled", label: "已启用" },
+              { value: "disabled", label: "已停用" },
+            ]}
+          />
+          <Select
+            ariaLabel="按同步状态筛选"
             value={filters.syncStatus}
-            onChange={(event) =>
+            onValueChange={(value) =>
               setFilters((current) => ({
                 ...current,
-                syncStatus: event.target.value as ClientFilters["syncStatus"],
+                syncStatus: value as ClientFilters["syncStatus"],
               }))
             }
-            className="h-10 rounded-md border border-border bg-surface px-3"
-          >
-            <option value="all">全部同步状态</option>
-            <option value="synced">已同步</option>
-            <option value="pending">等待同步</option>
-            <option value="unconfirmed">尚未确认</option>
-            <option value="disabled">已停用</option>
-          </select>
+            options={[
+              { value: "all", label: "全部同步状态" },
+              { value: "synced", label: "已同步" },
+              { value: "pending", label: "等待同步" },
+              { value: "unconfirmed", label: "尚未确认" },
+              { value: "disabled", label: "已停用" },
+            ]}
+          />
         </div>
 
         <div className="hidden grid-cols-[minmax(260px,1.3fr)_minmax(180px,.8fr)_140px_150px_150px_36px] gap-4 border-b border-border bg-subtle/70 px-5 py-2.5 text-xs font-semibold text-text-muted lg:grid">
@@ -283,7 +276,7 @@ export function ClientsWorkspace() {
           </div>
         ) : (
           <div className="grid min-h-[360px] place-items-center px-6 text-center">
-            <div>
+            <div className="flex max-w-md flex-col items-center">
               <ClientIcon type="web_chat" size={34} />
               <h2 className="mt-3 text-base font-semibold">
                 {data.rows.length ? "没有符合条件的接入记录" : "尚未接入 Client"}

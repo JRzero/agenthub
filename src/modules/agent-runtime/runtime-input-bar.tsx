@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { FileArrowUp, ImageSquare, PaperPlaneRight, X } from "@phosphor-icons/react";
+import { Select } from "@/shared/ui/select";
 import type { PendingRuntimeAttachment, RuntimeMessageOptions, RuntimeWidgetSpec } from "./types";
 
 export function RuntimeInputBar({ widgets, disabled, placeholder = "输入消息，按 Shift + Enter 换行", onSubmit }: {
@@ -45,7 +46,7 @@ export function RuntimeInputBar({ widgets, disabled, placeholder = "输入消息
 function RuntimeWidgetField({ widget, value, onChange, disabled }: { widget: RuntimeWidgetSpec; value: unknown; onChange: (value: unknown) => void; disabled: boolean }) {
   const options = Array.isArray(widget.config.options) ? widget.config.options : [];
   const placeholder = typeof widget.config.placeholder === "string" ? widget.config.placeholder : "";
-  if (widget.type === "select") return <label className="text-xs font-medium">{widget.label}<select value={String(value ?? widget.config.default ?? "")} onChange={(event) => onChange(event.target.value)} disabled={disabled} className="mt-1 h-9 w-full rounded-md border border-border bg-surface px-2 text-sm"><option value="">请选择</option>{options.map((option) => { const item = typeof option === "string" ? { value: option, label: option } : option as { value?: unknown; label?: unknown }; return <option key={String(item.value)} value={String(item.value)}>{String(item.label ?? item.value)}</option>; })}</select></label>;
+  if (widget.type === "select") return <div className="text-xs font-medium">{widget.label}<Select ariaLabel={widget.label} value={String(value ?? widget.config.default ?? "")} onValueChange={onChange} disabled={disabled} className="mt-1 w-full" options={[{ value: "", label: "请选择" }, ...options.map((option) => { const item = typeof option === "string" ? { value: option, label: option } : option as { value?: unknown; label?: unknown }; return { value: String(item.value), label: String(item.label ?? item.value) }; })]} /></div>;
   if (widget.type === "checkbox" || widget.type === "switch") return <label className="flex items-center gap-2 self-end rounded-md border border-border px-3 py-2 text-xs font-medium"><input type="checkbox" checked={Boolean(value)} onChange={(event) => onChange(event.target.checked)} disabled={disabled} />{widget.label}</label>;
   if (widget.type === "custom") return <div className="rounded-md border border-dashed border-border px-3 py-2 text-xs text-text-muted">{widget.label}：暂不支持的自定义 widget</div>;
   if (widget.type === "textarea") return <label className="text-xs font-medium sm:col-span-2">{widget.label}<textarea value={String(value ?? "")} onChange={(event) => onChange(event.target.value)} disabled={disabled} placeholder={placeholder} rows={2} className="mt-1 w-full rounded-md border border-border px-2 py-1.5 text-sm" /></label>;

@@ -15,6 +15,7 @@ import { AgentAvatar } from "@/modules/agents/agent-avatar";
 import { useAgents } from "@/modules/agents/queries";
 import type { Agent } from "@/modules/agents/types";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
+import { Select } from "@/shared/ui/select";
 
 type StatusFilter = "all" | "active" | "draft" | "archived";
 
@@ -86,11 +87,19 @@ export default function AssetLibraryPage() {
             <label className="relative w-full sm:w-80">
               <span className="sr-only">搜索 Agent</span>
               <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
-              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索 Agent 名称或编码" className="h-10 w-full rounded-md border border-border bg-surface pl-10 pr-3 outline-none transition focus:border-primary" />
+              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索 Agent 名称或编码" className="control-field w-full pl-10" />
             </label>
-            <select value={status} onChange={(event) => setStatus(event.target.value as StatusFilter)} aria-label="Agent 状态" className="h-10 rounded-md border border-border bg-surface px-3">
-              <option value="all">全部状态</option><option value="active">已发布</option><option value="draft">草稿</option><option value="archived">已归档</option>
-            </select>
+            <Select
+              ariaLabel="Agent 状态"
+              value={status}
+              onValueChange={(value) => setStatus(value as StatusFilter)}
+              options={[
+                { value: "all", label: "全部状态" },
+                { value: "active", label: "已发布" },
+                { value: "draft", label: "草稿" },
+                { value: "archived", label: "已归档" },
+              ]}
+            />
           </div>
         </section>
       ) : null}

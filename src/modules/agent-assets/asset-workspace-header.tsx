@@ -113,14 +113,14 @@ export function AssetWorkspaceHeader({
             <>
               <Link
                 href={base + "/distribution"}
-                className="button-secondary min-h-9 px-3"
+                className="button-secondary control-compact"
               >
                 <DownloadSimple size={16} />
                 导出当前版本
               </Link>
               <Link
                 href={base + "/build"}
-                className="button-primary min-h-9 px-3"
+                className="button-primary control-compact"
               >
                 <PencilSimple size={16} />
                 编辑当前版本
@@ -130,14 +130,14 @@ export function AssetWorkspaceHeader({
             <>
               <Link
                 href={base + "/test"}
-                className="button-secondary min-h-9 px-3"
+                className="button-secondary control-compact"
               >
                 <Play size={16} />
                 测试当前版本
               </Link>
               <Link
                 href={base + "/build"}
-                className="button-primary min-h-9 px-3"
+                className="button-primary control-compact"
               >
                 <PencilSimple size={16} />
                 编辑当前版本
@@ -147,7 +147,7 @@ export function AssetWorkspaceHeader({
             <>
               <Link
                 href={base + "/build"}
-                className="button-secondary min-h-9 px-3"
+                className="button-secondary control-compact"
               >
                 <Wrench size={16} />
                 继续构建

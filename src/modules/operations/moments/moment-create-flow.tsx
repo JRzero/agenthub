@@ -354,7 +354,7 @@ export function MomentCreateFlow({
                               setAgentQuery(event.target.value)
                             }
                             placeholder="搜索 Agent 名称或编码"
-                            className="h-10 w-full rounded-lg border border-border bg-canvas pl-9 pr-3 text-sm outline-none transition focus:border-primary"
+                            className="control-field w-full bg-canvas pl-9"
                           />
                         </label>
                         <div
@@ -475,7 +475,7 @@ export function MomentCreateFlow({
                   </div>
                   <button
                     type="button"
-                    className="button-secondary min-h-9 px-3"
+                    className="button-secondary control-compact"
                     disabled={!agentId || generating}
                     onClick={() => void generate()}
                   >
@@ -525,7 +525,7 @@ export function MomentCreateFlow({
                 <div className="mt-3 flex flex-wrap gap-2">
                   <button
                     type="button"
-                    className={`button-secondary min-h-9 px-3 ${
+                    className={`button-secondary control-compact ${
                       autoImage ? "border-primary bg-primary-soft text-primary" : ""
                     }`}
                     onClick={() => {
@@ -538,7 +538,7 @@ export function MomentCreateFlow({
                   </button>
                   <button
                     type="button"
-                    className="button-secondary min-h-9 px-3"
+                    className="button-secondary control-compact"
                     disabled={uploading || images.length >= 9}
                     onClick={() => fileInput.current?.click()}
                   >

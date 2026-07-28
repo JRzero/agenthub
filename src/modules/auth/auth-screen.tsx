@@ -22,7 +22,7 @@ import { resolveAuthRedirect } from "./redirect";
 type AuthMode = "login" | "register";
 
 const fieldClass =
-  "h-11 w-full rounded-lg border border-border bg-surface pl-10 pr-11 text-sm text-text-strong outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/15";
+  "control-native-large h-11 w-full rounded-lg border border-border bg-surface pl-10 pr-11 text-sm text-text-strong outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/15";
 
 export function AuthScreen({ mode }: { mode: AuthMode }) {
   const router = useRouter();

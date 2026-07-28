@@ -18,6 +18,7 @@ import { createAgentClient } from "@/modules/agent-versions/api";
 import { useAuth } from "@/modules/auth/auth-provider";
 import { useWorkspace } from "@/modules/workspace/workspace-provider";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
+import { Select } from "@/shared/ui/select";
 
 const CLIENT_TYPES = [
   { value: "web_chat", label: "Web Chat" },
@@ -204,21 +205,20 @@ export function ClientCreateWorkspace() {
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   placeholder="例如：OyiiOyii"
-                  className="h-10 w-full rounded-md border border-border bg-surface px-3 focus:border-primary"
+                  className="control-field w-full"
                 />
               </Field>
               <Field label="Client 类型" required>
-                <select
+                <Select
+                  ariaLabel="Client 类型"
                   value={clientType}
-                  onChange={(event) => setClientType(event.target.value)}
-                  className="h-10 w-full rounded-md border border-border bg-surface px-3"
-                >
-                  {CLIENT_TYPES.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
+                  onValueChange={setClientType}
+                  options={CLIENT_TYPES.map((type) => ({
+                    value: type.value,
+                    label: type.label,
+                  }))}
+                  className="w-full"
+                />
               </Field>
               <Field
                 label="Client Key"
@@ -231,7 +231,7 @@ export function ClientCreateWorkspace() {
                     setClientKey(event.target.value.toLowerCase())
                   }
                   placeholder="oyiioyii-primary"
-                  className={`h-10 w-full rounded-md border bg-surface px-3 font-mono text-sm focus:border-primary ${
+                  className={`control-field w-full font-mono ${
                     clientKey && !keyValid ? "border-danger" : "border-border"
                   }`}
                 />
@@ -241,7 +241,7 @@ export function ClientCreateWorkspace() {
                   value={interactionMode}
                   onChange={(event) => setInteractionMode(event.target.value)}
                   placeholder="例如：对话"
-                  className="h-10 w-full rounded-md border border-border bg-surface px-3 focus:border-primary"
+                  className="control-field w-full"
                 />
               </Field>
               <Field label="运行模式">
@@ -249,7 +249,7 @@ export function ClientCreateWorkspace() {
                   value={companionMode}
                   onChange={(event) => setCompanionMode(event.target.value)}
                   placeholder="例如：陪伴模式"
-                  className="h-10 w-full rounded-md border border-border bg-surface px-3 focus:border-primary"
+                  className="control-field w-full"
                 />
               </Field>
               <Field
@@ -260,7 +260,7 @@ export function ClientCreateWorkspace() {
                   value={credentialRef}
                   onChange={(event) => setCredentialRef(event.target.value)}
                   placeholder="vault:client-reference"
-                  className="h-10 w-full rounded-md border border-border bg-surface px-3 font-mono text-sm focus:border-primary"
+                  className="control-field w-full font-mono"
                 />
               </Field>
             </div>

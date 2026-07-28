@@ -12,6 +12,7 @@ import {
 } from "@phosphor-icons/react";
 import { DATA_MODE } from "@/config/capabilities";
 import type { Agent } from "@/modules/agents/types";
+import { Select } from "@/shared/ui/select";
 import {
   deleteMomentSchedule,
   generateMomentSchedule,
@@ -230,26 +231,23 @@ export function AutoPublishDialog({
         </header>
 
         <div className="min-h-0 flex-1 overflow-y-auto p-5">
-          <label className="block">
+          <div>
             <span className="text-sm font-medium">发布 Agent</span>
-            <select
-              autoFocus
-              aria-label="自动发布 Agent"
-              value={agentId || ""}
-              onChange={(event) => {
-                setAgentId(Number(event.target.value));
+            <Select
+              ariaLabel="自动发布 Agent"
+              value={String(agentId || "")}
+              onValueChange={(value) => {
+                setAgentId(Number(value));
                 setMessage("");
                 setError("");
               }}
-              className="mt-2 h-11 w-full rounded-lg border border-border bg-surface px-3 outline-none transition focus:border-primary"
-            >
-              {availableAgents.map((agent) => (
-                <option key={agent.id} value={agent.id}>
-                  {agent.name} · 平台当前版本 v{agent.version}
-                </option>
-              ))}
-            </select>
-          </label>
+              className="mt-2 w-full"
+              options={availableAgents.map((agent) => ({
+                value: String(agent.id),
+                label: `${agent.name} · 平台当前版本 v${agent.version}`,
+              }))}
+            />
+          </div>
 
           {!availableAgents.length ? (
             <div className="mt-5 rounded-xl border border-dashed border-border p-8 text-center">

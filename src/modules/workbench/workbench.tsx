@@ -41,7 +41,7 @@ export function Workbench() {
           </div>
           <p className="mt-1.5 text-xs text-text-muted">欢迎回来，继续完成你的 Agent</p>
         </div>
-        <button type="button" onClick={() => router.push("/assets/create")} className="button-primary min-h-9 px-4">
+        <button type="button" onClick={() => router.push("/assets/create")} className="button-primary">
           <Plus size={16} weight="bold" />
           新建 Agent
         </button>
@@ -76,10 +76,10 @@ export function Workbench() {
                   <span className="block h-full rounded-full bg-success" style={{ width: `${focusReadiness}%` }} />
                 </span>
               </div>
-              <Link href={`/assets/${focusAgent.id}/build`} className="button-primary min-h-9 px-4">
+              <Link href={`/assets/${focusAgent.id}/build`} className="button-primary">
                 继续构建
               </Link>
-              <Link href={`/assets/${focusAgent.id}/test`} className="button-secondary min-h-9 px-4">
+              <Link href={`/assets/${focusAgent.id}/test`} className="button-secondary">
                 进入测试
               </Link>
             </div>
@@ -89,7 +89,7 @@ export function Workbench() {
         <section className="panel rounded-xl px-5 py-8 text-center">
           <h2 className="text-sm font-semibold">从第一个 Agent Asset 开始</h2>
           <p className="mt-1.5 text-xs text-text-muted">通过四步向导完成基础设定、头像、角色设定稿和技能。</p>
-          <button type="button" onClick={() => router.push("/assets/create")} className="button-primary mt-3 min-h-9 px-4">
+          <button type="button" onClick={() => router.push("/assets/create")} className="button-primary mt-3">
             <Plus size={16} />
             新建 Agent
           </button>

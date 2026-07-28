@@ -339,7 +339,7 @@ export function ClientDetailWorkspace() {
                         current ? { ...current, name: event.target.value } : current,
                       )
                     }
-                    className="h-10 w-full rounded-md border border-border bg-surface px-3 focus:border-primary"
+                    className="control-field w-full"
                   />
                 </Field>
                 <ReadOnly label="Client 类型" value={clientTypeLabel(client.client_type)} />
@@ -355,7 +355,7 @@ export function ClientDetailWorkspace() {
                       )
                     }
                     placeholder="例如：网页对话"
-                    className="h-10 w-full rounded-md border border-border bg-surface px-3 focus:border-primary"
+                    className="control-field w-full"
                   />
                 </Field>
                 <Field label="运行模式">
@@ -369,7 +369,7 @@ export function ClientDetailWorkspace() {
                       )
                     }
                     placeholder="例如：标准模式"
-                    className="h-10 w-full rounded-md border border-border bg-surface px-3 focus:border-primary"
+                    className="control-field w-full"
                   />
                 </Field>
                 <Field
@@ -386,7 +386,7 @@ export function ClientDetailWorkspace() {
                       )
                     }
                     placeholder="vault:client-reference"
-                    className="h-10 w-full rounded-md border border-border bg-surface px-3 font-mono text-sm focus:border-primary"
+                    className="control-field w-full font-mono"
                   />
                 </Field>
               </div>

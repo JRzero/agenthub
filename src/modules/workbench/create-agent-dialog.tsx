@@ -5,7 +5,7 @@ import { X } from "@phosphor-icons/react";
 import { suggestAgentCode } from "./model";
 import type { CreateAgentInput } from "./api";
 
-const inputClass = "mt-2 h-10 w-full rounded-md border border-border bg-surface px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15";
+const inputClass = "control-field mt-2 w-full";
 
 export function CreateAgentDialog({ open, saving, error, onClose, onSubmit }: { open: boolean; saving: boolean; error: string; onClose: () => void; onSubmit: (input: CreateAgentInput) => void }) {
   const [name, setName] = useState("");

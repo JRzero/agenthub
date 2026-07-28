@@ -289,6 +289,27 @@ final result: passed
 
 ---
 
+# Client 空状态排版 QA
+
+- 验证日期：2026-07-28
+- 详细报告：`docs/qa/reports/client-empty-state-layout-2026-07-28.md`
+- 当前状态：代码修复与自动检查通过；浏览器渲染复验受 `ERR_BLOCKED_BY_CLIENT` 阻塞。
+
+final result: blocked
+
+---
+
+# AgentHub 自定义下拉组件设计 QA
+
+- 验证日期：2026-07-28
+- 验证范围：全局原生下拉替换、macOS 展示一致性、键盘操作与窄视口定位
+- 详细报告：`docs/qa/reports/custom-select-design-qa-2026-07-28.md`
+- 实现截图：`docs/qa/images/custom-select-open-2026-07-28.png`
+
+final result: passed
+
+---
+
 # Moment Automatic Publication Settings Design QA
 
 ## Target and evidence

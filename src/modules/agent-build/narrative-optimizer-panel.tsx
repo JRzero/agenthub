@@ -56,7 +56,7 @@ export function NarrativeOptimizerPanel({ agentId, draft, onPatch }: { agentId: 
       <div className="p-5 sm:p-6">
         <label className="block text-sm font-medium" htmlFor="system-prompt-optimization-focus">希望这次重点改进什么？<span className="ml-1 font-normal text-text-muted">选填</span></label>
         <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-          <input id="system-prompt-optimization-focus" value={instruction} onChange={(event) => setInstruction(event.target.value)} placeholder="例如：语气更亲切、边界更自然、回答更简洁" className="h-10 min-w-0 flex-1 rounded-md border border-border px-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
+          <input id="system-prompt-optimization-focus" value={instruction} onChange={(event) => setInstruction(event.target.value)} placeholder="例如：语气更亲切、边界更自然、回答更简洁" className="control-field min-w-0 flex-1" />
           <button type="button" onClick={() => void optimize()} disabled={busy || !draft.systemPrompt.trim()} className="button-secondary shrink-0 whitespace-nowrap"><MagicWand size={17} />{busy ? "生成中…" : optimized ? "重新优化" : "生成优化版本"}</button>
         </div>
 

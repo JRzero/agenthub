@@ -87,7 +87,7 @@ export function BuildWorkspace() {
               type="button"
               onClick={editor.reset}
               disabled={!editor.dirty || editor.saving}
-              className="button-secondary min-h-9 px-3"
+              className="button-secondary control-compact"
             >
               <ArrowCounterClockwise size={16} />
               放弃修改
@@ -96,7 +96,7 @@ export function BuildWorkspace() {
               type="button"
               onClick={() => void editor.save("draft")}
               disabled={!editor.dirty || editor.saving}
-              className="button-secondary min-h-9 px-3"
+              className="button-secondary control-compact"
             >
               <FloppyDisk size={16} />
               {editor.saving ? "保存中…" : "保存草稿"}
@@ -105,7 +105,7 @@ export function BuildWorkspace() {
               type="button"
               onClick={() => void saveAndTest()}
               disabled={editor.saving}
-              className="button-secondary min-h-9 px-3"
+              className="button-secondary control-compact"
             >
               <Play size={16} />
               测试当前草稿
@@ -114,7 +114,7 @@ export function BuildWorkspace() {
               type="button"
               onClick={() => router.push("/assets/" + agentId + "/versions")}
               disabled={editor.saving || editor.dirty}
-              className="button-primary min-h-9 px-3"
+              className="button-primary control-compact"
               title={editor.dirty ? "请先保存当前草稿" : "前往版本管理发布"}
             >
               <PaperPlaneTilt size={16} />

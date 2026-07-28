@@ -1,4 +1,5 @@
 import { ChatCircleDots, MagnifyingGlass } from "@phosphor-icons/react";
+import { Select } from "@/shared/ui/select";
 import { filterSessions, humanLabel, sessionLabel } from "./model";
 import type { SharedSessionRow } from "./types";
 
@@ -30,8 +31,8 @@ export function SessionList({
       <div className="space-y-3 border-b border-border p-3">
         <label className="relative block"><MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={17} /><input value={query} onChange={(e) => onQuery(e.target.value)} placeholder="搜索会话或脱敏用户" className="h-9 w-full rounded-md border border-border pl-9 pr-3 text-sm outline-none focus:border-primary" /></label>
         <div className="grid grid-cols-2 gap-2">
-          <select value={agentId} onChange={(e) => onAgent(Number(e.target.value) || "")} className="h-9 rounded-md border border-border bg-surface px-2 text-xs"><option value="">全部 Agent</option>{agents.map((agent) => <option key={agent.id} value={agent.id}>{agent.name}</option>)}</select>
-          <select value={status} onChange={(e) => onStatus(e.target.value)} className="h-9 rounded-md border border-border bg-surface px-2 text-xs"><option value="all">全部状态</option><option value="active">正常</option><option value="review">需复核</option></select>
+          <Select ariaLabel="会话 Agent 筛选" value={String(agentId)} onValueChange={(value) => onAgent(Number(value) || "")} options={[{ value: "", label: "全部 Agent" }, ...agents.map((agent) => ({ value: String(agent.id), label: agent.name }))]} compact className="min-w-0" triggerClassName="min-w-0" />
+          <Select ariaLabel="会话状态筛选" value={status} onValueChange={onStatus} options={[{ value: "all", label: "全部状态" }, { value: "active", label: "正常" }, { value: "review", label: "需复核" }]} compact className="min-w-0" triggerClassName="min-w-0" />
         </div>
       </div>
       <div className="flex items-center justify-between border-b border-border px-4 py-3"><div><h2 className="font-semibold">会话列表</h2><p className="mt-1 text-xs text-text-muted">共 {filtered.length} 条共享会话</p></div><span className="text-xs text-text-muted">最新</span></div>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CaretDown, Info, MagicWand, Plus, Trash, X } from "@phosphor-icons/react";
 import type { KnowledgeBaseOption } from "./api";
 import { NarrativeOptimizerPanel } from "./narrative-optimizer-panel";
+import { Select } from "@/shared/ui/select";
 import {
   getLLMProviderFamilies,
   getLLMProviderFamily,
@@ -18,8 +19,7 @@ import type {
   DraftValidationErrors,
 } from "./types";
 
-const inputClass =
-  "mt-2 w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-text-strong outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/15";
+const inputClass = "control-field mt-2 w-full";
 
 function Field({
   label,
@@ -190,7 +190,7 @@ export function BasicSectionFields({
               type="button"
               onClick={() => setOptimizerOpen(true)}
               disabled={!draft.systemPrompt.trim()}
-              className="button-secondary h-9 px-3 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+              className="button-secondary control-compact"
             >
               <MagicWand size={16} />
               优化角色人格
@@ -251,16 +251,14 @@ export function BasicSectionFields({
         ) : (
           <div className="rounded-xl border border-dashed border-border p-7 text-center text-sm text-text-muted">尚未绑定知识库。</div>
         )}
-        <Field label={selectedKnowledge ? "更换知识库" : "选择知识库"}>
-          <select className={inputClass} disabled={knowledgeLoading} value={draft.knowledgeBaseId ?? ""} onChange={(event) => {
-            const next = event.target.value ? Number(event.target.value) : null;
+        <div>
+          <span className="font-medium text-text-strong">{selectedKnowledge ? "更换知识库" : "选择知识库"}</span>
+          <Select className="mt-2 w-full" ariaLabel={selectedKnowledge ? "更换知识库" : "选择知识库"} disabled={knowledgeLoading} value={String(draft.knowledgeBaseId ?? "")} onValueChange={(value) => {
+            const next = value ? Number(value) : null;
             if (draft.knowledgeBaseId !== null && next !== draft.knowledgeBaseId && !window.confirm(next === null ? "确定解除当前知识库绑定吗？" : "确定更换当前知识库吗？")) return;
             onPatch({ knowledgeBaseId: next });
-          }}>
-            <option value="">不绑定知识库</option>
-            {knowledgeBases.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
-          </select>
-        </Field>
+          }} options={[{ value: "", label: "不绑定知识库" }, ...knowledgeBases.map((item) => ({ value: String(item.id), label: item.name }))]} />
+        </div>
       </div>
     );
   }
@@ -279,93 +277,64 @@ export function BasicSectionFields({
   if (section === "runtime") {
     return (
       <div className="space-y-5">
-        <Field label="部署形态">
-          <select
-            className={inputClass}
+        <div>
+          <span className="font-medium text-text-strong">部署形态</span>
+          <Select
+            className="mt-2 w-full"
+            ariaLabel="部署形态"
             value={draft.agentType}
-            onChange={(e) =>
-              onPatch({ agentType: e.target.value as "cloud" | "edge" })
+            onValueChange={(value) =>
+              onPatch({ agentType: value as "cloud" | "edge" })
             }
-          >
-            <option value="cloud">Cloud Agent</option>
-            <option value="edge">Edge Agent</option>
-          </select>
-        </Field>
+            options={[{ value: "cloud", label: "Cloud Agent" }, { value: "edge", label: "Edge Agent" }]}
+          />
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field
-            label="供应商"
-            hint={
-              providersQuery.isError
-                ? "系统 Provider 加载失败，仍可选择兼容协议"
-                : undefined
-            }
-          >
-            <select
-              className={inputClass}
+          <div>
+            <span className="font-medium text-text-strong">供应商</span>
+            {providersQuery.isError && <span className="ml-2 text-xs text-text-muted">系统 Provider 加载失败，仍可选择兼容协议</span>}
+            <Select
+              className="mt-2 w-full"
+              ariaLabel="供应商"
               value={providerSelection}
-              onChange={(e) =>
-                onPatch(getRuntimeProviderPatch(e.target.value, llmProviders))
+              onValueChange={(value) =>
+                onPatch(getRuntimeProviderPatch(value, llmProviders))
               }
-            >
-              <option value="">系统默认（不覆盖）</option>
-              {providersQuery.isLoading && (
-                <option disabled>正在加载系统 Provider…</option>
-              )}
-              {(providerFamilies.length > 0 || currentProviderMissing) && (
-                <optgroup label="系统 Provider">
-                  {currentProviderMissing && (
-                    <option value={"provider:" + draft.llmProvider}>
-                      {draft.llmProvider}（当前配置）
-                    </option>
-                  )}
-                  {providerFamilies.map((family) => (
-                    <option key={family.key} value={"catalogue:" + family.key}>
-                      {family.label}
-                    </option>
-                  ))}
-                </optgroup>
-              )}
-              <optgroup label="自定义兼容协议">
-                {RUNTIME_PROVIDER_PROTOCOLS.map((protocol) => (
-                  <option
-                    key={protocol.value}
-                    value={"protocol:" + protocol.value}
-                  >
-                    {protocol.label}
-                  </option>
-                ))}
-              </optgroup>
-            </select>
+              options={[
+                { value: "", label: "系统默认（不覆盖）" },
+                ...(providersQuery.isLoading ? [{ value: "__loading", label: "正在加载系统 Provider…", disabled: true }] : []),
+                ...(currentProviderMissing ? [{ value: `provider:${draft.llmProvider}`, label: `${draft.llmProvider}（当前配置）`, group: "系统 Provider" }] : []),
+                ...providerFamilies.map((family) => ({ value: `catalogue:${family.key}`, label: family.label, group: "系统 Provider" })),
+                ...RUNTIME_PROVIDER_PROTOCOLS.map((protocol) => ({ value: `protocol:${protocol.value}`, label: protocol.label, group: "自定义兼容协议" })),
+              ]}
+            />
             {selectedProviderFamily && (
               <p className="mt-2 text-xs text-text-muted">
                 {selectedProviderFamily.label} · {modelOptions.length}{" "}
                 个可选模型
               </p>
             )}
-          </Field>{" "}
-          <Field label="模型名称" hint="留空使用系统默认">
-            <select
-              className={inputClass}
+          </div>{" "}
+          <div>
+            <span className="font-medium text-text-strong">模型名称</span>
+            <span className="ml-2 text-xs text-text-muted">留空使用系统默认</span>
+            <Select
+              className="mt-2 w-full"
+              ariaLabel="模型名称"
               value={draft.llmModelName}
               disabled={providersQuery.isLoading}
-              onChange={(e) =>
+              onValueChange={(value) =>
                 onPatch(
                   getRuntimeModelPatch(
-                    e.target.value,
+                    value,
                     providerSelection,
                     llmProviders,
                   ),
                 )
               }
-            >
-              <option value="">系统默认（不覆盖）</option>
-              {modelOptions.map((model) => (
-                <option key={model} value={model}>
-                  {model}
-                </option>
-              ))}
-            </select>
-          </Field>
+              options={[{ value: "", label: "系统默认（不覆盖）" }, ...modelOptions.map((model) => ({ value: model, label: model }))]}
+            />
+          </div>
         </div>
         <button type="button" onClick={() => setRuntimeAdvancedOpen((current) => !current)} aria-expanded={runtimeAdvancedOpen} className="flex w-full items-center justify-between rounded-lg border border-border px-4 py-3 text-left text-sm font-medium hover:bg-subtle">
           高级设置
@@ -461,20 +430,19 @@ export function ExamplesEditor({
             className="rounded-lg border border-border p-4"
           >
             <div className="mb-2 flex items-center justify-between">
-              <select
+              <Select
+                ariaLabel={`示例 ${index + 1} 的角色`}
                 value={item.role}
-                onChange={(e) =>
+                onValueChange={(value) =>
                   update(
                     index,
-                    e.target.value as "user" | "assistant",
+                    value as "user" | "assistant",
                     item.content,
                   )
                 }
-                className="rounded border border-border bg-surface px-2 py-1 text-xs"
-              >
-                <option value="user">用户</option>
-                <option value="assistant">Agent</option>
-              </select>
+                compact
+                options={[{ value: "user", label: "用户" }, { value: "assistant", label: "Agent" }]}
+              />
               <button
                 type="button"
                 aria-label={`删除示例 ${index + 1}`}

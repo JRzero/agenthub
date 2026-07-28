@@ -188,7 +188,7 @@ export function DistributionWorkspace() {
         </div>
         <Link
           href={`/operations?module=moments&agentId=${agentId}`}
-          className="button-secondary min-h-9 px-3"
+          className="button-secondary control-compact"
         >
           <ChatCircle size={17} />
           管理朋友圈
@@ -230,7 +230,7 @@ export function DistributionWorkspace() {
         <div className="ml-auto text-right">
           <button
             type="button"
-            className="button-secondary min-h-9"
+            className="button-secondary"
             disabled={!current || !packageExportReady}
             onClick={openExport}
             title={
@@ -313,7 +313,7 @@ export function DistributionWorkspace() {
         )}
         <button
           type="button"
-          className="button-secondary min-h-9"
+          className="button-secondary"
           disabled={shareBusy || !current}
           onClick={() => void toggleShare()}
         >
