@@ -111,6 +111,7 @@ export function useBuildEditor(agentId: number | null) {
     validationErrors,
     knowledgeBases: knowledgeQuery.data || [],
     knowledgeLoading: knowledgeQuery.isLoading,
+    knowledgeError: knowledgeQuery.isError,
     demo,
     patchDraft,
     reset,

@@ -11,6 +11,11 @@ import { useAuth } from "@/modules/auth/auth-provider";
 import { useWorkspace } from "@/modules/workspace/workspace-provider";
 import { buildSimulationPayload, getDemoSimulationResponse, simulateAgent } from "./api";
 import { deriveEvaluation } from "./evaluation";
+import {
+  createPublishTestSummary,
+  readPublishTestSummary,
+  savePublishTestSummary,
+} from "./publish-test-summary";
 import { DEFAULT_TEST_SCENARIOS, type EvaluationResult, type TestMessage, type TestScenario } from "./types";
 
 export function useTestSession(agentId: number | null) {
@@ -34,6 +39,30 @@ export function useTestSession(agentId: number | null) {
     if (demo || !agentId || !session?.apiKey) return;
     getRuntimeWidgets(session.apiKey, workspaceCode, agentId).then(setWidgets).catch(() => setWidgets([]));
   }, [agentId, demo, session?.apiKey, workspaceCode]);
+
+  useEffect(() => {
+    if (!query.data || !agentId) return;
+    const summary = readPublishTestSummary(
+      window.sessionStorage,
+      DATA_MODE,
+      agentId,
+      query.data.draft_revision ?? 0,
+    );
+    if (!summary) return;
+    setScenarioId(summary.scenarioId);
+    setEvaluation(summary.evaluation);
+    setScenarios((current) =>
+      current.map((item) =>
+        item.id === summary.scenarioId
+          ? {
+              ...item,
+              status:
+                summary.evaluation.overall >= 85 ? "passed" : "partial",
+            }
+          : item,
+      ),
+    );
+  }, [agentId, query.data]);
 
   const resetTranscript = useCallback(() => { setMessages([]); setEvaluation(null); setConversationError(""); }, []);
   const selectScenario = useCallback((id: string) => { setScenarioId(id); setMessages([]); setEvaluation(null); setConversationError(""); }, []);
@@ -76,6 +105,11 @@ export function useTestSession(agentId: number | null) {
   const runEvaluation = useCallback(() => {
     if (!query.data || !scenario || !canEvaluate) return null;
     const result = deriveEvaluation(query.data, scenario, messages); setEvaluation(result);
+    savePublishTestSummary(
+      window.sessionStorage,
+      DATA_MODE,
+      createPublishTestSummary(query.data, result, scenario.id),
+    );
     setScenarios((current) => current.map((item) => item.id === scenario.id ? { ...item, status: result.overall >= 85 ? "passed" : "partial" } : item));
     return result;
   }, [canEvaluate, messages, query.data, scenario]);

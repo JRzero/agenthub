@@ -93,6 +93,64 @@ final result: blocked
 
 ---
 
+# Build 简单发布检查设计 QA
+
+## Comparison target
+
+- Source visual truth: `/Users/king/.codex/generated_images/019fa2f9-bd5a-7ad1-b5cd-8b60a9c65cec/call_GQidrKZZGoei3BhkTVl5EbTb.png`
+- Original product reference: `/var/folders/rk/rlxc7qzd2xz55_fls_ftnyrm0000gn/T/codex-clipboard-56d81da0-47c4-4bc1-83c2-6e0ec102b2e3.png`
+- Implementation route: `http://localhost:3002/assets/904/build`
+- Verified viewports: `1440 × 900` and `1280 × 720` CSS px
+- Verified state: saved draft, publish check active
+- Source pixels: generated source `1792 × 896`; original reference `3024 × 1516`
+- Implementation evidence:
+  - `docs/qa/images/add-build-publish-check-1440x900.png`
+  - `docs/qa/images/add-build-publish-check-1280x720.png`
+
+## Full-view comparison evidence
+
+- The rendered implementation preserves the existing global icon rail, grouped Build rail, Agent header actions, lifecycle tabs, center editor structure, and right-panel width.
+- The default state remains the existing realtime preview. Clicking `发布为新版本` activates the two-state switch and replaces only the right-panel content with the publish summary.
+- At both viewports, `scrollWidth` equals `innerWidth` and `scrollHeight` equals `innerHeight`; no page-level horizontal or vertical overflow was observed.
+
+## Focused region comparison evidence
+
+- The right panel renders `实时预览 / 发布检查`, four ordered categories, no percentage, no progress bar, no nested cards, and one concise blocking summary.
+- `基础配置` and `能力与资源` show passed states; `测试与安全` honestly shows `尚未测试` with the direct `前往测试` action; `线上影响` shows the queried Client count.
+- At `1280 × 720`, all four rows and the final readiness summary remain visible in one screen without crowding or truncation.
+
+## Required fidelity surfaces
+
+- Fonts and typography: existing AgentHub font stack and text tokens are reused; labels, supporting copy, and status hierarchy remain legible at both viewports.
+- Spacing and layout rhythm: existing panel and grid tracks are preserved; the publish rows use consistent dividers and compact vertical rhythm.
+- Colors and visual tokens: existing `primary`, `success`, `warning`, `border`, and text tokens are reused.
+- Image quality and assets: the existing Agent avatar and Phosphor icon library remain unchanged; no new raster assets or custom SVG substitutes were added.
+- Copy and content: the implementation uses the approved four categories and shows `尚未测试` when no current-revision evidence exists instead of inventing a successful result.
+
+## Interaction verification
+
+- Browser interaction verified the transition from `发布为新版本` to the selected `发布检查` state and the header action change to `继续发布`.
+- Unit tests cover entering the check, blocked continuation, successful continuation intent, configuration routing metadata, test routing metadata, resource failure, and Client counts.
+- No console errors were recorded during either viewport check.
+
+## Findings
+
+- No blocking or high-priority visual defects were found in the selected simple publish-check state.
+- The generated source used a wider conceptual layout, while the implementation intentionally retains the product's established fixed right panel so the editor does not jump when entering the check.
+
+## Comparison history
+
+1. Source was simplified from a percentage-based readiness dashboard to four fixed rows with one actionable blocker.
+2. Implementation matched that information hierarchy and preserved the existing page shell.
+3. Initial browser QA was blocked by a corrupted local development build cache.
+4. The development service was restarted cleanly; browser interaction, screenshots, overflow checks, and console checks then passed at both requested PC viewports.
+
+## Final result
+
+final result: passed
+
+---
+
 # Agent 分步创建流程设计 QA
 
 ## 对照范围

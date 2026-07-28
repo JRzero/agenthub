@@ -60,7 +60,7 @@ export function useAgentVersion(agentId: number, versionNo: number | null) {
   });
 }
 
-export function useAgentClients(agentId: number) {
+export function useAgentClients(agentId: number, queryEnabled = true) {
   const { enabled, ...auth } = useVersionAuth();
   return useQuery({
     queryKey: ["agent-version-clients", agentId, auth.workspaceCode, DATA_MODE],
@@ -68,7 +68,7 @@ export function useAgentClients(agentId: number) {
       DATA_MODE === "demo"
         ? Promise.resolve({ clients: demoClients(agentId) })
         : listAgentClients(auth, agentId),
-    enabled: enabled && agentId > 0,
+    enabled: enabled && queryEnabled && agentId > 0,
   });
 }
 

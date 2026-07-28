@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -14,11 +14,22 @@ import { BuildEditorPanel } from "./build-editor-panel";
 import { resolveBuildPreviewLayout } from "./build-layout";
 import { BuildPreview } from "./build-preview";
 import { BuildSectionRail } from "./build-section-rail";
+import {
+  derivePublishCheck,
+  resolvePublishActionState,
+} from "./publish-check-model";
 import { resolveRequestedBuildSection } from "./professional-navigation";
 import { useBuildEditor } from "./use-build-editor";
 import type { BuildSectionId } from "./types";
+import type { PublishCheckAction } from "./publish-check-model";
+import { DATA_MODE } from "@/config/capabilities";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 import { BUILD_HEADER_ACTIONS_ID } from "@/modules/agent-assets/asset-workspace-header";
+import { useAgentClients } from "@/modules/agent-versions/queries";
+import {
+  readPublishTestSummary,
+  type PublishTestSummary,
+} from "@/modules/agent-test/publish-test-summary";
 
 export function BuildWorkspace() {
   const params = useParams<{ agentId: string }>();
@@ -28,8 +39,19 @@ export function BuildWorkspace() {
   const editor = useBuildEditor(Number.isFinite(agentId) ? agentId : null);
   const [section, setSection] = useState<BuildSectionId>("identity");
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
+  const [publishCheckEnabled, setPublishCheckEnabled] = useState(false);
+  const [panelMode, setPanelMode] = useState<"preview" | "publish-check">(
+    "preview",
+  );
+  const [testSummary, setTestSummary] = useState<PublishTestSummary | null>(
+    null,
+  );
   const [momentsMigrated, setMomentsMigrated] = useState(false);
   const [actionsTarget, setActionsTarget] = useState<HTMLElement | null>(null);
+  const clientsQuery = useAgentClients(
+    Number.isFinite(agentId) ? agentId : 0,
+    publishCheckEnabled,
+  );
   const previewLayout = resolveBuildPreviewLayout(previewCollapsed);
 
   useEffect(() => {
@@ -55,6 +77,66 @@ export function BuildWorkspace() {
     return () => query.removeEventListener("change", sync);
   }, []);
 
+  useEffect(() => {
+    if (!editor.data || !Number.isFinite(agentId)) {
+      setTestSummary(null);
+      return;
+    }
+    setTestSummary(
+      readPublishTestSummary(
+        window.sessionStorage,
+        DATA_MODE,
+        agentId,
+        editor.data.draft_revision ?? 0,
+      ),
+    );
+  }, [agentId, editor.data]);
+
+  const publishCheck = useMemo(
+    () =>
+      editor.draft
+        ? derivePublishCheck({
+            draft: editor.draft,
+            dirty: editor.dirty,
+            knowledgeBases: editor.knowledgeBases,
+            knowledgeLoading: editor.knowledgeLoading,
+            knowledgeError: editor.knowledgeError,
+            testSummary,
+            clients: clientsQuery.data?.clients || [],
+            clientsLoading: clientsQuery.isLoading,
+            clientsError: clientsQuery.isError,
+          })
+        : { items: [], blockers: 0, canContinue: false },
+    [
+      clientsQuery.data?.clients,
+      clientsQuery.isError,
+      clientsQuery.isLoading,
+      editor.dirty,
+      editor.draft,
+      editor.knowledgeBases,
+      editor.knowledgeError,
+      editor.knowledgeLoading,
+      testSummary,
+    ],
+  );
+  const publishAction = useMemo(
+    () =>
+      resolvePublishActionState({
+        publishCheckEnabled,
+        panelMode,
+        dirty: editor.dirty,
+        saving: editor.saving,
+        canContinue: publishCheck.canContinue,
+      }),
+    [
+      editor.dirty,
+      editor.saving,
+      panelMode,
+      publishCheck.canContinue,
+      publishCheckEnabled,
+    ],
+  );
+
   if (editor.isLoading || !editor.draft)
     return <LoadingState label="正在加载构建草稿…" />;
   if (editor.isError || !editor.data)
@@ -68,6 +150,26 @@ export function BuildWorkspace() {
   const saveAndTest = async () => {
     const saved = await editor.save();
     if (saved) router.push(`/assets/${agentId}/test`);
+  };
+
+  const handlePublish = () => {
+    if (publishAction.intent === "open-check") {
+      setPublishCheckEnabled(true);
+      setPanelMode("publish-check");
+      setPreviewCollapsed(false);
+      return;
+    }
+    if (publishCheck.canContinue) {
+      router.push(`/assets/${agentId}/versions`);
+    }
+  };
+
+  const handlePublishCheckAction = (action: PublishCheckAction) => {
+    if (action.kind === "section") {
+      setSection(action.target);
+      return;
+    }
+    router.push(`/assets/${agentId}/test`);
   };
 
   return (
@@ -112,13 +214,13 @@ export function BuildWorkspace() {
             </button>
             <button
               type="button"
-              onClick={() => router.push("/assets/" + agentId + "/versions")}
-              disabled={editor.saving || editor.dirty}
+              onClick={handlePublish}
+              disabled={publishAction.disabled}
               className="button-primary control-compact"
-              title={editor.dirty ? "请先保存当前草稿" : "前往版本管理发布"}
+              title={publishAction.title}
             >
               <PaperPlaneTilt size={16} />
-              发布为新版本
+              {publishAction.label}
             </button>
           </div>,
           actionsTarget,
@@ -163,6 +265,11 @@ export function BuildWorkspace() {
             dirty={editor.dirty}
             collapsed={previewCollapsed}
             onToggleCollapsed={() => setPreviewCollapsed((current) => !current)}
+            panelMode={panelMode}
+            publishCheckEnabled={publishCheckEnabled}
+            publishCheck={publishCheck}
+            onPanelModeChange={setPanelMode}
+            onPublishCheckAction={handlePublishCheckAction}
           />
         </div>
       </div>
