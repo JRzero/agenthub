@@ -1,7 +1,9 @@
 import path from "node:path";
 import type { NextConfig } from "next";
+import { resolveNextDistDir } from "./src/config/next-build-output";
 
 const nextConfig: NextConfig = {
+  distDir: resolveNextDistDir(process.env.NODE_ENV),
   output: "standalone",
   experimental: {
     optimizePackageImports: ["@phosphor-icons/react"],
