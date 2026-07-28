@@ -332,14 +332,7 @@ export function MomentsWorkspace() {
       <div className="grid min-h-[680px] xl:h-[calc(100vh-193px)] xl:min-h-[560px] xl:grid-cols-[300px_minmax(390px,1fr)_290px]">
         <aside className="flex min-h-0 flex-col border-r border-border bg-surface">
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <div>
-              <h2 className="font-semibold">已发布内容</h2>
-              <p className="mt-0.5 text-xs text-text-muted">
-                {total === null || total === undefined
-                  ? `${loadedMoments.length} 条当前页记录`
-                  : `共 ${total} 条`}
-              </p>
-            </div>
+            <h2 className="font-semibold">已发布内容</h2>
             {momentsQuery.isFetching && (
               <SpinnerGap size={17} className="loading-spin text-primary" />
             )}
