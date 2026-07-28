@@ -58,11 +58,6 @@ function NavigationLink({
           {item.label}
         </span>
       )}
-      {item.capability === "future" && (
-        <span
-          className={`ml-auto h-1.5 w-1.5 rounded-full bg-border group-hover:bg-primary/50 ${compact ? "lg:hidden" : ""}`}
-        />
-      )}
     </Link>
   );
 }
@@ -89,21 +84,21 @@ export function WorkspaceSidebar({
         />
       )}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-[224px] flex-col border-r border-border bg-surface px-3 py-4 transition-[width,transform,padding] duration-200 lg:translate-x-0 ${agentAssetMode ? "lg:bottom-0 lg:top-[60px] lg:py-3" : ""} ${collapsed ? "lg:w-[88px] lg:px-2" : "lg:w-[224px] lg:px-3"} ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-[224px] flex-col border-r border-border bg-surface px-3 py-4 transition-[width,transform,padding] duration-200 lg:translate-x-0 ${agentAssetMode ? "lg:bottom-0 lg:top-[60px] lg:py-3" : ""} ${collapsed ? "lg:w-[88px] lg:px-2" : "lg:w-[196px] lg:px-2.5"} ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div
-          className={`mb-5 flex h-10 items-center gap-2 px-2 ${agentAssetMode ? "lg:hidden" : ""}`}
+          className={`mb-5 flex h-10 items-center gap-2 px-1.5 ${agentAssetMode ? "lg:hidden" : ""}`}
         >
           <Image
             src="/images/agenthub-logo.png"
             alt="AgentHub"
-            width={32}
-            height={32}
+            width={30}
+            height={30}
             priority
           />
-          <span className="text-[20px] font-bold tracking-tight text-text-strong">
+          <span className="text-lg font-bold tracking-tight text-text-strong">
             AgentHub
           </span>
           <button

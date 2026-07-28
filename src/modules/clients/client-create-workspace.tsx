@@ -122,7 +122,7 @@ export function ClientCreateWorkspace() {
               Demo 模式不会向后端写入记录。切换到 Live 模式后可使用相同表单创建真实 Client 接入。
             </p>
             <Link href="/clients" className="button-primary mt-6">
-              返回 Clients
+              返回接入管理
             </Link>
           </div>
         </div>
@@ -138,7 +138,7 @@ export function ClientCreateWorkspace() {
           className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-primary"
         >
           <ArrowLeft size={16} />
-          返回 Clients
+          返回接入管理
         </Link>
         <h1 className="mt-3 text-2xl font-bold tracking-tight">
           新建 Client 接入

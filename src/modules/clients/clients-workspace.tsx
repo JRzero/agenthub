@@ -305,7 +305,7 @@ function PageHeader() {
     <header className="flex flex-wrap items-start justify-between gap-4">
       <div>
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold tracking-tight">Clients</h1>
+          <h1 className="text-2xl font-bold tracking-tight">客户端接入</h1>
           <SourceBadge source={DATA_MODE === "demo" ? "demo" : "live"} />
         </div>
         <p className="mt-1.5 text-sm text-text-muted">

@@ -12,7 +12,7 @@ export function shouldCollapseWorkspaceSidebar(pathname: string): boolean {
 export type WorkspaceShellLayout = {
   agentAssetMode: boolean;
   sidebarCollapsed: boolean;
-  mainDesktopPaddingClass: "lg:pl-[88px]" | "lg:pl-[224px]";
+  mainDesktopPaddingClass: "lg:pl-[88px]" | "lg:pl-[196px]";
   mainTopPaddingClass: "pt-[50px]";
 };
 
@@ -25,7 +25,7 @@ export function resolveWorkspaceShellLayout(
   return {
     agentAssetMode,
     sidebarCollapsed,
-    mainDesktopPaddingClass: sidebarCollapsed ? "lg:pl-[88px]" : "lg:pl-[224px]",
+    mainDesktopPaddingClass: sidebarCollapsed ? "lg:pl-[88px]" : "lg:pl-[196px]",
     mainTopPaddingClass: "pt-[50px]",
   };
 }

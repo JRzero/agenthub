@@ -30,16 +30,16 @@ export function Workbench() {
   if (query.isError) return <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />;
 
   return (
-    <div className="space-y-7 pb-8">
+    <div className="space-y-6 pb-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">工作台</h1>
+          <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">工作台</h1>
             <span className="text-xs text-text-muted">
               {new Date().toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" })}
             </span>
           </div>
-          <p className="mt-1.5 text-xs text-text-muted">欢迎回来，继续完成你的 Agent</p>
+          <p className="mt-1 text-xs text-text-muted">欢迎回来，继续完成你的 Agent</p>
         </div>
         <button type="button" onClick={() => router.push("/assets/create")} className="button-primary">
           <Plus size={16} weight="bold" />
@@ -49,7 +49,6 @@ export function Workbench() {
 
       {focusAgent ? (
         <section>
-          <h2 className="mb-3 text-lg font-semibold">继续构建</h2>
           <div className="panel grid overflow-hidden rounded-xl shadow-sm xl:grid-cols-[minmax(0,1fr)_auto]">
             <div className="flex min-w-0 items-center gap-4 px-5 py-4">
               <AgentAvatar agent={focusAgent} size={68} className="shrink-0 rounded-lg" />

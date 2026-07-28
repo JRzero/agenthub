@@ -123,7 +123,7 @@ export function ClientDetailWorkspace() {
         message={
           agentQuery.error?.message ||
           clientsQuery.error?.message ||
-          "没有找到这条 Client 接入记录，请从 Clients 列表重新进入。"
+          "没有找到这条 Client 接入记录，请从接入管理列表重新进入。"
         }
         onRetry={() => router.push("/clients")}
       />
@@ -257,7 +257,7 @@ export function ClientDetailWorkspace() {
             className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-primary"
           >
             <ArrowLeft size={16} />
-            返回 Clients
+            返回接入管理
           </Link>
           <div className="mt-3 flex items-center gap-3">
             <span

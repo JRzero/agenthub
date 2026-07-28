@@ -68,7 +68,7 @@ describe("resolveWorkspaceShellLayout", () => {
     expect(resolveWorkspaceShellLayout("/assets")).toEqual({
       agentAssetMode: false,
       sidebarCollapsed: false,
-      mainDesktopPaddingClass: "lg:pl-[224px]",
+      mainDesktopPaddingClass: "lg:pl-[196px]",
       mainTopPaddingClass: "pt-[50px]",
     });
   });

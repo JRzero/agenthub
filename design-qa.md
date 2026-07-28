@@ -1,3 +1,112 @@
+# Design QA: 工作空间侧栏方案 1
+
+## 2026-07-28 静默全量导航
+
+### 对照范围
+
+- Source visual truth：`/Users/king/.codex/generated_images/019fa2f9-bd5a-7ad1-b5cd-8b60a9c65cec/call_hAhCqFCusMeaBLNLrEWRXBOm.png`
+- Source pixels：`1487 × 1058`
+- Implementation route：`http://localhost:3003/workbench`（Demo 数据，仅用于视觉验证）
+- Implementation evidence：`docs/qa/images/workbench-sidebar-option-1-1440x1024.png`
+- Implementation screenshot pixels：`1440 × 1024`
+- CSS viewport：`1440 × 1024`，device scale factor `1`
+- Full-view comparison：`docs/qa/images/workbench-sidebar-option-1-comparison.png`
+- Focus comparison：`docs/qa/images/workbench-sidebar-option-1-focus-comparison.png`
+- State：浅色主题、工作台已加载、工作台导航选中
+
+### Full-view comparison evidence
+
+- 实现保留设计稿的完整文字导航、单一紫色激活态、底部设置入口和白色侧栏结构。
+- 工作空间侧栏固定为 `196px`，顶部栏与内容区同步避让；页面 `scrollWidth=1440`，与视口宽度一致，没有横向溢出。
+- 设计稿使用示意数据，实现使用仓库隔离的 Demo 数据；数据内容差异不影响本次导航结构与密度判断。
+- Agent Asset 和应用运营现有的 `88px` 紧凑轨道行为继续保留，避免扩大本次改动范围。
+
+### Focused region comparison evidence
+
+- 聚焦图将设计稿与实现的左侧导航置于同一张对照图中。
+- 实现的 9 个导航行（含设置）均为 `48px` 高，图标沿用项目现有 Phosphor 图标，文字保持产品统一的 `14px`。
+- 设计稿中文字视觉偏大；实现按用户此前“字体、组件过大”的反馈保持现有 14px token，同时把桌面侧栏从 `224px` 收窄至 `196px`。
+- 模糊的未来能力圆点已全部移除，实测数量为 `0`；没有新增分组标题、徽标或持续显示的提示层。
+
+### Required fidelity surfaces
+
+- Fonts and typography：沿用系统字体栈、14px/500 导航文字与 21px 图标；层级清晰，无换行或截断。
+- Spacing and layout rhythm：196px 侧栏、48px 导航行、12px 图文间距与紧凑 Logo 组合形成稳定节奏；主内容获得额外 28px 横向空间。
+- Colors and visual tokens：仅使用现有 `primary`、`primary-soft`、`surface`、`border` 和文字 token；未引入渐变或额外阴影。
+- Image quality and assets：继续使用现有 AgentHub Logo 与 Phosphor 图标，没有占位图、手绘 SVG 或低清替代资产。
+- Copy and content：导航名称完整保留，并延续已确认的“接入管理”中文命名。
+
+### Findings
+
+- 未发现 P0、P1 或 P2 视觉与可用性问题。
+- 浏览器实测“接入管理”可从 `/workbench` 正常跳转至 `/clients`。
+- 浏览器控制台无错误。
+
+### Comparison history
+
+1. Earlier finding：原工作空间侧栏为 `224px`，同时存在无明确含义的未来能力圆点，视觉占用偏大。
+2. Fix：桌面文字侧栏收窄至 `196px`，顶部栏与主内容偏移同步调整，移除未来能力圆点，Logo 组合同步缩小。
+3. Post-fix evidence：同视口全页对照、侧栏聚焦对照、计算尺寸、导航跳转和控制台检查全部通过。
+
+### Follow-up polish
+
+- P3：设计稿的设置图标未被外部浮层遮挡；验证截图底部出现的圆形 `N` 浮层不属于 AgentHub DOM，不纳入产品代码修复范围。
+
+### Final result
+
+final result: passed
+
+# Design QA: 工作台标题密度优化
+
+## 2026-07-28 工作台标题密度优化
+
+### 对照范围
+
+- Source visual truth：`/var/folders/rk/rlxc7qzd2xz55_fls_ftnyrm0000gn/T/codex-clipboard-0ad3dbbe-ac75-46da-928d-7f8b6e7bbd20.png`
+- Source pixels：`1748 × 846`
+- Implementation route：`http://localhost:3002/workbench`
+- Implementation evidence：`docs/qa/images/workbench-compact-title-1440x900.png`
+- Implementation screenshot pixels：`1429 × 650`
+- CSS viewport override：`1440 × 900`
+- Focus comparison：`docs/qa/images/workbench-title-density-comparison.png`
+- State：工作台已加载，存在继续构建 Agent、待处理事项和最近资产
+
+### Full-view comparison evidence
+
+- 优化前主标题在桌面断点使用 `30px`，与 `50px` 顶部栏和紧凑卡片内容相比视觉权重过高。
+- 优化后主标题为 `24px / 32px`，日期与欢迎语保持 `12px`，首屏仍保留清晰的页面、区块和内容三级层级。
+- 工作台纵向区块间距由 `28px` 收紧为 `24px`；没有调整左侧菜单、顶部栏、卡片结构或业务内容。
+- 页面 `scrollWidth=1429`，小于 `innerWidth=1440`，未出现横向溢出。
+
+### Focused region comparison evidence
+
+- 对照图将源图标题及首个内容区与实现中的同一区域分别裁切，并统一到 `800 × 360` 后并排比较。
+- 实现中的标题不再形成独立的大面积视觉块，日期仍与标题基线对齐，欢迎语与下方“继续构建”保持可辨识间隔。
+- “继续构建”等二级标题继续使用现有 `18px / 28px` 层级，避免与同页“待处理事项”“今日表现”产生不一致。
+
+### Required fidelity surfaces
+
+- Fonts and typography：沿用现有字体、字重和抗锯齿，仅把工作台 H1 从桌面 `30px` 调整为 `24px`；没有出现换行或截断。
+- Spacing and layout rhythm：缩小标题横向间距、欢迎语上间距和页面区块间距；卡片内边距、圆角和阴影保持不变。
+- Colors and visual tokens：颜色与语义 token 未修改。
+- Image quality and assets：Agent 头像、品牌 Logo 和图标资产未修改。
+- Copy and content：标题、日期、欢迎语和所有业务文案保持不变。
+
+### Findings
+
+- 未发现与本次标题密度目标相关的 P0、P1 或 P2 问题。
+- 浏览器控制台没有错误。
+
+### Comparison history
+
+1. Earlier finding：桌面工作台 H1 使用 `30px`，在用户当前显示密度下占用过多首屏空间。
+2. Fix：H1 调整为 `24px / 32px`，标题间距和工作台区块间距同步收紧；二级标题保持全页一致。
+3. Post-fix evidence：真实工作台渲染、聚焦并排对照、计算样式与控制台检查均通过。
+
+### Final result
+
+final result: passed
+
 # Design QA: Agent Asset 紧凑外壳
 
 ## Source of truth
