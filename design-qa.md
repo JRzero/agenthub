@@ -212,3 +212,105 @@ final result: blocked
 ## 最终复核
 
 未发现阻断或高优先级视觉问题。实现与最终产品边界一致；与早期概念稿的差异均来自已锁定的信息架构调整，不属于视觉缺失。
+
+---
+
+# Moment Agent Selector Design QA
+
+## Comparison target
+
+- Source visual truth: `/Users/king/.codex/generated_images/019fa2d7-5040-7163-ba02-3a73b1703f8b/call_ga3sOaYRq0Rp22gXpxLGbnat.png`
+- Implementation screenshot: `/Users/king/Projects/linkyun/agenthub/docs/qa/images/moment-agent-selector-open-final-2026-07-27.png`
+- Combined comparison evidence: `/Users/king/Projects/linkyun/agenthub/docs/qa/images/moment-agent-selector-comparison-final-2026-07-27.png`
+- Closed-state evidence: `/Users/king/Projects/linkyun/agenthub/docs/qa/images/moment-agent-selector-closed-2026-07-27.png`
+- Responsive evidence: `/Users/king/Projects/linkyun/agenthub/docs/qa/images/moment-agent-selector-responsive-1024-2026-07-27.png`
+- Route: `http://localhost:3002/operations?module=moments`
+- State: live data, Moment creation step 1, Agent selector open, `可发布` filter selected
+
+## Viewport and normalization
+
+- Source pixels: 1797 × 875
+- Implementation browser viewport: 1464 × 714 CSS px
+- Implementation screenshot pixels: 1453 × 709
+- Browser density: 1 CSS px to 1 screenshot px
+- Comparison normalization: source downsampled with aspect-preserving contain to 1453 × 709; implementation retained at 1453 × 709; both stacked in one 1453 × 1426 comparison image
+- Responsive check: 1024 × 768 CSS px, no horizontal overflow (`scrollWidth` 1013, `clientWidth` 1013)
+
+## Full-view comparison
+
+The implementation matches the selected direction's core composition: a compact selected-Agent control, a constrained searchable list, availability tabs, a parallel writing area, and a persistent right-side OyiiOyii preview. The editor remains visible while the Agent selector is open.
+
+## Focused region comparison
+
+The Agent selector region was checked separately in closed, open, search-result, `可发布`, and `全部` states. Focused evidence was necessary because the full-page comparison cannot show disabled-row semantics, keyboard closure, or search behavior.
+
+## Required fidelity surfaces
+
+- Fonts and typography: existing AgentHub font stack, weights, sizes, line heights, truncation, and hierarchy were preserved.
+- Spacing and layout rhythm: selector/editor proportions now follow the reference; the open list is height-constrained and independently scrollable.
+- Colors and visual tokens: existing canvas, surface, border, muted text, primary-soft, and primary tokens are used throughout.
+- Image quality and assets: existing Agent avatars and the existing Phosphor icon library are used; no replacement placeholders, custom SVGs, or generated raster assets were introduced.
+- Copy and content: Chinese labels reflect the live product contract. Unlike the concept image, unpublished Agents are not presented as valid selected values.
+
+## Interaction verification
+
+- Default selection skips unpublished Agents and chooses the first Agent with a platform current version.
+- Selector opens and closes from the selected-Agent field.
+- Search by Agent name returns the expected single result.
+- Selecting a result updates the field and preview, clears the search, and closes the selector.
+- `可发布` and `全部` filters work.
+- Unpublished Agents remain visible in `全部` but are disabled and explain that a platform version must be published first.
+- Escape closes the selector.
+- No browser console warnings or errors were present.
+- No publish action or backend Moment creation was triggered during QA.
+
+## Comparison history
+
+1. Initial implementation finding — P2: the selector overlay was full-width and obscured the upper writing area.
+2. Fix: changed the desktop composition to a parallel Agent-selector and writing layout, while retaining stacked responsive behavior below the desktop breakpoint.
+3. Post-fix evidence: `moment-agent-selector-open-final-2026-07-27.png`; the writing controls remain visible while the list is open, with no horizontal overflow at 1024 px.
+
+## Findings
+
+- No remaining P0, P1, or P2 findings.
+- P3: the concept image depicts a richer formatting toolbar, but the current Moment contract uses plain text. This was intentionally not added because it is outside the Agent-selection change and would imply unsupported formatting behavior.
+
+## Implementation checklist
+
+- [x] Compact selected-Agent field
+- [x] Searchable, scrollable single-select list
+- [x] Availability filter and disabled unpublished state
+- [x] Published-Agent default selection
+- [x] Keyboard and click-away dismissal
+- [x] Parallel desktop layout and stacked responsive fallback
+- [x] Automated logic, type, lint, browser interaction, responsive, and visual checks
+
+final result: passed
+
+---
+
+# Moment Automatic Publication Settings Design QA
+
+## Target and evidence
+
+- Route: `http://localhost:3002/operations?module=moments`
+- State: Live data, automatic publication disabled for the selected published Agent
+- Default-size evidence: `/Users/king/Projects/linkyun/agenthub/docs/qa/images/moment-auto-publish-settings-live-default-2026-07-28.png`
+- Responsive evidence: `/Users/king/Projects/linkyun/agenthub/docs/qa/images/moment-auto-publish-settings-live-2026-07-28.png`
+
+## Product and visual verification
+
+- The entry sits in the Moments management toolbar next to the create action, keeping schedule management at the platform operations layer.
+- The modal uses the existing AgentHub surface, border, text, primary, status and elevation tokens.
+- The hierarchy is intentionally compact: title and purpose, published-Agent selector, current status, primary scheduling action, then the non-destructive close note.
+- The selector exposes 16 published Agents in the verified Live workspace and excludes unpublished Agents.
+- At the 1280 × 720 content viewport the 768 px dialog remains fully visible with no horizontal overflow; its body owns vertical scrolling for denser enabled schedules.
+- Escape dismissal and reopening work, and no console errors or warnings were recorded.
+- Live QA was read-only. No schedule generation, deletion or Moment publication was triggered.
+
+## Findings
+
+- No remaining P0, P1, P2 or P3 findings.
+- The design intentionally does not expose manual weekday or time editing because the current backend contract generates the schedule from Agent identity.
+
+final result: passed

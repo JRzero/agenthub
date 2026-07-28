@@ -41,6 +41,28 @@ export interface MomentUpload {
   url_240: string;
 }
 
+export interface MomentScheduleConfig {
+  agent_id: number;
+  enabled: boolean;
+  weekdays: number[];
+  daily_times: string[];
+  timezone: string;
+  week_start: string;
+}
+
+export interface MomentScheduleItem {
+  id: number;
+  scheduled_at: string;
+  status: string;
+  moment_id?: number;
+}
+
+export interface MomentScheduleResult {
+  config: MomentScheduleConfig | null;
+  schedules: MomentScheduleItem[];
+  reasoning?: string;
+}
+
 export interface CreateMomentInput {
   content: string;
   image_tokens?: string[];

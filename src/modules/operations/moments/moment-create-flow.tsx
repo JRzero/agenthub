@@ -4,10 +4,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
+  CaretDown,
   Check,
   CheckCircle,
   ImageSquare,
   MagicWand,
+  MagnifyingGlass,
   SpinnerGap,
   UploadSimple,
   WarningCircle,
@@ -30,6 +32,16 @@ interface UploadedImage {
   name: string;
 }
 
+export function getDefaultMomentAgentId(
+  agents: Pick<Agent, "id" | "current_version_id">[],
+  initialAgentId: number | null,
+) {
+  const initialAgent = agents.find(
+    (agent) => agent.id === initialAgentId && agent.current_version_id,
+  );
+  return initialAgent?.id ?? agents.find((agent) => agent.current_version_id)?.id ?? null;
+}
+
 export function MomentCreateFlow({
   agents,
   initialAgentId,
@@ -45,8 +57,13 @@ export function MomentCreateFlow({
   const { workspaceCode } = useWorkspace();
   const auth = { apiKey: session?.apiKey || "", workspaceCode };
   const [step, setStep] = useState<1 | 2>(1);
-  const [agentId, setAgentId] = useState<number | null>(
-    initialAgentId || agents[0]?.id || null,
+  const [agentId, setAgentId] = useState<number | null>(() =>
+    getDefaultMomentAgentId(agents, initialAgentId),
+  );
+  const [agentPickerOpen, setAgentPickerOpen] = useState(false);
+  const [agentQuery, setAgentQuery] = useState("");
+  const [agentFilter, setAgentFilter] = useState<"available" | "all">(
+    "available",
   );
   const [brief, setBrief] = useState("");
   const [content, setContent] = useState("");
@@ -58,8 +75,24 @@ export function MomentCreateFlow({
   const [error, setError] = useState("");
   const [published, setPublished] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
+  const agentPicker = useRef<HTMLDivElement>(null);
   const selectedAgent = agents.find((agent) => agent.id === agentId);
   const dirty = Boolean(content.trim() || brief.trim() || images.length);
+  const availableAgentCount = agents.filter(
+    (agent) => agent.current_version_id,
+  ).length;
+  const visibleAgents = useMemo(() => {
+    const query = agentQuery.trim().toLocaleLowerCase();
+    return agents.filter((agent) => {
+      if (agentFilter === "available" && !agent.current_version_id) {
+        return false;
+      }
+      if (!query) return true;
+      return [agent.name, agent.code, agent.uuid].some((value) =>
+        value.toLocaleLowerCase().includes(query),
+      );
+    });
+  }, [agentFilter, agentQuery, agents]);
 
   useEffect(() => {
     if (!dirty || published) return;
@@ -69,6 +102,40 @@ export function MomentCreateFlow({
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty, published]);
+
+  useEffect(() => {
+    const selectedIsAvailable = agents.some(
+      (agent) => agent.id === agentId && agent.current_version_id,
+    );
+    if (!selectedIsAvailable) {
+      setAgentId(getDefaultMomentAgentId(agents, initialAgentId));
+    }
+  }, [agentId, agents, initialAgentId]);
+
+  useEffect(() => {
+    if (!agentPickerOpen) return;
+
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (
+        agentPicker.current &&
+        !agentPicker.current.contains(event.target as Node)
+      ) {
+        setAgentPickerOpen(false);
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setAgentPickerOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [agentPickerOpen]);
 
   const previewImage = useMemo(
     () =>
@@ -224,46 +291,181 @@ export function MomentCreateFlow({
       <div className="grid min-h-[calc(100vh-250px)] lg:grid-cols-[minmax(0,1fr)_minmax(360px,440px)]">
         <div className="border-r border-border p-4 sm:p-6 lg:p-7">
           {step === 1 ? (
-            <div className="mx-auto max-w-3xl space-y-6">
-              <section>
+            <div className="mx-auto max-w-5xl space-y-6">
+              <div className="grid gap-6 xl:grid-cols-[minmax(280px,0.78fr)_minmax(0,1.22fr)] xl:items-start">
+                <section>
                 <h3 className="text-base font-semibold">发布 Agent</h3>
                 <p className="mt-1 text-sm text-text-muted">
                   使用 Agent 平台当前版本中的身份、表达方式和安全边界
                 </p>
-                <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                  {agents.map((agent) => (
-                    <button
-                      key={agent.id}
-                      type="button"
-                      onClick={() => setAgentId(agent.id)}
-                      className={`flex items-center gap-3 rounded-lg border p-3 text-left transition ${
-                        agentId === agent.id
-                          ? "border-primary bg-primary-soft"
-                          : "border-border bg-surface hover:border-primary/40"
-                      }`}
-                    >
-                      <AgentAvatar agent={agent} size={38} />
-                      <span className="min-w-0 flex-1">
-                        <strong className="block truncate">{agent.name}</strong>
-                        <span className="mt-0.5 block text-xs text-text-muted">
-                          {agent.current_version_id
-                            ? `平台当前版本 v${agent.version}`
-                            : "尚未发布"}
-                        </span>
+                <div ref={agentPicker} className="relative mt-3">
+                  <button
+                    type="button"
+                    aria-expanded={agentPickerOpen}
+                    aria-haspopup="listbox"
+                    onClick={() => setAgentPickerOpen((open) => !open)}
+                    className={`flex min-h-[62px] w-full items-center gap-3 rounded-lg border bg-surface px-3.5 py-2.5 text-left transition ${
+                      agentPickerOpen
+                        ? "border-primary ring-2 ring-primary/10"
+                        : "border-border hover:border-primary/40"
+                    }`}
+                  >
+                    {selectedAgent ? (
+                      <AgentAvatar agent={selectedAgent} size={40} />
+                    ) : (
+                      <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-subtle text-text-muted">
+                        —
                       </span>
-                      {agentId === agent.id && (
-                        <CheckCircle
-                          size={19}
-                          weight="fill"
-                          className="text-primary"
-                        />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </section>
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <strong className="block truncate">
+                        {selectedAgent?.name || "选择一个可发布的 Agent"}
+                      </strong>
+                      <span className="mt-0.5 block text-xs text-text-muted">
+                        {selectedAgent?.current_version_id
+                          ? `平台当前版本 v${selectedAgent.version}`
+                          : `${availableAgentCount} 个 Agent 可发布`}
+                      </span>
+                    </span>
+                    <span className="mr-1 text-xs text-text-muted">
+                      更换 Agent
+                    </span>
+                    <CaretDown
+                      size={16}
+                      className={`shrink-0 text-text-muted transition-transform ${
+                        agentPickerOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
 
-              <section className="border-t border-border pt-6">
+                  {agentPickerOpen && (
+                    <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-xl border border-border bg-surface shadow-xl">
+                      <div className="border-b border-border p-3">
+                        <label className="relative block">
+                          <span className="sr-only">搜索 Agent</span>
+                          <MagnifyingGlass
+                            size={17}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
+                          />
+                          <input
+                            autoFocus
+                            value={agentQuery}
+                            onChange={(event) =>
+                              setAgentQuery(event.target.value)
+                            }
+                            placeholder="搜索 Agent 名称或编码"
+                            className="h-10 w-full rounded-lg border border-border bg-canvas pl-9 pr-3 text-sm outline-none transition focus:border-primary"
+                          />
+                        </label>
+                        <div
+                          className="mt-3 flex items-center gap-5 text-sm"
+                          role="tablist"
+                          aria-label="Agent 可用状态"
+                        >
+                          <button
+                            type="button"
+                            role="tab"
+                            aria-selected={agentFilter === "available"}
+                            onClick={() => setAgentFilter("available")}
+                            className={`relative pb-2 font-medium ${
+                              agentFilter === "available"
+                                ? "text-primary after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary"
+                                : "text-text-muted hover:text-text-strong"
+                            }`}
+                          >
+                            可发布 {availableAgentCount}
+                          </button>
+                          <button
+                            type="button"
+                            role="tab"
+                            aria-selected={agentFilter === "all"}
+                            onClick={() => setAgentFilter("all")}
+                            className={`relative pb-2 font-medium ${
+                              agentFilter === "all"
+                                ? "text-primary after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary"
+                                : "text-text-muted hover:text-text-strong"
+                            }`}
+                          >
+                            全部 {agents.length}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div
+                        role="listbox"
+                        aria-label="选择发布 Agent"
+                        className="max-h-72 overflow-y-auto p-1.5"
+                      >
+                        {visibleAgents.length ? (
+                          visibleAgents.map((agent) => {
+                            const available = Boolean(
+                              agent.current_version_id,
+                            );
+                            const selected = agent.id === agentId;
+                            return (
+                              <button
+                                key={agent.id}
+                                type="button"
+                                role="option"
+                                aria-selected={selected}
+                                aria-disabled={!available}
+                                disabled={!available}
+                                onClick={() => {
+                                  setAgentId(agent.id);
+                                  setAgentPickerOpen(false);
+                                  setAgentQuery("");
+                                }}
+                                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition ${
+                                  selected
+                                    ? "bg-primary-soft"
+                                    : available
+                                      ? "hover:bg-subtle"
+                                      : "cursor-not-allowed opacity-55"
+                                }`}
+                              >
+                                <AgentAvatar agent={agent} size={36} />
+                                <span className="min-w-0 flex-1">
+                                  <strong className="block truncate text-sm">
+                                    {agent.name}
+                                  </strong>
+                                  <span className="mt-0.5 block truncate text-xs text-text-muted">
+                                    {available
+                                      ? `平台当前版本 v${agent.version}`
+                                      : "尚未发布 · 需先发布 Agent 版本"}
+                                  </span>
+                                </span>
+                                {selected && (
+                                  <CheckCircle
+                                    size={18}
+                                    weight="fill"
+                                    className="shrink-0 text-primary"
+                                  />
+                                )}
+                              </button>
+                            );
+                          })
+                        ) : (
+                          <div className="px-4 py-8 text-center">
+                            <p className="text-sm font-medium">
+                              没有找到匹配的 Agent
+                            </p>
+                            <p className="mt-1 text-xs text-text-muted">
+                              尝试更换关键词或查看全部 Agent
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      {agentFilter === "all" && (
+                        <p className="border-t border-border px-4 py-2.5 text-xs text-text-muted">
+                          尚未发布的 Agent 需要先发布平台版本后才能用于动态。
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+                </section>
+
+                <section className="border-t border-border pt-5 xl:border-t-0 xl:pt-0">
                 <div className="flex items-end justify-between gap-4">
                   <div>
                     <h3 className="text-base font-semibold">生成与编辑正文</h3>
@@ -312,7 +514,8 @@ export function MomentCreateFlow({
                     className="mt-2 w-full resize-none rounded-lg border border-border bg-surface p-3 text-[15px] leading-7 focus:border-primary"
                   />
                 </label>
-              </section>
+                </section>
+              </div>
 
               <section className="border-t border-border pt-6">
                 <h3 className="text-base font-semibold">动态图片</h3>

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowClockwise,
+  CalendarDots,
   CaretLeft,
   CaretRight,
   ChatCircle,
@@ -31,6 +32,7 @@ import {
 } from "./api";
 import { DEMO_MOMENTS } from "./fixtures";
 import { filterMoments, formatMomentTime, momentMediaUrl } from "./model";
+import { AutoPublishDialog } from "./auto-publish-dialog";
 import { MomentCreateFlow } from "./moment-create-flow";
 import type { MomentComment, MomentItem } from "./types";
 
@@ -64,6 +66,7 @@ export function MomentsWorkspace() {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [actionError, setActionError] = useState("");
+  const [autoPublishOpen, setAutoPublishOpen] = useState(false);
 
   const momentsQuery = useQuery({
     queryKey: ["oyiioyii-moments", agentId, page, workspaceCode, DATA_MODE],
@@ -301,6 +304,17 @@ export function MomentsWorkspace() {
         </label>
         <button
           type="button"
+          className="button-secondary"
+          onClick={() => setAutoPublishOpen(true)}
+          disabled={
+            !agentsQuery.data?.some((agent) => agent.current_version_id)
+          }
+        >
+          <CalendarDots size={17} />
+          自动发布设置
+        </button>
+        <button
+          type="button"
           className="button-primary ml-auto"
           onClick={openCreate}
           disabled={!agentsQuery.data?.length}
@@ -309,6 +323,14 @@ export function MomentsWorkspace() {
           新建动态
         </button>
       </div>
+
+      <AutoPublishDialog
+        open={autoPublishOpen}
+        agents={agentsQuery.data || []}
+        initialAgentId={agentId}
+        auth={auth}
+        onClose={() => setAutoPublishOpen(false)}
+      />
 
       {actionError && (
         <div className="mx-4 mt-3 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-danger dark:border-rose-400/20 dark:bg-rose-400/10 sm:mx-6">

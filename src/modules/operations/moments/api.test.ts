@@ -4,8 +4,11 @@ import {
   addMomentComment,
   createMoment,
   deleteMoment,
+  deleteMomentSchedule,
+  generateMomentSchedule,
   getMoment,
   getMomentDraft,
+  getMomentSchedule,
   listMomentComments,
   listMoments,
   uploadMomentImage,
@@ -83,6 +86,33 @@ describe("OyiiOyii Moment contracts", () => {
       2,
       "/moments/7/comments",
       expect.objectContaining({ method: "POST" }),
+    );
+  });
+
+  it("reads, generates and disables Agent-scoped automatic schedules", async () => {
+    vi.mocked(apiRequest).mockResolvedValue({
+      config: null,
+      schedules: [],
+    } as never);
+
+    await getMomentSchedule(auth, 32);
+    await generateMomentSchedule(auth, 32);
+    await deleteMomentSchedule(auth, 32);
+
+    expect(apiRequest).toHaveBeenNthCalledWith(
+      1,
+      "/agents/32/moments/auto-schedule",
+      auth,
+    );
+    expect(apiRequest).toHaveBeenNthCalledWith(
+      2,
+      "/agents/32/moments/auto-schedule",
+      expect.objectContaining({ method: "POST", workspaceCode: "studio" }),
+    );
+    expect(apiRequest).toHaveBeenNthCalledWith(
+      3,
+      "/agents/32/moments/auto-schedule",
+      expect.objectContaining({ method: "DELETE", workspaceCode: "studio" }),
     );
   });
 

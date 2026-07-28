@@ -58,3 +58,32 @@ Agent Build SHALL NOT include a Moments section or load Moment operational data.
 - **WHEN** a creator opens Build with `section=moments`
 - **THEN** Build SHALL select a valid configuration section
 - **AND** it SHALL explain that Moments moved to Application Operations
+
+### Requirement: Automatic Moment schedules are managed in Operations
+
+The Moments workspace SHALL provide an Agent-scoped automatic publication setting using the existing schedule endpoints.
+
+#### Scenario: Open automatic publication settings
+
+- **WHEN** a creator opens automatic publication settings
+- **THEN** the interface SHALL require one Agent with a platform-current version
+- **AND** it SHALL show the real current schedule or a clear disabled state
+- **AND** it SHALL NOT fabricate editable schedule fields unsupported by the backend
+
+#### Scenario: Generate or regenerate a schedule
+
+- **WHEN** the creator requests AI scheduling and the backend succeeds
+- **THEN** the returned schedule configuration and scheduled items SHALL replace the displayed schedule
+- **AND** the interface SHALL identify that Agent as enabled for automatic publication
+
+#### Scenario: Disable automatic publication
+
+- **WHEN** the creator confirms disabling and the backend succeeds
+- **THEN** the schedule SHALL be shown as disabled
+- **AND** the published Moment history SHALL remain unchanged
+
+#### Scenario: Schedule mutation fails
+
+- **WHEN** schedule generation or deletion fails
+- **THEN** the last loaded schedule SHALL remain visible
+- **AND** the interface SHALL show a retryable failure rather than success

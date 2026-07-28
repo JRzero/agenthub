@@ -6,6 +6,7 @@ import type {
   MomentItem,
   MomentPage,
   MomentQuery,
+  MomentScheduleResult,
   MomentUpload,
 } from "./types";
 
@@ -131,4 +132,25 @@ export async function listMomentComments(
     auth,
   );
   return result.comments || [];
+}
+
+export function getMomentSchedule(auth: MomentAuth, agentId: number) {
+  return apiRequest<MomentScheduleResult>(
+    `/agents/${agentId}/moments/auto-schedule`,
+    auth,
+  );
+}
+
+export function generateMomentSchedule(auth: MomentAuth, agentId: number) {
+  return apiRequest<MomentScheduleResult>(
+    `/agents/${agentId}/moments/auto-schedule`,
+    { ...auth, method: "POST" },
+  );
+}
+
+export function deleteMomentSchedule(auth: MomentAuth, agentId: number) {
+  return apiRequest<{ message: string }>(
+    `/agents/${agentId}/moments/auto-schedule`,
+    { ...auth, method: "DELETE" },
+  );
 }

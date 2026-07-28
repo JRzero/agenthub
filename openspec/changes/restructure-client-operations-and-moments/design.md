@@ -10,11 +10,12 @@ The current frontend already has live Agent listing, per-Agent AgentClient listi
 - Keep AgentClient edits consistent between Clients and Agent Distribution.
 - Make OyiiOyii context explicit in Application Operations.
 - Provide a responsive two-step Moment publication flow with honest failure and navigation guards.
+- Keep Agent-scoped automatic publication schedules available after Moments move out of Agent Build.
 - Match the established AgentHub visual system at 1440×900 and 1280×720.
 
 **Non-Goals**
 
-- Workspace Client, Client-global settings, multi-Client Moments, Client-level roles, persistent Moment drafts, review/approval states, downline, scheduling, or per-Client Agent versions.
+- Workspace Client, Client-global settings, multi-Client Moments, Client-level roles, persistent Moment drafts, review/approval states, downline, manual schedule editing, or per-Client Agent versions.
 
 ## Decisions
 
@@ -46,6 +47,10 @@ Generation creates a temporary text candidate only. `POST /agents/{id}/moments` 
 
 At wide desktop widths, Moments uses three columns matching the reference density. At 1280×720 it retains the list/detail/panel relationship with narrower tracks and internal scrolling; below that it stacks without page-level horizontal overflow. Existing Phosphor icons, CSS tokens, typography, borders, and buttons are reused.
 
+### 8. Automatic schedules are Agent-scoped Operations settings
+
+Moments management exposes an `自动发布设置` action. The setting always targets one explicit Agent and reuses `GET`, `POST`, and `DELETE /agents/{id}/moments/auto-schedule`. `POST` asks the backend to generate or regenerate the coming schedule; the frontend does not invent editable weekdays or times that the backend contract cannot persist. Unpublished Agents remain visible but cannot be selected for automatic publication. Failures preserve the currently loaded schedule and remain retryable.
+
 ## Risks / Trade-offs
 
 - Cross-Agent Client aggregation creates N+1 requests; bounded parallel loading and partial failures are accepted for V1.
@@ -59,7 +64,8 @@ At wide desktop widths, Moments uses three columns matching the reference densit
 2. Add Operations module routing and move Moment contracts/components.
 3. Remove Moment Build types/navigation/rendering and add legacy-entry handling.
 4. Add Distribution-to-Operations links after the target route exists.
-5. Run automated checks and browser/design QA, recording screenshots and limitations.
+5. Restore the existing Agent-scoped automatic schedule from Moments management.
+6. Run automated checks and browser/design QA, recording screenshots and limitations.
 
 ## Open Questions
 
