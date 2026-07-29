@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  addBuiltinUpload,
+  deleteAgentAvatar,
   getLLMProviderFamilies,
   getLLMProviderModelOptions,
   getRuntimeModelPatch,
@@ -8,6 +10,7 @@ import {
   listStageSkills,
   resetEdgeToken,
   setStageSkills,
+  uploadAgentAvatar,
   updateBuildCreatorSkill,
 } from "./advanced-api";
 
@@ -22,11 +25,62 @@ const providers = [
 
 describe("advanced build API", () => {
   it("reads and writes stage-specific skills", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async () => new Response(JSON.stringify({ success: true, data: { mid_skills: [] } }), { status: 200 }));
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(new Response(JSON.stringify({ success: true, data: { mid_skills: [] } }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ success: true, data: { message: "Updated", draft_revision: 13 } }), { status: 200 }));
     await expect(listStageSkills("token", 32, "mid")).resolves.toEqual([]);
-    await setStageSkills("token", 32, "mid", [{ creator_skill_id: 7, config: { city: "上海" } }]);
+    await expect(
+      setStageSkills("token", 32, "mid", 12, [
+        { creator_skill_id: 7, config: { city: "上海" } },
+      ]),
+    ).resolves.toEqual({ message: "Updated", draft_revision: 13 });
     expect(fetchMock.mock.calls[1][0]).toContain("/agents/32/mid-skills");
-    expect((fetchMock.mock.calls[1][1] as RequestInit).body).toBe(JSON.stringify({ mid_skills: [{ creator_skill_id: 7, config: { city: "上海" } }] }));
+    expect(JSON.parse(String((fetchMock.mock.calls[1][1] as RequestInit).body))).toEqual({
+      expected_draft_revision: 12,
+      mid_skills: [{ creator_skill_id: 7, config: { city: "上海" } }],
+    });
+  });
+
+  it("sends draft revisions with avatar and built-in Skill mutations", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(
+      async () =>
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: { id: 32, draft_revision: 15, message: "Updated" },
+          }),
+          { status: 200 },
+        ),
+    );
+
+    await uploadAgentAvatar("token", 32, new Blob(["avatar"]), 12);
+    await deleteAgentAvatar("token", 32, 13);
+    await addBuiltinUpload("token", 32, "image", 14);
+
+    const uploadBody = fetchMock.mock.calls[0][1]?.body as FormData;
+    expect(uploadBody.get("expected_draft_revision")).toBe("12");
+    expect(String(fetchMock.mock.calls[1][0])).toContain(
+      "/avatar?expected_draft_revision=13",
+    );
+    expect(String(fetchMock.mock.calls[2][0])).toContain(
+      "add-builtin-image-upload?expected_draft_revision=14",
+    );
+  });
+
+  it("preserves DRAFT_CONFLICT from multipart avatar responses", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: false,
+          data: { code: "DRAFT_CONFLICT", error: "Draft revision changed" },
+        }),
+        { status: 409 },
+      ),
+    );
+
+    await expect(
+      uploadAgentAvatar("token", 32, new Blob(["avatar"]), 12),
+    ).rejects.toMatchObject({ code: "DRAFT_CONFLICT", status: 409 });
   });
 
   it("groups concrete Provider configurations by supplier", () => {

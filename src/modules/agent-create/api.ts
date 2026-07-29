@@ -154,10 +154,20 @@ export function completeAgentCreation(
   });
 }
 
-export async function confirmAvatarCandidate(apiKey: string, agentId: number, candidate: ImageCandidate): Promise<Agent> {
+export async function confirmAvatarCandidate(
+  apiKey: string,
+  agentId: number,
+  expectedDraftRevision: number,
+  candidate: ImageCandidate,
+): Promise<Agent> {
   const response = await fetch(candidate.url);
   if (!response.ok) throw new Error("无法读取头像候选，请重新生成或上传");
-  return uploadAgentAvatar(apiKey, agentId, await response.blob());
+  return uploadAgentAvatar(
+    apiKey,
+    agentId,
+    await response.blob(),
+    expectedDraftRevision,
+  );
 }
 
 export async function generateCharacterSheetCandidate(
@@ -177,9 +187,20 @@ export async function generateCharacterSheetCandidate(
   };
 }
 
-export function confirmCharacterSheetCandidate(apiKey: string, agentId: number, candidate: ImageCandidate): Promise<Agent> {
+export function confirmCharacterSheetCandidate(
+  apiKey: string,
+  agentId: number,
+  expectedDraftRevision: number,
+  candidate: ImageCandidate,
+): Promise<Agent> {
   if (!candidate.specText || !candidate.sourceUrl) throw new Error("角色设定稿候选信息不完整，请重新生成");
-  return saveCharacterDesign(apiKey, agentId, candidate.specText, candidate.sourceUrl);
+  return saveCharacterDesign(
+    apiKey,
+    agentId,
+    candidate.specText,
+    candidate.sourceUrl,
+    expectedDraftRevision,
+  );
 }
 
 function creatorSkillStage(skill: CreatorSkill): SkillStage {
@@ -188,10 +209,27 @@ function creatorSkillStage(skill: CreatorSkill): SkillStage {
   return "mid";
 }
 
-export async function saveGuidedCreationSkills(apiKey: string, agentId: number, selectedSkills: CreatorSkill[]): Promise<void> {
+export async function saveGuidedCreationSkills(
+  apiKey: string,
+  agentId: number,
+  expectedDraftRevision: number,
+  selectedSkills: CreatorSkill[],
+): Promise<number> {
   const grouped: Record<SkillStage, CreatorSkill[]> = { pre: [], mid: [], post: [] };
   selectedSkills.forEach((skill) => grouped[creatorSkillStage(skill)].push(skill));
-  await Promise.all((Object.keys(grouped) as SkillStage[]).map((stage) =>
-    setStageSkills(apiKey, agentId, stage, grouped[stage].map((skill) => ({ creator_skill_id: skill.id, config: {} }))),
-  ));
+  let draftRevision = expectedDraftRevision;
+  for (const stage of Object.keys(grouped) as SkillStage[]) {
+    const result = await setStageSkills(
+      apiKey,
+      agentId,
+      stage,
+      draftRevision,
+      grouped[stage].map((skill) => ({
+        creator_skill_id: skill.id,
+        config: {},
+      })),
+    );
+    draftRevision = result.draft_revision;
+  }
+  return draftRevision;
 }

@@ -5,6 +5,8 @@ import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Gear, MagicWand, Plus, X } from "@phosphor-icons/react";
 import { DATA_MODE } from "@/config/capabilities";
+import { useAgent } from "@/modules/agents/queries";
+import type { Agent } from "@/modules/agents/types";
 import { useAuth } from "@/modules/auth/auth-provider";
 import type {
   CreatorSkill,
@@ -20,6 +22,8 @@ import {
 } from "./advanced-api";
 import { SkillConfigDialog } from "./skill-config-dialog";
 import { sanitizeSkillConfig } from "./skill-credential-model";
+import { useWorkspace } from "@/modules/workspace/workspace-provider";
+import { ApiError } from "@/shared/api/http-client";
 
 const STAGES: Record<SkillStage, { label: string; contract: string }> = {
   pre: { label: "对话前", contract: "pre_conversation" },
@@ -43,8 +47,10 @@ function demoBound(stage: SkillStage): AgentStageSkill[] {
 
 export function StagedSkillsPanel({ agentId }: { agentId: number }) {
   const { session } = useAuth();
+  const { workspaceCode } = useWorkspace();
   const queryClient = useQueryClient();
   const demo = DATA_MODE === "demo";
+  const agentQuery = useAgent(agentId);
   const [stage, setStage] = useState<SkillStage>("mid");
   const [adding, setAdding] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -70,16 +76,46 @@ export function StagedSkillsPanel({ agentId }: { agentId: number }) {
   const boundIds = new Set(bound.map((skill) => skill.id));
   const available = compatible.filter((skill) => !boundIds.has(skill.id));
 
+  function applyDraftRevision(draftRevision: number) {
+    queryClient.setQueryData<Agent>(
+      ["agent", agentId, workspaceCode, demo],
+      (current) =>
+        current ? { ...current, draft_revision: draftRevision } : current,
+    );
+    void queryClient.invalidateQueries({ queryKey: ["agents"] });
+  }
+
   async function persist(next: AgentStageSkill[], successMessage: string) {
     if (!session?.apiKey) return;
     setSaving(true);
     setMessage("");
     try {
-      if (!demo) await setStageSkills(session.apiKey, agentId, stage, next.map((skill) => ({ creator_skill_id: skill.id, config: skill.agent_config || {} })));
+      const currentRevision = agentQuery.data?.draft_revision;
+      if (!demo && !currentRevision) {
+        throw new Error("草稿版本缺失，请刷新页面后重试");
+      }
+      const result = demo
+        ? { message: "Updated", draft_revision: (currentRevision || 0) + 1 }
+        : await setStageSkills(
+            session.apiKey,
+            agentId,
+            stage,
+            currentRevision!,
+            next.map((skill) => ({
+              creator_skill_id: skill.id,
+              config: skill.agent_config || {},
+            })),
+          );
       queryClient.setQueryData(["agent-stage-skills", agentId, stage, demo], next);
+      applyDraftRevision(result.draft_revision);
       setMessage(successMessage);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "技能更新失败，请重试");
+      if (error instanceof ApiError && error.code === "DRAFT_CONFLICT") {
+        await Promise.all([agentQuery.refetch(), boundQuery.refetch()]);
+        setMessage("草稿已被其他操作更新，已刷新最新状态，请确认后重新修改技能。");
+      } else {
+        setMessage(error instanceof Error ? error.message : "技能更新失败，请重试");
+      }
     } finally {
       setSaving(false);
     }
@@ -114,6 +150,7 @@ export function StagedSkillsPanel({ agentId }: { agentId: number }) {
             }
           : await updateBuildCreatorSkill(session.apiKey, configSkill.id, request);
         queryClient.setQueryData<CreatorSkill[]>(["build-creator-skills", demo], (current) => (current || []).map((item) => item.id === updated.id ? updated : item));
+        if (!demo) await agentQuery.refetch();
         setMessage("技能默认配置已更新");
         return updated;
       } else {
@@ -122,14 +159,38 @@ export function StagedSkillsPanel({ agentId }: { agentId: number }) {
           configSkill.credential_schema,
         );
         const next = bound.map((item) => item.id === configSkill.id ? { ...item, agent_config: safeConfig } : item);
-        if (!demo) await setStageSkills(session.apiKey, agentId, stage, next.map((item) => ({ creator_skill_id: item.id, config: item.agent_config || {} })));
+        const currentRevision = agentQuery.data?.draft_revision;
+        if (!demo && !currentRevision) {
+          throw new Error("草稿版本缺失，请刷新页面后重试");
+        }
+        const result = demo
+          ? { message: "Updated", draft_revision: (currentRevision || 0) + 1 }
+          : await setStageSkills(
+              session.apiKey,
+              agentId,
+              stage,
+              currentRevision!,
+              next.map((item) => ({
+                creator_skill_id: item.id,
+                config: item.agent_config || {},
+              })),
+            );
         queryClient.setQueryData(["agent-stage-skills", agentId, stage, demo], next);
+        applyDraftRevision(result.draft_revision);
         setMessage("当前 Agent 的技能配置已更新");
         return null;
       }
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "技能配置保存失败");
-      throw error;
+      if (error instanceof ApiError && error.code === "DRAFT_CONFLICT") {
+        await Promise.all([agentQuery.refetch(), boundQuery.refetch()]);
+        const conflictMessage =
+          "草稿已被其他操作更新，已刷新最新状态，请确认后重新保存技能配置。";
+        setMessage(conflictMessage);
+        throw new Error(conflictMessage);
+      } else {
+        setMessage(error instanceof Error ? error.message : "技能配置保存失败");
+        throw error;
+      }
     } finally {
       setSaving(false);
     }

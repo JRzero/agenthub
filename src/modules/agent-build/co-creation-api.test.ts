@@ -1,5 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { autoTalkRound, generateCharacterSpec, optimizeNarrative, talkToMotherland } from "./co-creation-api";
+import {
+  autoTalkRound,
+  deleteCharacterDesign,
+  generateCharacterSpec,
+  optimizeNarrative,
+  saveCharacterDesign,
+  talkToMotherland,
+} from "./co-creation-api";
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -18,5 +25,27 @@ describe("Motherland and character design API", () => {
     await generateCharacterSpec("token", 32, "baseline");
     expect(String((fetchMock.mock.calls[0][1] as RequestInit).body)).toContain("baseline_prompt");
     expect(String((fetchMock.mock.calls[1][1] as RequestInit).body)).toContain("system_prompt");
+  });
+
+  it("sends the draft revision when saving or deleting character design", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(
+      async () =>
+        new Response(
+          JSON.stringify({ success: true, data: { id: 32, draft_revision: 9 } }),
+          { status: 200 },
+        ),
+    );
+
+    await saveCharacterDesign("token", 32, "spec", "/api/file", 7);
+    await deleteCharacterDesign("token", 32, 8);
+
+    expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toEqual({
+      spec_text: "spec",
+      image_url: "/api/file",
+      expected_draft_revision: 7,
+    });
+    expect(String(fetchMock.mock.calls[1][0])).toContain(
+      "/character-design?expected_draft_revision=8",
+    );
   });
 });

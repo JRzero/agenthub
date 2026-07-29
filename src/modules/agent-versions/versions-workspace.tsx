@@ -17,6 +17,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { useAuth } from "@/modules/auth/auth-provider";
+import { DATA_MODE } from "@/config/capabilities";
 import { getAgent } from "@/modules/agents/api";
 import type { Agent } from "@/modules/agents/types";
 import {
@@ -28,9 +29,15 @@ import { useWorkspace } from "@/modules/workspace/workspace-provider";
 import { ApiError } from "@/shared/api/http-client";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 import { createRequestKey } from "@/shared/utils/request-key";
-import { createDraftFromVersion, publishAgentVersion } from "./api";
+import {
+  createDraftFromVersion,
+  publishAgentVersion,
+  relistAgent,
+  unpublishAgent,
+} from "./api";
 import {
   countSkillReferences,
+  resolveNextVersionNumber,
   resolveVersionPublisher,
   resolveVersionResourceCounts,
   resolveVersionSummary,
@@ -38,6 +45,7 @@ import {
 } from "./model";
 import { useAgentClients, useAgentVersion, useAgentVersions } from "./queries";
 import type { AgentClient, AgentVersion } from "./types";
+import { publishTestSummaryKey } from "@/modules/agent-test/publish-test-summary";
 
 function shortHash(value?: string | null) {
   return value ? value.slice(0, 12) : "—";
@@ -98,6 +106,11 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
   );
   const [restoreError, setRestoreError] = useState("");
   const [restoring, setRestoring] = useState(false);
+  const [listingAction, setListingAction] = useState<
+    "unpublish" | "relist" | null
+  >(null);
+  const [listingBusy, setListingBusy] = useState(false);
+  const [listingError, setListingError] = useState("");
 
   useEffect(() => {
     if (selectedVersionNo === null && versions[0]) {
@@ -116,13 +129,47 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
       current.version_hash &&
       agent.draft_content_hash !== current.version_hash),
   );
-  const nextVersionNo = (versions[0]?.version_no || agent.version || 0) + 1;
+  const hasVersionHistory = versions.length > 0;
+  const nextVersionNo = resolveNextVersionNumber(versions);
   const auth = { apiKey: session?.apiKey || "", workspaceCode };
   const clients = clientsQuery.data?.clients || [];
   const draftSkillCount = countSkillReferences(
     agent.config?.skills,
     stageSkillQueries.flatMap((query) => query.data || []),
   );
+  const unpublished = agent.status === "private" && Boolean(current);
+
+  async function submitListingAction() {
+    if (!listingAction) return;
+    setListingBusy(true);
+    setListingError("");
+    try {
+      const updated = demo
+        ? {
+            ...agent,
+            status: listingAction === "unpublish" ? "private" : "active",
+          }
+        : listingAction === "unpublish"
+          ? await unpublishAgent(auth, agent.id)
+          : await relistAgent(auth, agent.id);
+      queryClient.setQueryData(
+        ["agent", agent.id, workspaceCode, false],
+        updated,
+      );
+      await queryClient.invalidateQueries({ queryKey: ["agents"] });
+      setListingAction(null);
+    } catch (error) {
+      setListingError(
+        error instanceof Error
+          ? error.message
+          : listingAction === "unpublish"
+            ? "下架失败，请重试"
+            : "重新上架失败，请重试",
+      );
+    } finally {
+      setListingBusy(false);
+    }
+  }
 
   function openPublish() {
     setReleaseNote("");
@@ -137,6 +184,10 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
     setPublishError("");
     setPublishErrorCode("");
     try {
+      if (!agent.draft_revision) {
+        setPublishError("草稿版本缺失，请刷新页面后重试。");
+        return;
+      }
       const latestAgent = demo
         ? agent
         : await getAgent(session?.apiKey || "", agent.id, workspaceCode);
@@ -147,7 +198,7 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
         );
       }
       const result = await publishAgentVersion(auth, agent.id, {
-        expected_draft_revision: latestAgent.draft_revision ?? 0,
+        expected_draft_revision: latestAgent.draft_revision || agent.draft_revision,
         expected_current_version_id: latestAgent.current_version_id ?? null,
         release_note: releaseNote.trim(),
         request_key: requestKey,
@@ -184,6 +235,10 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
 
   async function submitRestore(confirmReplace: boolean) {
     if (!restoreVersion) return;
+    if (!agent.draft_revision) {
+      setRestoreError("草稿版本缺失，请刷新页面后重试。");
+      return;
+    }
     setRestoring(true);
     setRestoreError("");
     try {
@@ -192,7 +247,7 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
         agent.id,
         restoreVersion.version_no,
         {
-          expected_draft_revision: agent.draft_revision ?? 0,
+          expected_draft_revision: agent.draft_revision,
           confirm_replace: confirmReplace,
         },
       );
@@ -200,7 +255,19 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
         ["agent", agent.id, workspaceCode, false],
         updated,
       );
-      await queryClient.invalidateQueries({ queryKey: ["agents"] });
+      if (typeof window !== "undefined") {
+        window.sessionStorage.removeItem(
+          publishTestSummaryKey(DATA_MODE, agent.id),
+        );
+      }
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["agents"] }),
+        queryClient.invalidateQueries({
+          queryKey: ["agent-stage-skills", agent.id],
+        }),
+        queryClient.invalidateQueries({ queryKey: ["agent-versions", agent.id] }),
+        queryClient.invalidateQueries({ queryKey: ["agent-version", agent.id] }),
+      ]);
       setRestoreVersion(null);
     } catch (error) {
       if (
@@ -210,6 +277,29 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
       ) {
         setRestoreError(
           "当前草稿有未发布修改。再次确认将用所选版本替换草稿，但不会改变平台当前版本。",
+        );
+      } else if (
+        error instanceof ApiError &&
+        error.code === "DRAFT_CONFLICT"
+      ) {
+        const latestAgent = await getAgent(
+          session?.apiKey || "",
+          agent.id,
+          workspaceCode,
+        );
+        queryClient.setQueryData(
+          ["agent", agent.id, workspaceCode, false],
+          latestAgent,
+        );
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["agents"] }),
+          queryClient.invalidateQueries({
+            queryKey: ["agent-stage-skills", agent.id],
+          }),
+          versionsQuery.refetch(),
+        ]);
+        setRestoreError(
+          "草稿已被其他操作更新，已刷新最新状态。请检查后重新确认恢复。",
         );
       } else {
         setRestoreError(versionErrorMessage(error));
@@ -254,7 +344,9 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
             <CopyButton value={current.version_hash} />
           </span>
           <Divider />
-          <span className="text-success">新会话默认使用</span>
+          <span className={unpublished ? "text-warning" : "text-success"}>
+            {unpublished ? "已暂停新会话" : "新会话默认使用"}
+          </span>
           <Divider />
           <span
             className={hasDraftChanges ? "text-warning" : "text-text-muted"}
@@ -265,8 +357,18 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
             href={"/assets/" + agent.id + "/build"}
             className="button-secondary ml-auto"
           >
-            编辑当前版本
+            {hasDraftChanges ? "继续编辑草稿" : "编辑当前版本"}
           </Link>
+          <button
+            type="button"
+            className="button-secondary"
+            onClick={() => {
+              setListingError("");
+              setListingAction(unpublished ? "relist" : "unpublish");
+            }}
+          >
+            {unpublished ? "重新上架" : "下架"}
+          </button>
           {hasDraftChanges && (
             <button
               type="button"
@@ -300,7 +402,7 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
             className="button-primary"
             onClick={openPublish}
           >
-            发布第一个版本
+            {hasVersionHistory ? "发布新版本" : "发布第一个版本"}
           </button>
         </div>
       )}
@@ -330,6 +432,7 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
                 agent={agent}
                 version={selected}
                 currentVersion={current}
+                hasDraftChanges={hasDraftChanges}
                 clients={clients}
                 publisherName={resolveVersionPublisher(
                   selected,
@@ -351,6 +454,7 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
       {publishOpen && (
         <PublishDialog
           current={current}
+          hasVersionHistory={hasVersionHistory}
           nextVersionNo={nextVersionNo}
           agent={agent}
           clients={clients}
@@ -372,11 +476,57 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
         <RestoreDialog
           version={restoreVersion}
           current={current}
+          hasDraftChanges={hasDraftChanges}
           error={restoreError}
           restoring={restoring}
           onClose={() => !restoring && setRestoreVersion(null)}
           onConfirm={() => void submitRestore(Boolean(restoreError))}
         />
+      )}
+
+      {listingAction && (
+        <Dialog
+          title={listingAction === "unpublish" ? "确认下架 Agent" : "确认重新上架"}
+          subtitle={
+            listingAction === "unpublish"
+              ? "下架不会删除平台当前版本"
+              : "重新使用现有平台当前版本，不会创建新版本"
+          }
+          onClose={() => !listingBusy && setListingAction(null)}
+        >
+          <p className="text-sm leading-6 text-text-muted">
+            {listingAction === "unpublish"
+              ? "下架后已有会话继续使用创建时绑定的版本，但不能创建新会话。"
+              : "重新上架后，新会话将继续使用当前平台版本；已有会话不受影响。"}
+          </p>
+          {listingError && (
+            <p role="alert" className="mt-4 text-sm text-danger">
+              {listingError}
+            </p>
+          )}
+          <footer className="mt-6 flex justify-end gap-3">
+            <button
+              type="button"
+              className="button-secondary"
+              disabled={listingBusy}
+              onClick={() => setListingAction(null)}
+            >
+              取消
+            </button>
+            <button
+              type="button"
+              className="button-primary"
+              disabled={listingBusy}
+              onClick={() => void submitListingAction()}
+            >
+              {listingBusy
+                ? "处理中…"
+                : listingAction === "unpublish"
+                  ? "确认下架"
+                  : "确认重新上架"}
+            </button>
+          </footer>
+        </Dialog>
       )}
     </section>
   );
@@ -505,6 +655,7 @@ function VersionDetail({
   agent,
   version,
   currentVersion,
+  hasDraftChanges,
   clients,
   publisherName,
   showSnapshot,
@@ -514,6 +665,7 @@ function VersionDetail({
   agent: Agent;
   version: AgentVersion;
   currentVersion?: AgentVersion;
+  hasDraftChanges: boolean;
   clients: AgentClient[];
   publisherName: string;
   showSnapshot: boolean;
@@ -627,13 +779,24 @@ function VersionDetail({
           {showSnapshot ? "收起版本内容" : "查看版本内容"}
         </button>
         {isCurrent ? (
-          <Link
-            href={"/assets/" + agent.id + "/distribution"}
-            className="button-secondary"
-          >
-            <DownloadSimple size={16} />
-            导出当前版本
-          </Link>
+          <>
+            {hasDraftChanges && (
+              <button
+                type="button"
+                className="button-secondary border-primary text-primary"
+                onClick={onCreateDraft}
+              >
+                用 v{version.version_no} 重置当前草稿
+              </button>
+            )}
+            <Link
+              href={"/assets/" + agent.id + "/distribution"}
+              className="button-secondary"
+            >
+              <DownloadSimple size={16} />
+              导出当前版本
+            </Link>
+          </>
         ) : (
           <button
             type="button"
@@ -651,6 +814,7 @@ function VersionDetail({
 
 function PublishDialog({
   current,
+  hasVersionHistory,
   nextVersionNo,
   agent,
   clients,
@@ -664,6 +828,7 @@ function PublishDialog({
   onPublish,
 }: {
   current?: AgentVersion;
+  hasVersionHistory: boolean;
   nextVersionNo: number;
   agent: Agent;
   clients: AgentClient[];
@@ -685,7 +850,11 @@ function PublishDialog({
   return (
     <Dialog
       title={
-        blocked ? "暂时无法发布" : current ? "发布新版本" : "发布第一个版本"
+        blocked
+          ? "暂时无法发布"
+          : hasVersionHistory
+            ? "发布新版本"
+            : "发布第一个版本"
       }
       subtitle={
         blocked
@@ -698,7 +867,13 @@ function PublishDialog({
       <div className="flex items-center gap-5">
         <VersionPill
           tone="blue"
-          label={current ? "当前运行 v" + current.version_no : "尚未发布"}
+          label={
+            current
+              ? "当前运行 v" + current.version_no
+              : hasVersionHistory
+                ? "暂无当前运行版本"
+                : "尚未发布"
+          }
         />
         <ArrowRight size={24} />
         <VersionPill
@@ -831,7 +1006,7 @@ function PublishDialog({
             <PaperPlaneTilt size={17} />
             {publishing
               ? "正在发布…"
-              : current
+              : hasVersionHistory
                 ? "发布并更新平台当前版本"
                 : "发布第一个版本"}
           </button>
@@ -844,6 +1019,7 @@ function PublishDialog({
 function RestoreDialog({
   version,
   current,
+  hasDraftChanges,
   error,
   restoring,
   onClose,
@@ -851,25 +1027,42 @@ function RestoreDialog({
 }: {
   version: AgentVersion;
   current?: AgentVersion;
+  hasDraftChanges: boolean;
   error: string;
   restoring: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }) {
+  const resetsCurrentVersion = version.id === current?.id;
+
   return (
     <Dialog
-      title={"基于 v" + version.version_no + " 创建草稿"}
-      subtitle="恢复该版本内容，并继续编辑后发布为新版本"
+      title={
+        resetsCurrentVersion
+          ? "用 v" + version.version_no + " 重置当前草稿"
+          : "基于 v" + version.version_no + " 创建草稿"
+      }
+      subtitle={
+        resetsCurrentVersion
+          ? "用已发布快照覆盖当前未发布修改"
+          : "恢复该版本内容，并继续编辑后发布为新版本"
+      }
       onClose={onClose}
     >
       <div className="flex items-center justify-center gap-6">
         <VersionPill
           tone="blue"
-          label={"历史版本 v" + version.version_no}
+          label={
+            (resetsCurrentVersion ? "平台当前版本 v" : "历史版本 v") +
+            version.version_no
+          }
           sublabel={"Hash " + shortHash(version.version_hash)}
         />
         <ArrowRight size={28} />
-        <VersionPill tone="green" label="新的当前草稿" />
+        <VersionPill
+          tone="green"
+          label={resetsCurrentVersion ? "重置后的当前草稿" : "新的当前草稿"}
+        />
       </div>
       <section className="mt-5">
         <h4 className="text-sm font-semibold">将恢复的内容</h4>
@@ -894,7 +1087,11 @@ function RestoreDialog({
       <div className="mt-4 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-xs leading-5 text-blue-700 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-200">
         <ul className="list-disc space-y-0.5 pl-4">
           <li>平台仍运行 v{current?.version_no || "—"}，不会直接回退</li>
-          <li>新建草稿不会修改任何已发布版本</li>
+          <li>
+            {resetsCurrentVersion
+              ? "当前未发布草稿将被完整替换，包括头像等运行媒体"
+              : "新建草稿不会修改任何已发布版本"}
+          </li>
           <li>后续发布将使用连续的新版本号</li>
         </ul>
       </div>
@@ -904,7 +1101,11 @@ function RestoreDialog({
         </p>
       )}
       <p className="mt-4 text-xs text-text-muted">
-        {error ? "确认后将替换现有未发布草稿。" : "当前无其他未发布草稿。"}
+        {error
+          ? "确认后将替换现有未发布草稿。"
+          : hasDraftChanges
+            ? "继续操作将覆盖当前未发布草稿。"
+            : "当前无其他未发布草稿。"}
       </p>
       <div className="mt-5 flex justify-end gap-2">
         <button
@@ -921,7 +1122,13 @@ function RestoreDialog({
           onClick={onConfirm}
           disabled={restoring || version.availability === "revoked"}
         >
-          {restoring ? "正在创建…" : error ? "确认替换草稿" : "创建草稿"}
+          {restoring
+            ? "正在处理…"
+            : error
+              ? "确认替换草稿"
+              : resetsCurrentVersion
+                ? "重置当前草稿"
+                : "创建草稿"}
         </button>
       </div>
     </Dialog>

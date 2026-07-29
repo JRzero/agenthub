@@ -46,6 +46,31 @@ export function generateCharacterSheet(apiKey: string, agentId: number, specText
   return apiRequest<{ image_url: string }>(`/agents/${agentId}/character-design/generate-sheet`, { method: "POST", apiKey, body: JSON.stringify({ spec_text: specText }) });
 }
 
-export function saveCharacterDesign(apiKey: string, agentId: number, specText: string, imageUrl: string): Promise<Agent> {
-  return apiRequest<Agent>(`/agents/${agentId}/character-design/save`, { method: "POST", apiKey, body: JSON.stringify({ spec_text: specText, image_url: imageUrl }) });
+export function saveCharacterDesign(
+  apiKey: string,
+  agentId: number,
+  specText: string,
+  imageUrl: string,
+  expectedDraftRevision: number,
+): Promise<Agent> {
+  return apiRequest<Agent>(`/agents/${agentId}/character-design/save`, {
+    method: "POST",
+    apiKey,
+    body: JSON.stringify({
+      spec_text: specText,
+      image_url: imageUrl,
+      expected_draft_revision: expectedDraftRevision,
+    }),
+  });
+}
+
+export function deleteCharacterDesign(
+  apiKey: string,
+  agentId: number,
+  expectedDraftRevision: number,
+): Promise<Agent> {
+  return apiRequest<Agent>(
+    `/agents/${agentId}/character-design?expected_draft_revision=${expectedDraftRevision}`,
+    { method: "DELETE", apiKey },
+  );
 }

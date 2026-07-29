@@ -23,6 +23,7 @@ interface BuildEditorPanelProps {
   knowledgeLoading: boolean;
   onPatch: (patch: Partial<AgentBuildDraft>) => void;
   onAgentUpdated: (agent: Agent) => void;
+  onDraftConflict: () => Promise<void>;
 }
 
 function SectionGroup({
@@ -54,6 +55,7 @@ export function BuildEditorPanel({
   knowledgeLoading,
   onPatch,
   onAgentUpdated,
+  onDraftConflict,
 }: BuildEditorPanelProps) {
   const special = section === "media";
 
@@ -71,6 +73,7 @@ export function BuildEditorPanel({
             agent={agent}
             draft={draft}
             onAgentUpdated={onAgentUpdated}
+            onDraftConflict={onDraftConflict}
           />
         )}
 

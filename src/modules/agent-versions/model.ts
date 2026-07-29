@@ -59,6 +59,13 @@ export function countSkillReferences(
   return references.size;
 }
 
+export function resolveNextVersionNumber(
+  versions: ReadonlyArray<Pick<AgentVersion, "version_no">>,
+): number {
+  if (versions.length === 0) return 1;
+  return Math.max(...versions.map((version) => version.version_no)) + 1;
+}
+
 function arrayValue(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [];
 }

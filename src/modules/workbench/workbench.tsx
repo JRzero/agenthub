@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Clock, Plus, Warning } from "@phosphor-icons/react";
 import { DATA_MODE } from "@/config/capabilities";
 import { useAgents } from "@/modules/agents/queries";
+import { resolveAgentLifecycle } from "@/modules/agents/lifecycle";
 import { AgentAvatar } from "@/modules/agents/agent-avatar";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 import { SourceBadge } from "@/shared/ui/source-badge";
@@ -22,7 +23,10 @@ export function Workbench() {
   const router = useRouter();
   const demo = DATA_MODE === "demo";
   const agents = useMemo(() => query.data || [], [query.data]);
-  const focusAgent = agents.find((agent) => agent.status !== "active") || agents[0];
+  const focusAgent =
+    agents.find(
+      (agent) => resolveAgentLifecycle(agent).state !== "published",
+    ) || agents[0];
   const tasks = useMemo(() => deriveWorkbenchTasks(agents), [agents]);
   const focusReadiness = focusAgent ? readiness(focusAgent) : 0;
 
@@ -56,8 +60,8 @@ export function Workbench() {
                 <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
                   <strong className="text-lg">{focusAgent.name}</strong>
                   <span className="text-xs text-text-muted">v{focusAgent.version || 1}.0</span>
-                  <span className={`status-badge ${focusAgent.status === "active" ? "status-success" : "status-info"}`}>
-                    {focusAgent.status === "active" ? "已发布" : "草稿已保存"}
+                  <span className={`status-badge ${resolveAgentLifecycle(focusAgent).badgeClassName}`}>
+                    {resolveAgentLifecycle(focusAgent).label}
                   </span>
                 </div>
                 <p className="mt-2 max-h-10 max-w-3xl overflow-hidden text-xs leading-5 text-text-muted">
@@ -205,8 +209,8 @@ export function Workbench() {
                 </span>
               </div>
               <div className="mt-3 flex shrink-0 items-center justify-between border-t border-border pt-2.5">
-                <span className={`status-badge ${agent.status === "active" ? "status-success" : "status-info"}`}>
-                  {agent.status === "active" ? "已发布" : "构建中"}
+                <span className={`status-badge ${resolveAgentLifecycle(agent).badgeClassName}`}>
+                  {resolveAgentLifecycle(agent).label}
                 </span>
                 <span className="text-xs text-text-muted">v{agent.version || 1}.0</span>
               </div>

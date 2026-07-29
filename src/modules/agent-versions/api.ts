@@ -48,6 +48,28 @@ export function publishAgentVersion(
   });
 }
 
+async function setAgentListing(
+  auth: Auth,
+  agentId: number,
+  action: "unpublish" | "relist",
+) {
+  const result = await apiRequest<{
+    agent: import("@/modules/agents/types").Agent;
+  }>(`/agents/${agentId}/${action}`, {
+    ...auth,
+    method: "POST",
+  });
+  return result.agent;
+}
+
+export function unpublishAgent(auth: Auth, agentId: number) {
+  return setAgentListing(auth, agentId, "unpublish");
+}
+
+export function relistAgent(auth: Auth, agentId: number) {
+  return setAgentListing(auth, agentId, "relist");
+}
+
 export function createDraftFromVersion(
   auth: Auth,
   agentId: number,

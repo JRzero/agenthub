@@ -36,7 +36,7 @@ export function CharacterDesignPanel({ agent, draft, onAgentUpdated }: { agent: 
   const acceptAvatar = async () => {
     if (!session?.apiKey || !avatarPreview) return;
     setBusy("avatar-save"); setMessage("");
-    try { const response = await fetch(avatarPreview); if (!response.ok) throw new Error("无法读取生成的头像"); onAgentUpdated(await uploadAgentAvatar(session.apiKey, agent.id, await response.blob())); setMessage("生成头像已保存；如需调整可在媒体素材中重新裁剪。"); }
+    try { const response = await fetch(avatarPreview); if (!response.ok) throw new Error("无法读取生成的头像"); if (!agent.draft_revision) throw new Error("草稿版本缺失，请刷新页面后重试"); onAgentUpdated(await uploadAgentAvatar(session.apiKey, agent.id, await response.blob(), agent.draft_revision)); setMessage("生成头像已保存；如需调整可在媒体素材中重新裁剪。"); }
     catch (error) { setMessage(error instanceof Error ? error.message : "生成头像保存失败"); }
     finally { setBusy(""); }
   };
@@ -57,7 +57,7 @@ export function CharacterDesignPanel({ agent, draft, onAgentUpdated }: { agent: 
   const save = async () => {
     if (!session?.apiKey || !spec.trim() || !sheet) return;
     setBusy("save"); setMessage("");
-    try { const updated = demo ? { ...agent, config: { ...agent.config, metadata: { ...agent.config?.metadata, character_design_spec: spec, character_design_sheet: sheet } } } : await saveCharacterDesign(session.apiKey, agent.id, spec, sheet); onAgentUpdated(updated); setMessage("角色设定与设计稿已保存到 Agent Profile"); }
+    try { if (!demo && !agent.draft_revision) throw new Error("草稿版本缺失，请刷新页面后重试"); const updated = demo ? { ...agent, config: { ...agent.config, metadata: { ...agent.config?.metadata, character_design_spec: spec, character_design_sheet: sheet } } } : await saveCharacterDesign(session.apiKey, agent.id, spec, sheet, agent.draft_revision!); onAgentUpdated(updated); setMessage("角色设定与设计稿已保存到 Agent Profile"); }
     catch (error) { setMessage(error instanceof Error ? error.message : "角色设计保存失败"); }
     finally { setBusy(""); }
   };

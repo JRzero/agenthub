@@ -8,6 +8,7 @@ import {
   countSkillReferences,
   createDemoDraft,
   resolveDraftBaseVersionNumber,
+  resolveNextVersionNumber,
   resolveVersionResourceCounts,
   resolveVersionSummary,
   resolveVersionPublisher,
@@ -60,6 +61,20 @@ describe("Agent version model", () => {
 
   it("treats null skill collections from legacy version data as empty", () => {
     expect(countSkillReferences(null, null)).toBe(0);
+  });
+
+  it("starts the first immutable version at v1 without using the legacy Agent version", () => {
+    expect(resolveNextVersionNumber([])).toBe(1);
+  });
+
+  it("increments the highest immutable version even when history is unsorted", () => {
+    expect(
+      resolveNextVersionNumber([
+        { version_no: 2 },
+        { version_no: 4 },
+        { version_no: 1 },
+      ]),
+    ).toBe(5);
   });
 
   it("reads knowledge, stage skills, and media from a version resource manifest", () => {

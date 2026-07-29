@@ -1,4 +1,4 @@
-import { apiRequest, getApiBaseUrl } from "@/shared/api/http-client";
+import { ApiError, apiRequest, getApiBaseUrl } from "@/shared/api/http-client";
 import type { Agent } from "@/modules/agents/types";
 import type {
   CreatorSkill,
@@ -163,17 +163,51 @@ export function resetEdgeToken(apiKey: string, agentId: number): Promise<{ edge_
   return apiRequest<{ edge_token: string }>(`/agents/${agentId}/edge-token/reset`, { method: "POST", apiKey });
 }
 
-export async function uploadAgentAvatar(apiKey: string, agentId: number, blob: Blob): Promise<Agent> {
+export async function uploadAgentAvatar(
+  apiKey: string,
+  agentId: number,
+  blob: Blob,
+  expectedDraftRevision: number,
+): Promise<Agent> {
   const form = new FormData();
   form.append("avatar", blob, "avatar.jpg");
+  form.append("expected_draft_revision", String(expectedDraftRevision));
   const response = await fetch(`${getApiBaseUrl()}/api/v1/agents/${agentId}/avatar`, { method: "POST", headers: { "X-API-Key": apiKey }, body: form });
-  const envelope = await response.json() as { success?: boolean; data?: Agent; error?: { message?: string } };
-  if (!response.ok || envelope.success === false || !envelope.data) throw new Error(envelope.error?.message || `头像上传失败（${response.status}）`);
-  return envelope.data;
+  const envelope = await response.json().catch(() => null) as {
+    success?: boolean;
+    data?: Agent | { code?: string; error?: string; message?: string };
+    error?: { code?: string; message?: string };
+  } | null;
+  const businessError =
+    envelope?.data && typeof envelope.data === "object" && "code" in envelope.data
+      ? (envelope.data as {
+          code?: string;
+          error?: string;
+          message?: string;
+        })
+      : undefined;
+  if (!response.ok || envelope?.success === false || !envelope?.data) {
+    throw new ApiError(
+      envelope?.error?.message ||
+        businessError?.error ||
+        businessError?.message ||
+        `头像上传失败（${response.status}）`,
+      response.status,
+      envelope?.error?.code || businessError?.code,
+    );
+  }
+  return envelope.data as Agent;
 }
 
-export function deleteAgentAvatar(apiKey: string, agentId: number): Promise<Agent> {
-  return apiRequest<Agent>(`/agents/${agentId}/avatar`, { method: "DELETE", apiKey });
+export function deleteAgentAvatar(
+  apiKey: string,
+  agentId: number,
+  expectedDraftRevision: number,
+): Promise<Agent> {
+  return apiRequest<Agent>(
+    `/agents/${agentId}/avatar?expected_draft_revision=${expectedDraftRevision}`,
+    { method: "DELETE", apiKey },
+  );
 }
 
 export async function listStageSkills(apiKey: string, agentId: number, stage: SkillStage): Promise<AgentStageSkill[]> {
@@ -181,8 +215,26 @@ export async function listStageSkills(apiKey: string, agentId: number, stage: Sk
   return result[`${stage}_skills`] || [];
 }
 
-export function setStageSkills(apiKey: string, agentId: number, stage: SkillStage, skills: Array<{ creator_skill_id: number; config?: Record<string, unknown> }>): Promise<{ message: string }> {
-  return apiRequest<{ message: string }>(`/agents/${agentId}/${stage}-skills`, { method: "PUT", apiKey, body: JSON.stringify({ [`${stage}_skills`]: skills }) });
+export interface StageSkillsUpdateResult {
+  message: string;
+  draft_revision: number;
+}
+
+export function setStageSkills(
+  apiKey: string,
+  agentId: number,
+  stage: SkillStage,
+  expectedDraftRevision: number,
+  skills: Array<{ creator_skill_id: number; config?: Record<string, unknown> }>,
+): Promise<StageSkillsUpdateResult> {
+  return apiRequest<StageSkillsUpdateResult>(`/agents/${agentId}/${stage}-skills`, {
+    method: "PUT",
+    apiKey,
+    body: JSON.stringify({
+      expected_draft_revision: expectedDraftRevision,
+      [`${stage}_skills`]: skills,
+    }),
+  });
 }
 
 export function listBuildCreatorSkills(apiKey: string): Promise<{ creator_skills: CreatorSkill[] }> {
@@ -193,6 +245,14 @@ export function updateBuildCreatorSkill(apiKey: string, skillId: number, data: U
   return apiRequest<CreatorSkill>(`/creator-skills/${skillId}`, { method: "PUT", apiKey, body: JSON.stringify(data) });
 }
 
-export function addBuiltinUpload(apiKey: string, agentId: number, kind: "image" | "document"): Promise<{ message: string; creator_skill_id?: number }> {
-  return apiRequest<{ message: string; creator_skill_id?: number }>(`/agents/${agentId}/pre-skills/add-builtin-${kind}-upload`, { method: "POST", apiKey });
+export function addBuiltinUpload(
+  apiKey: string,
+  agentId: number,
+  kind: "image" | "document",
+  expectedDraftRevision: number,
+): Promise<StageSkillsUpdateResult & { creator_skill_id?: number }> {
+  return apiRequest<StageSkillsUpdateResult & { creator_skill_id?: number }>(
+    `/agents/${agentId}/pre-skills/add-builtin-${kind}-upload?expected_draft_revision=${expectedDraftRevision}`,
+    { method: "POST", apiKey },
+  );
 }

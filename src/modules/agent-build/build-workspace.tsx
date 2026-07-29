@@ -196,7 +196,7 @@ export function BuildWorkspace() {
             </button>
             <button
               type="button"
-              onClick={() => void editor.save("draft")}
+              onClick={() => void editor.save()}
               disabled={!editor.dirty || editor.saving}
               className="button-secondary control-compact"
             >
@@ -258,6 +258,9 @@ export function BuildWorkspace() {
             knowledgeLoading={editor.knowledgeLoading}
             onPatch={editor.patchDraft}
             onAgentUpdated={editor.applyAgentUpdate}
+            onDraftConflict={async () => {
+              await editor.refetch();
+            }}
           />
           <BuildPreview
             agent={editor.data}

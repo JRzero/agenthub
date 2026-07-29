@@ -12,6 +12,8 @@ import {
   listAgentClients,
   listAgentVersions,
   publishAgentVersion,
+  relistAgent,
+  unpublishAgent,
   updateAgentClient,
 } from "./api";
 
@@ -83,6 +85,27 @@ describe("Agent version API contracts", () => {
       "/agents/12/publish",
       expect.objectContaining({ method: "POST", body: JSON.stringify(input) }),
     );
+  });
+
+  it("uses dedicated listing lifecycle endpoints and unwraps Agent responses", async () => {
+    vi.mocked(apiRequest)
+      .mockResolvedValueOnce({ agent: { id: 12, status: "private" } } as never)
+      .mockResolvedValueOnce({ agent: { id: 12, status: "active" } } as never);
+
+    await expect(unpublishAgent(auth, 12)).resolves.toMatchObject({
+      status: "private",
+    });
+    await expect(relistAgent(auth, 12)).resolves.toMatchObject({
+      status: "active",
+    });
+    expect(apiRequest).toHaveBeenNthCalledWith(1, "/agents/12/unpublish", {
+      ...auth,
+      method: "POST",
+    });
+    expect(apiRequest).toHaveBeenNthCalledWith(2, "/agents/12/relist", {
+      ...auth,
+      method: "POST",
+    });
   });
 
   it("lists clients and creates generic or Client-specific current-version exports", async () => {

@@ -16,10 +16,17 @@ import { AssetActions } from "@/modules/agent-assets/asset-actions";
 import { AgentAvatar } from "@/modules/agents/agent-avatar";
 import { useAgents } from "@/modules/agents/queries";
 import type { Agent } from "@/modules/agents/types";
+import { resolveAgentLifecycle } from "@/modules/agents/lifecycle";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 import { Select } from "@/shared/ui/select";
 
-type StatusFilter = "all" | "active" | "draft" | "creating" | "archived";
+type StatusFilter =
+  | "all"
+  | "active"
+  | "private"
+  | "draft"
+  | "creating"
+  | "archived";
 
 function versionLabel(version: number | undefined, currentVersionId: number | null | undefined): string {
   if (typeof version !== "number" || (!currentVersionId && version <= 0)) return "-";
@@ -37,10 +44,14 @@ function creationProgressLabel(agent: Agent): string {
 }
 
 function statusPresentation(agent: Agent): { label: string; className: string } {
-  if (agent.creation_completed === false) return { label: creationProgressLabel(agent), className: "status-info" };
-  if (agent.status === "active") return { label: "已发布", className: "status-success" };
-  if (agent.status === "archived") return { label: "已归档", className: "status-neutral" };
-  return { label: "草稿", className: "status-warning" };
+  const lifecycle = resolveAgentLifecycle(agent);
+  return {
+    label:
+      lifecycle.state === "creating"
+        ? creationProgressLabel(agent)
+        : lifecycle.label,
+    className: lifecycle.badgeClassName,
+  };
 }
 
 function updatedLabel(value: string | undefined): string {
@@ -60,9 +71,14 @@ export default function AssetLibraryPage() {
     const keyword = search.trim().toLowerCase();
     return allAgents.filter((agent) => {
       const matchesSearch = !keyword || `${agent.name} ${agent.code} ${agent.description}`.toLowerCase().includes(keyword);
+      const lifecycle = resolveAgentLifecycle(agent);
       const matchesStatus =
         status === "all" ||
-        (status === "creating" ? agent.creation_completed === false : agent.status === status && agent.creation_completed !== false);
+        (status === "creating" && lifecycle.state === "creating") ||
+        (status === "active" && lifecycle.state === "published") ||
+        (status === "private" && lifecycle.state === "unpublished") ||
+        (status === "draft" && lifecycle.state === "draft") ||
+        (status === "archived" && lifecycle.state === "archived");
       return matchesSearch && matchesStatus;
     });
   }, [allAgents, search, status]);
@@ -113,6 +129,7 @@ export default function AssetLibraryPage() {
             options={[
               { value: "all", label: "全部状态" },
               { value: "active", label: "已发布" },
+              { value: "private", label: "已下架" },
               { value: "draft", label: "草稿" },
               { value: "creating", label: "创建中" },
               { value: "archived", label: "已归档" },

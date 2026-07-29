@@ -5,7 +5,10 @@ import { ClockCounterClockwise, ImageSquare, MagicWand, Plus, X } from "@phospho
 import { DATA_MODE } from "@/config/capabilities";
 import { DEMO_CHARACTER_SHEETS, DEMO_COMIC_DRAFTS } from "@/fixtures/demo-media-assets";
 import type { Agent } from "@/modules/agents/types";
+import { useAuth } from "@/modules/auth/auth-provider";
+import { ApiError } from "@/shared/api/http-client";
 import { AgentAvatarEditor } from "./agent-avatar-editor";
+import { deleteCharacterDesign } from "./co-creation-api";
 import {
   mapAgentMediaAssets,
   resolveMediaCapabilityMap,
@@ -19,17 +22,22 @@ export function MediaAssetsPanel({
   agent,
   draft,
   onAgentUpdated,
+  onDraftConflict,
 }: {
   agent: Agent;
   draft: AgentBuildDraft;
   onAgentUpdated: (agent: Agent) => void;
+  onDraftConflict: () => Promise<void>;
 }) {
+  const { session } = useAuth();
   const demo = DATA_MODE === "demo";
   const capabilities = resolveMediaCapabilityMap(demo ? "demo" : "live");
   const mapped = useMemo(() => mapAgentMediaAssets(agent), [agent]);
   const [drawerKind, setDrawerKind] = useState<MediaAssetKind | null>(null);
   const [demoAssets, setDemoAssets] = useState<MediaAsset[]>([]);
   const [activeTab, setActiveTab] = useState<"avatar" | "character-sheet" | "comic-draft">("avatar");
+  const [removingCharacterDesign, setRemovingCharacterDesign] = useState(false);
+  const [message, setMessage] = useState("");
 
   const characterSheets = demo
     ? [...demoAssets.filter((asset) => asset.kind === "character-sheet"), ...DEMO_CHARACTER_SHEETS].slice(0, 3)
@@ -41,6 +49,51 @@ export function MediaAssetsPanel({
   const addDemoAsset = (asset: MediaAsset) => {
     if (!asset.demoOnly) return;
     setDemoAssets((current) => [asset, ...current.filter((item) => item.id !== asset.id)]);
+  };
+
+  const removeCharacterDesign = async () => {
+    if (
+      !agent.config?.metadata?.character_design_sheet ||
+      !window.confirm("确认移除当前角色设定稿？历史已发布版本中的素材不会被删除。")
+    ) {
+      return;
+    }
+    setRemovingCharacterDesign(true);
+    setMessage("");
+    try {
+      if (demo) {
+        onAgentUpdated({
+          ...agent,
+          draft_revision: (agent.draft_revision || 0) + 1,
+          config: {
+            ...agent.config,
+            metadata: {
+              ...agent.config?.metadata,
+              character_design_spec: undefined,
+              character_design_sheet: undefined,
+            },
+          },
+        });
+      } else if (session?.apiKey && agent.draft_revision) {
+        onAgentUpdated(
+          await deleteCharacterDesign(
+            session.apiKey,
+            agent.id,
+            agent.draft_revision,
+          ),
+        );
+      }
+      setMessage("角色设定稿已从当前草稿移除");
+    } catch (error) {
+      if (error instanceof ApiError && error.code === "DRAFT_CONFLICT") {
+        await onDraftConflict();
+        setMessage("草稿已被其他操作更新，已刷新最新状态，请确认后再移除。");
+      } else {
+        setMessage(error instanceof Error ? error.message : "角色设定稿移除失败");
+      }
+    } finally {
+      setRemovingCharacterDesign(false);
+    }
   };
 
   return (
@@ -57,6 +110,7 @@ export function MediaAssetsPanel({
           onGenerate={() => setDrawerKind("avatar")}
           assetLibrarySource={capabilities.assetLibrary}
           generationSource={capabilities.avatarGeneration}
+          onDraftConflict={onDraftConflict}
         />}
 
       {activeTab === "character-sheet" && <AssetSection
@@ -67,6 +121,12 @@ export function MediaAssetsPanel({
         onGenerate={() => setDrawerKind("character-sheet")}
         assets={characterSheets}
         emptyCopy="尚未保存角色设定稿"
+        onRemove={
+          agent.config?.metadata?.character_design_sheet
+            ? () => void removeCharacterDesign()
+            : undefined
+        }
+        removing={removingCharacterDesign}
       />}
 
       {activeTab === "comic-draft" && capabilities.comicDrafts !== "unavailable" && <AssetSection
@@ -86,7 +146,9 @@ export function MediaAssetsPanel({
         onClose={() => setDrawerKind(null)}
         onAgentUpdated={onAgentUpdated}
         onDemoAssetCreated={addDemoAsset}
+        onDraftConflict={onDraftConflict}
       />
+      {message && <p role="status" className="rounded-md bg-subtle px-4 py-3 text-sm text-text-muted">{message}</p>}
     </div>
   );
 }
@@ -103,6 +165,8 @@ function AssetSection({
   onGenerate,
   assets,
   emptyCopy,
+  onRemove,
+  removing = false,
 }: {
   title: string;
   description: string;
@@ -111,6 +175,8 @@ function AssetSection({
   onGenerate: () => void;
   assets: MediaAsset[];
   emptyCopy: string;
+  onRemove?: () => void;
+  removing?: boolean;
 }) {
   const unavailable = actionSource === "unavailable";
   const specAsset = assets.find((asset) => asset.specText?.trim());
@@ -133,14 +199,26 @@ function AssetSection({
             <h3 className="font-semibold">{title}</h3>
             <p className="mt-1 text-sm leading-6 text-text-muted">{description}</p>
           </div>
-          <button
-            type="button"
-            onClick={onGenerate}
-            disabled={unavailable}
-            className="button-secondary disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <MagicWand size={17} />{actionLabel}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            {onRemove && (
+              <button
+                type="button"
+                onClick={onRemove}
+                disabled={removing}
+                className="button-secondary text-danger disabled:opacity-50"
+              >
+                <X size={17} />{removing ? "移除中…" : "移除当前设定稿"}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onGenerate}
+              disabled={unavailable}
+              className="button-secondary disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <MagicWand size={17} />{actionLabel}
+            </button>
+          </div>
         </header>
 
         {assets.length > 0 ? (

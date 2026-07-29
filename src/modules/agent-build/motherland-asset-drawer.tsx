@@ -5,6 +5,7 @@ import { ArrowClockwise, CheckCircle, MagicWand, SpinnerGap, X } from "@phosphor
 import { DATA_MODE } from "@/config/capabilities";
 import type { Agent } from "@/modules/agents/types";
 import { useAuth } from "@/modules/auth/auth-provider";
+import { ApiError } from "@/shared/api/http-client";
 import { uploadAgentAvatar } from "./advanced-api";
 import {
   generateAvatarPreview,
@@ -50,6 +51,7 @@ export function MotherlandAssetDrawer({
   onClose,
   onAgentUpdated,
   onDemoAssetCreated,
+  onDraftConflict,
 }: {
   kind: MediaAssetKind | null;
   agent: Agent;
@@ -57,6 +59,7 @@ export function MotherlandAssetDrawer({
   onClose: () => void;
   onAgentUpdated: (agent: Agent) => void;
   onDemoAssetCreated: (asset: MediaAsset) => void;
+  onDraftConflict: () => Promise<void>;
 }) {
   const { session } = useAuth();
   const demo = DATA_MODE === "demo";
@@ -160,7 +163,15 @@ export function MotherlandAssetDrawer({
         } else if (session?.apiKey) {
           const response = await fetch(resolveGeneratedMediaUrl(candidate.url, candidate.kind));
           if (!response.ok) throw new Error("无法读取生成的头像");
-          onAgentUpdated(await uploadAgentAvatar(session.apiKey, agent.id, await response.blob()));
+          if (!agent.draft_revision) throw new Error("草稿版本缺失，请刷新页面后重试");
+          onAgentUpdated(
+            await uploadAgentAvatar(
+              session.apiKey,
+              agent.id,
+              await response.blob(),
+              agent.draft_revision,
+            ),
+          );
         }
       } else if (kind === "character-sheet") {
         const specText = candidate.specText || characterSpec.trim() || candidate.prompt;
@@ -178,7 +189,16 @@ export function MotherlandAssetDrawer({
             updated_at: new Date().toISOString(),
           });
         } else if (session?.apiKey) {
-          onAgentUpdated(await saveCharacterDesign(session.apiKey, agent.id, specText, candidate.url));
+          if (!agent.draft_revision) throw new Error("草稿版本缺失，请刷新页面后重试");
+          onAgentUpdated(
+            await saveCharacterDesign(
+              session.apiKey,
+              agent.id,
+              specText,
+              candidate.url,
+              agent.draft_revision,
+            ),
+          );
         }
       }
 
@@ -198,7 +218,15 @@ export function MotherlandAssetDrawer({
       dispatch("confirmed");
     } catch (requestError) {
       dispatch("failed");
-      setError(requestError instanceof Error ? requestError.message : "保存失败，请重试");
+      if (
+        requestError instanceof ApiError &&
+        requestError.code === "DRAFT_CONFLICT"
+      ) {
+        await onDraftConflict();
+        setError("草稿已被其他操作更新，已刷新最新状态，请重新确认该素材。");
+      } else {
+        setError(requestError instanceof Error ? requestError.message : "保存失败，请重试");
+      }
     }
   };
 

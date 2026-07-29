@@ -163,21 +163,30 @@ describe("guided Agent creation API", () => {
   });
 
   it("persists selected resource-library skills through their actual stage endpoints", async () => {
+    let nextRevision = 8;
     const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async () =>
-      new Response(JSON.stringify({ success: true, data: { message: "ok" } }), { status: 200 }),
+      new Response(JSON.stringify({
+        success: true,
+        data: { message: "ok", draft_revision: nextRevision++ },
+      }), { status: 200 }),
     );
     const skills: CreatorSkill[] = [
       { id: 11, uuid: "pre-11", skill_id: 101, name: "图片上传", stage: "pre_conversation", status: "active", config: {} },
       { id: 12, uuid: "mid-12", skill_id: 102, name: "天气查询", stage: "mid_conversation", status: "active", config: {} },
     ];
 
-    await saveGuidedCreationSkills("et_test_key", 28, skills);
+    await expect(
+      saveGuidedCreationSkills("et_test_key", 28, 7, skills),
+    ).resolves.toBe(10);
 
     expect(fetchMock).toHaveBeenCalledTimes(3);
-    expect(fetchMock.mock.calls.map(([url]) => url)).toEqual(expect.arrayContaining([
+    expect(fetchMock.mock.calls.map(([url]) => url)).toEqual([
       "http://localhost:8080/api/v1/agents/28/pre-skills",
       "http://localhost:8080/api/v1/agents/28/mid-skills",
       "http://localhost:8080/api/v1/agents/28/post-skills",
-    ]));
+    ]);
+    expect(fetchMock.mock.calls.map(([, init]) =>
+      JSON.parse(String(init?.body)).expected_draft_revision,
+    )).toEqual([7, 8, 9]);
   });
 });

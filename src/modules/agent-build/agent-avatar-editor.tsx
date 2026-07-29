@@ -6,6 +6,7 @@ import { DATA_MODE, type CapabilitySource } from "@/config/capabilities";
 import { AgentAvatar } from "@/modules/agents/agent-avatar";
 import type { Agent } from "@/modules/agents/types";
 import { useAuth } from "@/modules/auth/auth-provider";
+import { ApiError } from "@/shared/api/http-client";
 import { deleteAgentAvatar, uploadAgentAvatar } from "./advanced-api";
 
 function drawCrop(canvas: HTMLCanvasElement, image: HTMLImageElement, zoom: number, offsetX: number, offsetY: number) {
@@ -30,12 +31,14 @@ export function AgentAvatarEditor({
   onGenerate,
   assetLibrarySource,
   generationSource,
+  onDraftConflict,
 }: {
   agent: Agent;
   onUpdated: (agent: Agent) => void;
   onGenerate: () => void;
   assetLibrarySource: CapabilitySource;
   generationSource: CapabilitySource;
+  onDraftConflict: () => Promise<void>;
 }) {
   const { session } = useAuth();
   const demo = DATA_MODE === "demo";
@@ -95,12 +98,25 @@ export function AgentAvatarEditor({
           updated_at: new Date().toISOString(),
         });
       } else if (session?.apiKey) {
-        onUpdated(await uploadAgentAvatar(session.apiKey, agent.id, blob));
+        if (!agent.draft_revision) throw new Error("草稿版本缺失，请刷新页面后重试");
+        onUpdated(
+          await uploadAgentAvatar(
+            session.apiKey,
+            agent.id,
+            blob,
+            agent.draft_revision,
+          ),
+        );
       }
       clearSource();
       setMessage(demo ? "演示头像已更新，仅当前会话可见" : "头像已更新");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "头像上传失败");
+      if (error instanceof ApiError && error.code === "DRAFT_CONFLICT") {
+        await onDraftConflict();
+        setMessage("草稿已被其他操作更新，已刷新最新状态，请确认后重新保存头像。");
+      } else {
+        setMessage(error instanceof Error ? error.message : "头像上传失败");
+      }
     } finally {
       setBusy(false);
     }
@@ -114,12 +130,24 @@ export function AgentAvatarEditor({
       if (demo) {
         onUpdated({ ...agent, config: { ...agent.config, metadata: { ...agent.config?.metadata, avatar: undefined } } });
       } else if (session?.apiKey) {
-        onUpdated(await deleteAgentAvatar(session.apiKey, agent.id));
+        if (!agent.draft_revision) throw new Error("草稿版本缺失，请刷新页面后重试");
+        onUpdated(
+          await deleteAgentAvatar(
+            session.apiKey,
+            agent.id,
+            agent.draft_revision,
+          ),
+        );
       }
       clearSource();
       setMessage("头像已移除");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "移除头像失败");
+      if (error instanceof ApiError && error.code === "DRAFT_CONFLICT") {
+        await onDraftConflict();
+        setMessage("草稿已被其他操作更新，已刷新最新状态，请确认后重新移除头像。");
+      } else {
+        setMessage(error instanceof Error ? error.message : "移除头像失败");
+      }
     } finally {
       setBusy(false);
     }

@@ -60,12 +60,13 @@ describe("Agent build draft", () => {
     const draft = createBuildDraft(agent);
     draft.code = "  LIN-YUE-V2 ";
     draft.skills = [" realtime_weather ", ""];
-    const payload = serializeBuildDraft(draft, 0, "draft");
+    const payload = serializeBuildDraft(draft, 7);
     expect(payload).not.toHaveProperty("code");
+    expect(payload).not.toHaveProperty("status");
     expect(payload).toMatchObject({
+      expected_draft_revision: 7,
       skills: ["realtime_weather"],
       opening_message: "今天想聊些什么？",
-      status: "draft",
       knowledge_base_id: 8,
     });
   });

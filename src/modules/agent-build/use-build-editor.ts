@@ -64,7 +64,7 @@ export function useBuildEditor(agentId: number | null) {
     queryClient.setQueryData(["agent", updated.id, workspaceCode, demo], updated);
   }, [demo, queryClient, workspaceCode]);
 
-  const save = useCallback(async (status?: string): Promise<boolean> => {
+  const save = useCallback(async (): Promise<boolean> => {
     if (!draft || !agentId || !query.data) return false;
     const errors = validateBuildDraft(draft);
     if (Object.keys(errors).length) {
@@ -75,11 +75,15 @@ export function useBuildEditor(agentId: number | null) {
     setSaveError("");
     try {
       if (!demo) {
+        if (!query.data.draft_revision) {
+          setSaveError("草稿版本缺失，请刷新页面后重试");
+          return false;
+        }
         const updated = await updateAgentBuild(
           session?.apiKey || "",
           agentId,
           workspaceCode,
-          serializeBuildDraft(draft, query.data.draft_revision ?? 0, status),
+          serializeBuildDraft(draft, query.data.draft_revision),
         );
         applyAgentUpdate(updated);
       }

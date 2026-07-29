@@ -26,6 +26,7 @@ import { getAgent } from "@/modules/agents/api";
 import type { Agent } from "@/modules/agents/types";
 import type { CreatorSkill } from "@/modules/resources/types";
 import { useWorkspace } from "@/modules/workspace/workspace-provider";
+import { ApiError } from "@/shared/api/http-client";
 import { createAgentReducer, canOpenStep, shouldProtectExit, validateBasicRole } from "./reducer";
 import { createDemoBasicContent, DEMO_AVATAR_CANDIDATES, DEMO_CREATOR_SKILLS, DEMO_SHEET_CANDIDATE } from "./demo";
 import {
@@ -392,6 +393,49 @@ export function AgentCreateWorkspace() {
   const skillsQuery = useQuery({ queryKey: ["agent-create-skills", workspaceCode, demo], queryFn: () => demo ? Promise.resolve(DEMO_CREATOR_SKILLS) : listCreatorSkills(session?.apiKey || "", workspaceCode), enabled: Boolean((demo || session?.apiKey) && state.step === "skills") });
   const skills = skillsQuery.data || [];
 
+  async function handleDraftMutationError(error: unknown, fallback: string) {
+    if (
+      error instanceof ApiError &&
+      error.code === "DRAFT_CONFLICT" &&
+      state.agentId &&
+      session?.apiKey
+    ) {
+      try {
+        const [agent, progress, ...stageSkills] = await Promise.all([
+          getAgent(session.apiKey, state.agentId, workspaceCode),
+          getAgentCreationProgress(
+            session.apiKey,
+            workspaceCode,
+            state.agentId,
+          ),
+          ...(["pre", "mid", "post"] as const).map((stage) =>
+            listStageSkills(session.apiKey, state.agentId!, stage),
+          ),
+        ]);
+        dispatch({
+          type: "restore",
+          state: restoredCreationState(
+            agent,
+            progress,
+            stageSkills.flat().map((skill) => skill.id),
+          ),
+        });
+      } catch {
+        // Preserve the original conflict as the actionable error.
+      }
+      dispatch({
+        type: "save-failed",
+        conflict: true,
+        message: "草稿已被其他操作更新，已刷新最新状态，请确认后重新操作。",
+      });
+      return;
+    }
+    dispatch({
+      type: "save-failed",
+      message: error instanceof Error ? error.message : fallback,
+    });
+  }
+
   useEffect(() => {
     const agentId = Number(searchParams.get("agentId"));
     if (demo || !session?.apiKey || !Number.isInteger(agentId) || agentId <= 0 || restoredAgentId.current === agentId) return;
@@ -499,34 +543,48 @@ export function AgentCreateWorkspace() {
         dispatch({ type: "save-succeeded", draftRevision: updated.draft_revision || state.draftRevision + 1 });
       }
     } catch (error) {
-      dispatch({ type: "save-failed", message: error instanceof Error ? error.message : "基础设定保存失败，请重试。" });
+      await handleDraftMutationError(error, "基础设定保存失败，请重试。");
     } finally { setBusy(""); }
   }
 
   async function confirmAvatar() {
     const candidate = state.avatarCandidates.find((item) => item.id === state.selectedAvatarId);
-    if (!candidate || !state.agentId || (!demo && !session?.apiKey)) return;
+    if (!candidate || !state.agentId || !state.draftRevision || (!demo && !session?.apiKey)) return;
     setBusy("confirm-avatar");
     dispatch({ type: "save-started" });
     try {
-      const updated = demo ? null : await confirmAvatarCandidate(session!.apiKey, state.agentId, candidate);
+      const updated = demo
+        ? null
+        : await confirmAvatarCandidate(
+            session!.apiKey,
+            state.agentId,
+            state.draftRevision,
+            candidate,
+          );
       dispatch({ type: "confirm-avatar" });
       dispatch({ type: "save-succeeded", draftRevision: updated?.draft_revision || state.draftRevision || 1 });
     } catch (error) {
-      dispatch({ type: "save-failed", message: error instanceof Error ? error.message : "头像保存失败，请重试。" });
+      await handleDraftMutationError(error, "头像保存失败，请重试。");
     } finally { setBusy(""); }
   }
 
   async function confirmSheet() {
-    if (!state.sheetCandidate || !state.agentId || (!demo && !session?.apiKey)) return;
+    if (!state.sheetCandidate || !state.agentId || !state.draftRevision || (!demo && !session?.apiKey)) return;
     setBusy("confirm-sheet");
     dispatch({ type: "save-started" });
     try {
-      const updated = demo ? null : await confirmCharacterSheetCandidate(session!.apiKey, state.agentId, state.sheetCandidate);
+      const updated = demo
+        ? null
+        : await confirmCharacterSheetCandidate(
+            session!.apiKey,
+            state.agentId,
+            state.draftRevision,
+            state.sheetCandidate,
+          );
       dispatch({ type: "confirm-sheet" });
       dispatch({ type: "save-succeeded", draftRevision: updated?.draft_revision || state.draftRevision || 1 });
     } catch (error) {
-      dispatch({ type: "save-failed", message: error instanceof Error ? error.message : "角色设定稿保存失败，请重试。" });
+      await handleDraftMutationError(error, "角色设定稿保存失败，请重试。");
     } finally { setBusy(""); }
   }
 
@@ -539,16 +597,25 @@ export function AgentCreateWorkspace() {
       if (!demo) {
         if (!skipSkills) {
           const selected = skills.filter((skill) => state.selectedSkillIds.includes(skill.id));
-          await saveGuidedCreationSkills(session!.apiKey, state.agentId, selected);
+          savedRevision = await saveGuidedCreationSkills(
+            session!.apiKey,
+            state.agentId,
+            savedRevision,
+            selected,
+          );
         }
-        const progress = await getAgentCreationProgress(session!.apiKey, workspaceCode, state.agentId);
-        const completed = await completeAgentCreation(session!.apiKey, workspaceCode, state.agentId, progress.draft_revision);
-        savedRevision = completed.draft_revision || progress.draft_revision;
+        const completed = await completeAgentCreation(
+          session!.apiKey,
+          workspaceCode,
+          state.agentId,
+          savedRevision,
+        );
+        savedRevision = completed.draft_revision || savedRevision;
       }
       dispatch({ type: "complete" });
       dispatch({ type: "save-succeeded", draftRevision: savedRevision });
     } catch (error) {
-      dispatch({ type: "save-failed", message: error instanceof Error ? error.message : "完成创建失败，请检查必填内容后重试。" });
+      await handleDraftMutationError(error, "完成创建失败，请检查必填内容后重试。");
     } finally { setBusy(""); }
   }
 

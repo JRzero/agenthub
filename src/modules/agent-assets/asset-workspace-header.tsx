@@ -14,6 +14,7 @@ import { resolveDraftBaseVersionNumber } from "@/modules/agent-versions/model";
 import { useAgentVersions } from "@/modules/agent-versions/queries";
 import { assetNavigation } from "@/shared/layout/navigation";
 import { AssetActions } from "./asset-actions";
+import { resolveAgentLifecycle } from "@/modules/agents/lifecycle";
 
 export const BUILD_HEADER_ACTIONS_ID = "agent-build-header-actions";
 
@@ -24,11 +25,26 @@ export function AssetWorkspaceHeader({
 }) {
   const pathname = usePathname();
   const { agent } = overview;
+  const lifecycle = resolveAgentLifecycle(agent);
   const base = `/assets/${agent.id}`;
   const buildRoute = pathname === `${base}/build`;
   const versionsRoute = pathname === `${base}/versions`;
   const distributionRoute = pathname === `${base}/distribution`;
-  const versionsQuery = useAgentVersions(buildRoute ? agent.id : 0);
+  const versionsQuery = useAgentVersions(
+    buildRoute || versionsRoute ? agent.id : 0,
+  );
+  const currentVersion = versionsQuery.data?.versions.find(
+    (version) => version.id === agent.current_version_id,
+  );
+  const hasUnpublishedDraft = Boolean(
+    versionsQuery.data &&
+      agent.current_version_id &&
+      (!currentVersion ||
+        agent.draft_base_version_id !== agent.current_version_id ||
+        (agent.draft_content_hash &&
+          currentVersion.version_hash &&
+          agent.draft_content_hash !== currentVersion.version_hash)),
+  );
   const draftBaseVersionNo = resolveDraftBaseVersionNumber(
     agent,
     versionsQuery.data?.versions || [],
@@ -81,9 +97,13 @@ export function AssetWorkspaceHeader({
             </h1>
             <span className="inline-flex items-center gap-1.5 font-medium text-text-strong">
               <span
-                className={`h-2 w-2 rounded-full ${agent.status === "active" ? "bg-success" : "bg-warning"}`}
+                className={`h-2 w-2 rounded-full ${lifecycle.state === "published" ? "bg-success" : lifecycle.state === "unpublished" ? "bg-warning" : "bg-text-muted"}`}
               />
-              {agent.current_version_id ? "运行中 v" + agent.version : "未发布"}
+              {lifecycle.state === "published"
+                ? "运行中 v" + agent.version
+                : lifecycle.state === "unpublished"
+                  ? "已下架 v" + agent.version
+                  : lifecycle.label}
             </span>
             {buildRoute ? (
               <>
@@ -123,7 +143,7 @@ export function AssetWorkspaceHeader({
                 className="button-primary control-compact"
               >
                 <PencilSimple size={16} />
-                编辑当前版本
+                {hasUnpublishedDraft ? "继续编辑草稿" : "编辑当前版本"}
               </Link>
             </>
           ) : distributionRoute ? (
