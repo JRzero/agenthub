@@ -2,10 +2,33 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ArrowCounterClockwise, Info, X } from "@phosphor-icons/react";
-import type { ConfigProperty, CreatorSkill } from "@/modules/resources/types";
+import type {
+  ConfigProperty,
+  CreatorSkill,
+  CredentialProperty,
+  UpdateCreatorSkillRequest,
+} from "@/modules/resources/types";
 import { Select } from "@/shared/ui/select";
+import {
+  buildClearCredentialRequest,
+  buildCreatorSkillUpdateRequest,
+  getOrdinaryConfigProperties,
+  sanitizeSkillConfig,
+  SUPPORTED_CREDENTIAL_KEY,
+} from "./skill-credential-model";
 
 type ConfigScope = "global" | "agent";
+
+interface SkillConfigDialogProps {
+  skill: CreatorSkill | null;
+  agentConfig: Record<string, unknown>;
+  saving: boolean;
+  onClose: () => void;
+  onSave: (
+    scope: ConfigScope,
+    request: UpdateCreatorSkillRequest,
+  ) => Promise<CreatorSkill | null>;
+}
 
 const fieldLabels: Record<string, string> = {
   api_key: "API Key",
@@ -50,27 +73,50 @@ function parseFieldValue(raw: string, property: ConfigProperty): unknown {
   return raw;
 }
 
-export function SkillConfigDialog({ skill, agentConfig, saving, onClose, onSave }: { skill: CreatorSkill | null; agentConfig: Record<string, unknown>; saving: boolean; onClose: () => void; onSave: (scope: ConfigScope, config: Record<string, unknown>) => Promise<void> }) {
+export function SkillConfigDialog({
+  skill,
+  agentConfig,
+  saving,
+  onClose,
+  onSave,
+}: SkillConfigDialogProps) {
   const [scope, setScope] = useState<ConfigScope>("agent");
   const [config, setConfig] = useState<Record<string, unknown>>({});
+  const [credentialValues, setCredentialValues] = useState<Record<string, string>>({});
+  const [apiKeyConfigured, setApiKeyConfigured] = useState<boolean | undefined>();
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
 
   useEffect(() => {
     if (!skill) return;
     setScope("agent");
-    setConfig(agentConfig || {});
+    setConfig(sanitizeSkillConfig(agentConfig || {}, skill.credential_schema));
+    setCredentialValues({});
+    setApiKeyConfigured(skill.api_key_configured);
     setError("");
+    setNotice("");
   }, [agentConfig, skill]);
 
-  useEffect(() => {
+  const selectScope = (nextScope: ConfigScope) => {
     if (!skill) return;
-    setConfig(scope === "global" ? skill.config || {} : agentConfig || {});
+    setScope(nextScope);
+    setConfig(
+      sanitizeSkillConfig(
+        nextScope === "global" ? skill.config || {} : agentConfig || {},
+        skill.credential_schema,
+      ),
+    );
+    setCredentialValues({});
     setError("");
-  }, [agentConfig, scope, skill]);
+    setNotice("");
+  };
 
   const fields = useMemo(() => {
     if (!skill) return [];
-    const declared = skill.config_schema?.properties || {};
+    const declared = getOrdinaryConfigProperties(
+      skill.config_schema,
+      skill.credential_schema,
+    );
     const properties: Record<string, ConfigProperty> = { ...declared };
     Object.entries(config).forEach(([key, value]) => {
       if (!properties[key]) properties[key] = inferProperty(value);
@@ -80,6 +126,13 @@ export function SkillConfigDialog({ skill, agentConfig, saving, onClose, onSave 
     }
     return Object.entries(properties);
   }, [config, skill]);
+
+  const credentialFields = useMemo<Array<[string, CredentialProperty]>>(() => {
+    if (!skill || scope !== "global") return [];
+    const property =
+      skill.credential_schema?.properties[SUPPORTED_CREDENTIAL_KEY];
+    return property ? [[SUPPORTED_CREDENTIAL_KEY, property]] : [];
+  }, [scope, skill]);
 
   if (!skill) return null;
 
@@ -98,9 +151,50 @@ export function SkillConfigDialog({ skill, agentConfig, saving, onClose, onSave 
 
   const save = async () => {
     try {
-      await onSave(scope, config);
+      const request =
+        scope === "global"
+          ? buildCreatorSkillUpdateRequest(
+              config,
+              skill.credential_schema,
+              credentialValues[SUPPORTED_CREDENTIAL_KEY] || "",
+            )
+          : {
+              config: sanitizeSkillConfig(config, skill.credential_schema),
+            };
+      const updated = await onSave(scope, request);
+      setCredentialValues({});
+      if (updated?.config) {
+        setConfig(
+          sanitizeSkillConfig(
+            updated.config,
+            updated.credential_schema || skill.credential_schema,
+          ),
+        );
+      }
+      if (updated?.api_key_configured !== undefined) {
+        setApiKeyConfigured(updated.api_key_configured);
+      }
+      setNotice(scope === "global" ? "技能默认配置已保存" : "当前 Agent 配置已保存");
+      setError("");
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "配置保存失败");
+      setNotice("");
+    }
+  };
+
+  const clearApiKey = async () => {
+    if (!window.confirm("确认清除当前 Skill 的 API Key？清除后相关能力可能无法使用。")) return;
+    try {
+      const updated = await onSave("global", buildClearCredentialRequest());
+      setCredentialValues({});
+      if (updated?.api_key_configured !== undefined) {
+        setApiKeyConfigured(updated.api_key_configured);
+      }
+      setNotice("API Key 已清除");
+      setError("");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "API Key 清除失败");
+      setNotice("");
     }
   };
 
@@ -121,15 +215,14 @@ export function SkillConfigDialog({ skill, agentConfig, saving, onClose, onSave 
         <header className="flex shrink-0 items-center justify-between border-b border-border px-5 py-4">
           <div>
             <h2 id="skill-config-title" className="font-semibold">配置「{skill.name}」</h2>
-            <p className="mt-1 text-xs text-text-muted">按字段填写技能参数，无需编辑 JSON。</p>
           </div>
           <button type="button" onClick={onClose} aria-label="关闭技能配置" className="rounded-md p-2 hover:bg-subtle"><X size={18} /></button>
         </header>
 
         <div className="min-h-0 flex-1 overflow-y-auto p-5">
           <div className="flex rounded-md border border-border p-1">
-            <button type="button" onClick={() => setScope("global")} className={`flex-1 rounded px-4 py-2 text-sm ${scope === "global" ? "bg-primary-soft font-medium text-primary" : "text-text-muted"}`}>技能默认配置</button>
-            <button type="button" onClick={() => setScope("agent")} className={`flex-1 rounded px-4 py-2 text-sm ${scope === "agent" ? "bg-primary-soft font-medium text-primary" : "text-text-muted"}`}>当前 Agent 配置</button>
+            <button type="button" onClick={() => selectScope("global")} className={`flex-1 rounded px-4 py-2 text-sm ${scope === "global" ? "bg-primary-soft font-medium text-primary" : "text-text-muted"}`}>技能默认配置</button>
+            <button type="button" onClick={() => selectScope("agent")} className={`flex-1 rounded px-4 py-2 text-sm ${scope === "agent" ? "bg-primary-soft font-medium text-primary" : "text-text-muted"}`}>当前 Agent 配置</button>
           </div>
 
           <div className="mt-4 flex items-start gap-2 rounded-lg border border-primary/15 bg-primary-soft/50 px-4 py-3 text-sm leading-6 text-text-muted">
@@ -193,12 +286,75 @@ export function SkillConfigDialog({ skill, agentConfig, saving, onClose, onSave 
                 );
               })}
             </div>
-          ) : (
+          ) : scope !== "global" || !credentialFields.length ? (
             <div className="mt-5 rounded-lg border border-dashed border-border p-8 text-center text-sm text-text-muted">该技能没有可配置参数。</div>
+          ) : null}
+
+          {scope === "global" && credentialFields.length > 0 && (
+            <section className="mt-6 border-t border-border pt-5" aria-labelledby="skill-credential-title">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 id="skill-credential-title" className="font-semibold">敏感凭证</h3>
+                  {skill.credential_schema?.description && (
+                    <p className="mt-1 text-xs leading-5 text-text-muted">
+                      {skill.credential_schema.description}
+                    </p>
+                  )}
+                </div>
+                <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${apiKeyConfigured ? "bg-success/10 text-success" : "bg-subtle text-text-muted"}`}>
+                  {apiKeyConfigured ? "已配置" : "未配置"}
+                </span>
+              </div>
+
+              <div className="mt-4 space-y-4">
+                {credentialFields.map(([key, property]) => {
+                  const label = property.title || key;
+                  const configured = key === SUPPORTED_CREDENTIAL_KEY && apiKeyConfigured === true;
+                  return (
+                    <div key={key}>
+                      <label htmlFor={`credential-${key}`} className="text-sm font-medium">
+                        {label}
+                      </label>
+                      <input
+                        id={`credential-${key}`}
+                        type={property.format === "password" ? "password" : "text"}
+                        value={credentialValues[key] || ""}
+                        onChange={(event) => {
+                          const nextValue = event.target.value;
+                          setCredentialValues((current) => ({ ...current, [key]: nextValue }));
+                          setError("");
+                          setNotice("");
+                        }}
+                        placeholder={configured ? "留空将保持现有 Key" : "请输入 API Key"}
+                        maxLength={property.maxLength}
+                        autoComplete="new-password"
+                        className="mt-2 w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm"
+                      />
+                      {property.description && (
+                        <p className="mt-1.5 text-xs leading-5 text-text-muted">
+                          {property.description}
+                        </p>
+                      )}
+                      {configured && (
+                        <button
+                          type="button"
+                          disabled={saving}
+                          onClick={() => void clearApiKey()}
+                          className="mt-2 text-sm font-medium text-danger disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          清除 Key
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
           )}
 
           {skill.default_tool_description && <button type="button" onClick={resetDescription} className="mt-4 inline-flex items-center gap-2 text-sm text-primary"><ArrowCounterClockwise size={16} />恢复默认调用提示词</button>}
           {error && <p className="mt-3 text-sm text-danger">{error}</p>}
+          {notice && <p className="mt-3 text-sm text-success">{notice}</p>}
         </div>
 
         <footer className="flex shrink-0 justify-end gap-3 border-t border-border bg-surface px-5 py-4">

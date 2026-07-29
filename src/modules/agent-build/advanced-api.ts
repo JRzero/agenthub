@@ -1,6 +1,9 @@
 import { apiRequest, getApiBaseUrl } from "@/shared/api/http-client";
 import type { Agent } from "@/modules/agents/types";
-import type { CreatorSkill } from "@/modules/resources/types";
+import type {
+  CreatorSkill,
+  UpdateCreatorSkillRequest,
+} from "@/modules/resources/types";
 
 export interface LLMProvider {
   name: string;
@@ -186,7 +189,7 @@ export function listBuildCreatorSkills(apiKey: string): Promise<{ creator_skills
   return apiRequest<{ creator_skills: CreatorSkill[] }>("/creator-skills", { apiKey });
 }
 
-export function updateBuildCreatorSkill(apiKey: string, skillId: number, data: { name?: string; config?: Record<string, unknown> }): Promise<CreatorSkill> {
+export function updateBuildCreatorSkill(apiKey: string, skillId: number, data: UpdateCreatorSkillRequest): Promise<CreatorSkill> {
   return apiRequest<CreatorSkill>(`/creator-skills/${skillId}`, { method: "PUT", apiKey, body: JSON.stringify(data) });
 }
 

@@ -8,6 +8,7 @@ import {
   listStageSkills,
   resetEdgeToken,
   setStageSkills,
+  updateBuildCreatorSkill,
 } from "./advanced-api";
 
 afterEach(() => vi.restoreAllMocks());
@@ -83,5 +84,55 @@ describe("advanced build API", () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({ success: true, data: { edge_token: "new-token" } }), { status: 200 }));
     await expect(resetEdgeToken("token", 32)).resolves.toEqual({ edge_token: "new-token" });
     expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("/edge-token/reset"), expect.objectContaining({ method: "POST" }));
+  });
+
+  it("updates Creator Skill credentials only through top-level request fields", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: true,
+          data: { id: 7, api_key_configured: true },
+        }),
+        { status: 200 },
+      ),
+    );
+
+    await updateBuildCreatorSkill("token", 7, {
+      config: { timeout_seconds: 15 },
+      api_key: "new-secret-value",
+    });
+
+    const body = JSON.parse(
+      String((fetchMock.mock.calls[0][1] as RequestInit).body),
+    );
+    expect(body).toEqual({
+      config: { timeout_seconds: 15 },
+      api_key: "new-secret-value",
+    });
+    expect(body.config).not.toHaveProperty("api_key");
+  });
+
+  it("omits unchanged credentials and sends null only when clearing", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(
+      async () => new Response(
+        JSON.stringify({
+          success: true,
+          data: { id: 7, api_key_configured: false },
+        }),
+        { status: 200 },
+      ),
+    );
+
+    await updateBuildCreatorSkill("token", 7, {
+      config: { max_results: 10 },
+    });
+    await updateBuildCreatorSkill("token", 7, { api_key: null });
+
+    expect(
+      JSON.parse(String((fetchMock.mock.calls[0][1] as RequestInit).body)),
+    ).toEqual({ config: { max_results: 10 } });
+    expect(
+      JSON.parse(String((fetchMock.mock.calls[1][1] as RequestInit).body)),
+    ).toEqual({ api_key: null });
   });
 });

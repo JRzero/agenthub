@@ -6,6 +6,7 @@ import type {
   KnowledgeBase,
   KnowledgeDocument,
   MarketplaceSkill,
+  UpdateCreatorSkillInput,
 } from "./types";
 
 export async function listMarketplaceSkills(apiKey: string, workspaceCode: string): Promise<MarketplaceSkill[]> {
@@ -47,7 +48,7 @@ export function updateCreatorSkill(
   apiKey: string,
   workspaceCode: string,
   id: number,
-  input: { name?: string; config?: Record<string, unknown>; status?: string },
+  input: UpdateCreatorSkillInput,
 ): Promise<CreatorSkill> {
   return apiRequest<CreatorSkill>(`/creator-skills/${id}`, {
     method: "PUT",

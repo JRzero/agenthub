@@ -7,8 +7,24 @@ export interface ConfigProperty {
 }
 
 export interface SkillConfigSchema {
+  type?: "object";
   properties?: Record<string, ConfigProperty>;
   required?: string[];
+}
+
+export interface CredentialProperty {
+  type: "string";
+  title?: string;
+  description?: string;
+  format?: "password";
+  writeOnly?: boolean;
+  maxLength?: number;
+}
+
+export interface CredentialSchema {
+  type: "object";
+  description?: string;
+  properties: Record<string, CredentialProperty>;
 }
 
 export interface MarketplaceSkill {
@@ -23,6 +39,7 @@ export interface MarketplaceSkill {
   implementation_type: string;
   trigger_config?: unknown;
   config_schema?: SkillConfigSchema;
+  credential_schema?: CredentialSchema;
   category?: string;
 }
 
@@ -39,8 +56,20 @@ export interface CreatorSkill {
   status: string;
   config: Record<string, unknown>;
   config_schema?: SkillConfigSchema;
+  credential_schema?: CredentialSchema;
+  api_key_configured?: boolean;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface UpdateCreatorSkillRequest {
+  config?: Record<string, unknown>;
+  api_key?: string | null;
+}
+
+export interface UpdateCreatorSkillInput extends UpdateCreatorSkillRequest {
+  name?: string;
+  status?: string;
 }
 
 export interface KnowledgeBase {

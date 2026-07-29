@@ -6,7 +6,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Gear, MagicWand, Plus, X } from "@phosphor-icons/react";
 import { DATA_MODE } from "@/config/capabilities";
 import { useAuth } from "@/modules/auth/auth-provider";
-import type { CreatorSkill } from "@/modules/resources/types";
+import type {
+  CreatorSkill,
+  UpdateCreatorSkillRequest,
+} from "@/modules/resources/types";
 import {
   listBuildCreatorSkills,
   listStageSkills,
@@ -16,6 +19,7 @@ import {
   type SkillStage,
 } from "./advanced-api";
 import { SkillConfigDialog } from "./skill-config-dialog";
+import { sanitizeSkillConfig } from "./skill-credential-model";
 
 const STAGES: Record<SkillStage, { label: string; contract: string }> = {
   pre: { label: "对话前", contract: "pre_conversation" },
@@ -88,23 +92,44 @@ export function StagedSkillsPanel({ agentId }: { agentId: number }) {
     setAgentConfig(skill.agent_config || {});
   }
 
-  async function saveConfig(scope: "global" | "agent", config: Record<string, unknown>) {
-    if (!configSkill || !session?.apiKey) return;
+  async function saveConfig(
+    scope: "global" | "agent",
+    request: UpdateCreatorSkillRequest,
+  ): Promise<CreatorSkill | null> {
+    if (!configSkill || !session?.apiKey) return null;
     setSaving(true);
     setMessage("");
     try {
       if (scope === "global") {
-        const updated = demo ? { ...configSkill, config } : await updateBuildCreatorSkill(session.apiKey, configSkill.id, { config });
+        const updated = demo
+          ? {
+              ...configSkill,
+              config: request.config ?? configSkill.config,
+              api_key_configured:
+                request.api_key === null
+                  ? false
+                  : typeof request.api_key === "string"
+                    ? true
+                    : configSkill.api_key_configured,
+            }
+          : await updateBuildCreatorSkill(session.apiKey, configSkill.id, request);
         queryClient.setQueryData<CreatorSkill[]>(["build-creator-skills", demo], (current) => (current || []).map((item) => item.id === updated.id ? updated : item));
+        setMessage("技能默认配置已更新");
+        return updated;
       } else {
-        const next = bound.map((item) => item.id === configSkill.id ? { ...item, agent_config: config } : item);
+        const safeConfig = sanitizeSkillConfig(
+          request.config || {},
+          configSkill.credential_schema,
+        );
+        const next = bound.map((item) => item.id === configSkill.id ? { ...item, agent_config: safeConfig } : item);
         if (!demo) await setStageSkills(session.apiKey, agentId, stage, next.map((item) => ({ creator_skill_id: item.id, config: item.agent_config || {} })));
         queryClient.setQueryData(["agent-stage-skills", agentId, stage, demo], next);
+        setMessage("当前 Agent 的技能配置已更新");
+        return null;
       }
-      setConfigSkill(null);
-      setMessage(scope === "agent" ? "当前 Agent 的技能配置已更新" : "技能默认配置已更新");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "技能配置保存失败");
+      throw error;
     } finally {
       setSaving(false);
     }
