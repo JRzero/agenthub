@@ -4,6 +4,7 @@ import type { Agent } from "@/modules/agents/types";
 import { resolveBuildPreviewLayout } from "./build-layout";
 import {
   buildDraftSimulationPayload,
+  createPreviewAssistantMessage,
   latestPreviewExchange,
 } from "./build-preview-model";
 import {
@@ -85,8 +86,8 @@ describe("professional Build contracts", () => {
   it("uses deterministic desktop widths for the collapsible preview", () => {
     expect(resolveBuildPreviewLayout(false)).toMatchObject({
       collapsed: false,
-      desktopWidth: 280,
-      gridClass: "lg:grid-cols-[184px_minmax(0,1fr)_280px]",
+      desktopWidth: 320,
+      gridClass: "lg:grid-cols-[184px_minmax(0,1fr)_320px]",
     });
     expect(resolveBuildPreviewLayout(true)).toMatchObject({
       collapsed: true,
@@ -177,6 +178,44 @@ describe("professional Build contracts", () => {
       system_prompt: "用安全、积极的方式讲科普故事。",
       examples: [{ role: "assistant", content: "欢迎提问" }],
       skills: ["gpt_image"],
+    });
+  });
+
+  it("preserves generated media in build preview assistant messages", () => {
+    expect(
+      createPreviewAssistantMessage(
+        {
+          message_id: "message-image-1",
+          content: "赛博朋克风格的上海夜景已生成。",
+          role: "assistant",
+          model: "",
+          image_url:
+            "/api/v1/files/ft_1f9f258f-3c62-4efc-9991-031ee3cbc7a8/download",
+          audio_url: "/api/v1/files/audio/download",
+          docx_url: "/api/v1/files/document/download",
+          attachments: [
+            {
+              type: "image",
+              preview_url: "/api/v1/files/preview",
+            },
+          ],
+        },
+        "preview-fallback",
+      ),
+    ).toMatchObject({
+      id: "message-image-1",
+      role: "assistant",
+      content: "赛博朋克风格的上海夜景已生成。",
+      image_url:
+        "/api/v1/files/ft_1f9f258f-3c62-4efc-9991-031ee3cbc7a8/download",
+      audio_url: "/api/v1/files/audio/download",
+      docx_url: "/api/v1/files/document/download",
+      attachments: [
+        {
+          type: "image",
+          preview_url: "/api/v1/files/preview",
+        },
+      ],
     });
   });
 

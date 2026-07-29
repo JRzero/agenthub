@@ -1,4 +1,5 @@
 import type { TestMessage } from "@/modules/agent-test/types";
+import type { SimulationResponse } from "@/modules/agent-test/types";
 import type { AgentBuildDraft } from "./types";
 
 export function buildDraftSimulationPayload(
@@ -30,4 +31,21 @@ export function latestPreviewExchange(messages: TestMessage[]) {
   if (latestUserIndex < 0) return messages.slice(latestAssistantIndex);
 
   return messages.slice(latestUserIndex, latestAssistantIndex + 1);
+}
+
+export function createPreviewAssistantMessage(
+  response: SimulationResponse,
+  fallbackId: string,
+): TestMessage {
+  return {
+    id: response.message_id || fallbackId,
+    role: "assistant",
+    content: response.content,
+    model: response.model,
+    usage: response.usage,
+    attachments: response.attachments,
+    audio_url: response.audio_url,
+    docx_url: response.docx_url,
+    image_url: response.image_url,
+  };
 }

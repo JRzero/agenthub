@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CaretLeft, CaretRight, PaperPlaneRight } from "@phosphor-icons/react";
 import { DATA_MODE } from "@/config/capabilities";
+import { RuntimeMessageContent } from "@/modules/agent-runtime/runtime-message-content";
 import { AgentAvatar } from "@/modules/agents/agent-avatar";
 import { useAuth } from "@/modules/auth/auth-provider";
 import {
@@ -16,6 +17,7 @@ import type { AgentBuildDraft } from "./types";
 import { BuildPublishCheck } from "./build-publish-check";
 import {
   buildDraftSimulationPayload,
+  createPreviewAssistantMessage,
   latestPreviewExchange,
 } from "./build-preview-model";
 import type {
@@ -98,13 +100,10 @@ export function BuildPreview({
           );
       setMessages(() => [
         userMessage,
-        {
-          id: response.message_id || `preview-assistant-${Date.now()}`,
-          role: "assistant",
-          content: response.content,
-          model: response.model,
-          usage: response.usage,
-        },
+        createPreviewAssistantMessage(
+          response,
+          `preview-assistant-${Date.now()}`,
+        ),
       ]);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "预览失败，请重试");
@@ -245,8 +244,20 @@ export function BuildPreview({
                       key={message.id}
                       className={`rounded-xl px-4 py-3 text-sm leading-6 ${message.role === "user" ? "ml-8 bg-primary text-white" : "mr-8 bg-subtle text-text-strong"}`}
                     >
-                      {message.content ||
-                        (sending ? "正在生成…" : "暂未收到回复内容")}
+                      <RuntimeMessageContent
+                        content={
+                          message.content ||
+                          (sending
+                            ? "正在生成…"
+                            : message.image_url || message.attachments?.length
+                              ? ""
+                              : "暂未收到回复内容")
+                        }
+                        attachments={message.attachments}
+                        audioUrl={message.audio_url}
+                        docxUrl={message.docx_url}
+                        imageUrl={message.image_url}
+                      />
                     </div>
                   ))}
                 </div>
