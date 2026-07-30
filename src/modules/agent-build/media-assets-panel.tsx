@@ -32,12 +32,22 @@ export function MediaAssetsPanel({
   const { session } = useAuth();
   const demo = DATA_MODE === "demo";
   const capabilities = resolveMediaCapabilityMap(demo ? "demo" : "live");
-  const mapped = useMemo(() => mapAgentMediaAssets(agent), [agent]);
+  const [displayAgent, setDisplayAgent] = useState(agent);
+  const mapped = useMemo(() => mapAgentMediaAssets(displayAgent), [displayAgent]);
   const [drawerKind, setDrawerKind] = useState<MediaAssetKind | null>(null);
   const [demoAssets, setDemoAssets] = useState<MediaAsset[]>([]);
   const [activeTab, setActiveTab] = useState<"avatar" | "character-sheet" | "comic-draft">("avatar");
   const [removingCharacterDesign, setRemovingCharacterDesign] = useState(false);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    setDisplayAgent(agent);
+  }, [agent]);
+
+  const applyAgentUpdate = (updated: Agent) => {
+    setDisplayAgent(updated);
+    onAgentUpdated(updated);
+  };
 
   const characterSheets = demo
     ? [...demoAssets.filter((asset) => asset.kind === "character-sheet"), ...DEMO_CHARACTER_SHEETS].slice(0, 3)
@@ -53,7 +63,7 @@ export function MediaAssetsPanel({
 
   const removeCharacterDesign = async () => {
     if (
-      !agent.config?.metadata?.character_design_sheet ||
+      !displayAgent.config?.metadata?.character_design_sheet ||
       !window.confirm("确认移除当前角色设定稿？历史已发布版本中的素材不会被删除。")
     ) {
       return;
@@ -62,24 +72,24 @@ export function MediaAssetsPanel({
     setMessage("");
     try {
       if (demo) {
-        onAgentUpdated({
-          ...agent,
-          draft_revision: (agent.draft_revision || 0) + 1,
+        applyAgentUpdate({
+          ...displayAgent,
+          draft_revision: (displayAgent.draft_revision || 0) + 1,
           config: {
-            ...agent.config,
+            ...displayAgent.config,
             metadata: {
-              ...agent.config?.metadata,
+              ...displayAgent.config?.metadata,
               character_design_spec: undefined,
               character_design_sheet: undefined,
             },
           },
         });
-      } else if (session?.apiKey && agent.draft_revision) {
-        onAgentUpdated(
+      } else if (session?.apiKey && displayAgent.draft_revision) {
+        applyAgentUpdate(
           await deleteCharacterDesign(
             session.apiKey,
-            agent.id,
-            agent.draft_revision,
+            displayAgent.id,
+            displayAgent.draft_revision,
           ),
         );
       }
@@ -105,8 +115,8 @@ export function MediaAssetsPanel({
       </div>
 
       {activeTab === "avatar" && <AgentAvatarEditor
-          agent={agent}
-          onUpdated={onAgentUpdated}
+          agent={displayAgent}
+          onUpdated={applyAgentUpdate}
           onGenerate={() => setDrawerKind("avatar")}
           assetLibrarySource={capabilities.assetLibrary}
           generationSource={capabilities.avatarGeneration}
@@ -122,7 +132,7 @@ export function MediaAssetsPanel({
         assets={characterSheets}
         emptyCopy="尚未保存角色设定稿"
         onRemove={
-          agent.config?.metadata?.character_design_sheet
+          displayAgent.config?.metadata?.character_design_sheet
             ? () => void removeCharacterDesign()
             : undefined
         }
@@ -141,10 +151,10 @@ export function MediaAssetsPanel({
 
       <MotherlandAssetDrawer
         kind={drawerKind}
-        agent={agent}
+        agent={displayAgent}
         draft={draft}
         onClose={() => setDrawerKind(null)}
-        onAgentUpdated={onAgentUpdated}
+        onAgentUpdated={applyAgentUpdate}
         onDemoAssetCreated={addDemoAsset}
         onDraftConflict={onDraftConflict}
       />
@@ -256,6 +266,8 @@ function MediaAssetSpecPanel({ asset }: { asset: MediaAsset }) {
 }
 
 function MediaAssetCard({ asset, onPreview }: { asset: MediaAsset; onPreview: () => void }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
   return (
     <article className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface">
       <button
@@ -264,13 +276,26 @@ function MediaAssetCard({ asset, onPreview }: { asset: MediaAsset; onPreview: ()
         aria-label={`查看${asset.name}大图`}
         className="group block aspect-[4/3] w-full cursor-zoom-in overflow-hidden bg-subtle outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={asset.url} alt={asset.name} className={`h-full w-full transition duration-200 group-hover:scale-[1.01] ${asset.kind === "character-sheet" ? "object-contain" : "object-cover"}`} />
+        {imageFailed ? (
+          <MediaImageUnavailable />
+        ) : (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={asset.url}
+              alt={asset.name}
+              onError={() => setImageFailed(true)}
+              className={`h-full w-full transition duration-200 group-hover:scale-[1.01] ${asset.kind === "character-sheet" ? "object-contain" : "object-cover"}`}
+            />
+          </>
+        )}
       </button>
       <div className="p-3">
         <div className="flex items-center justify-between gap-2">
           <h4 className="truncate text-sm font-semibold">{asset.name}</h4>
-          <span className="status-badge status-success">{"\u5df2\u4fdd\u5b58"}</span>
+          <span className={`status-badge ${imageFailed ? "status-warning" : "status-success"}`}>
+            {imageFailed ? "已保存 · 读取异常" : "\u5df2\u4fdd\u5b58"}
+          </span>
         </div>
         <div className="mt-2 flex items-center gap-2 text-xs text-text-muted">
           <ClockCounterClockwise size={14} />
@@ -285,6 +310,8 @@ function MediaAssetCard({ asset, onPreview }: { asset: MediaAsset; onPreview: ()
 }
 
 function MediaAssetPreview({ asset, onClose }: { asset: MediaAsset; onClose: () => void }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
   return (
     <div className="fixed inset-0 z-[70] grid place-items-center bg-slate-950/70 p-4 sm:p-6" onMouseDown={onClose}>
       <section
@@ -302,11 +329,34 @@ function MediaAssetPreview({ asset, onClose }: { asset: MediaAsset; onClose: () 
         </header>
         <div className="min-h-0 flex-1 overflow-auto bg-subtle p-4 sm:p-6">
           <div className="mx-auto flex min-h-[20rem] w-full items-center justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={asset.url} alt={asset.name} className="max-h-[calc(100vh-10rem)] max-w-full object-contain" />
+            {imageFailed ? (
+              <MediaImageUnavailable />
+            ) : (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={asset.url}
+                  alt={asset.name}
+                  onError={() => setImageFailed(true)}
+                  className="max-h-[calc(100vh-10rem)] max-w-full object-contain"
+                />
+              </>
+            )}
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+function MediaImageUnavailable() {
+  return (
+    <div role="status" className="grid h-full min-h-40 w-full place-items-center px-5 py-8 text-center">
+      <div>
+        <ImageSquare size={28} className="mx-auto text-text-muted" />
+        <p className="mt-3 text-sm font-medium text-text-primary">图片已保存，暂时无法加载</p>
+        <p className="mt-1 text-xs leading-5 text-text-muted">图片读取服务返回异常，请稍后刷新重试。</p>
+      </div>
     </div>
   );
 }

@@ -86,8 +86,8 @@ describe("professional Build contracts", () => {
   it("uses deterministic desktop widths for the collapsible preview", () => {
     expect(resolveBuildPreviewLayout(false)).toMatchObject({
       collapsed: false,
-      desktopWidth: 320,
-      gridClass: "lg:grid-cols-[184px_minmax(0,1fr)_320px]",
+      desktopWidth: 400,
+      gridClass: "lg:grid-cols-[184px_minmax(0,1fr)_400px]",
     });
     expect(resolveBuildPreviewLayout(true)).toMatchObject({
       collapsed: true,

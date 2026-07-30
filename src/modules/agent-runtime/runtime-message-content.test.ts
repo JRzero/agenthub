@@ -60,6 +60,33 @@ describe("resolveRuntimeUrl", () => {
     );
   });
 
+  it("renders common Markdown blocks and inline formatting safely", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(RuntimeMessageContent, {
+        content:
+          "## 今日建议\n\n1. **养宠物**\n2. 使用 `10 分钟`\n\n[查看说明](https://example.com)",
+      }),
+    );
+
+    expect(html).toContain("<h2");
+    expect(html).toContain("<ol");
+    expect(html).toContain("<strong");
+    expect(html).toContain("<code");
+    expect(html).toContain('href="https://example.com"');
+    expect(html).not.toContain("**养宠物**");
+  });
+
+  it("does not turn unsafe Markdown links into anchors", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(RuntimeMessageContent, {
+        content: "[危险链接](javascript:alert(1))",
+      }),
+    );
+
+    expect(html).not.toContain("<a");
+    expect(html).not.toContain('href="javascript:');
+  });
+
   it("does not create a URL for a missing media value", () => {
     expect(resolveRuntimeUrl()).toBeUndefined();
   });

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useReducer, useState } from "react";
-import { ArrowClockwise, CheckCircle, MagicWand, SpinnerGap, X } from "@phosphor-icons/react";
+import { ArrowClockwise, ArrowSquareOut, CheckCircle, MagicWand, SpinnerGap, X } from "@phosphor-icons/react";
 import { DATA_MODE } from "@/config/capabilities";
 import type { Agent } from "@/modules/agents/types";
 import { useAuth } from "@/modules/auth/auth-provider";
@@ -231,13 +231,13 @@ export function MotherlandAssetDrawer({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/30" onMouseDown={() => { if (!busy) onClose(); }}>
+    <div className="fixed inset-0 z-50 overflow-hidden bg-slate-950/30" onMouseDown={() => { if (!busy) onClose(); }}>
       <aside
         role="dialog"
         aria-modal="true"
         aria-labelledby="motherland-drawer-title"
         onMouseDown={(event) => event.stopPropagation()}
-        className="ml-auto flex h-full w-full max-w-xl flex-col overflow-hidden bg-surface shadow-2xl"
+        className="ml-auto grid h-full max-h-full w-full max-w-xl grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden bg-surface shadow-2xl"
       >
         <header className="shrink-0 border-b border-border px-5 py-4">
           <div className="flex items-start justify-between gap-4">
@@ -255,7 +255,10 @@ export function MotherlandAssetDrawer({
           <p className="mt-3 text-sm leading-5 text-text-muted">{copy.description}</p>
         </header>
 
-        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5">
+        <div
+          data-testid="motherland-drawer-scroll"
+          className="flex min-h-0 flex-col gap-4 overflow-y-scroll overscroll-contain p-5 [scrollbar-gutter:stable]"
+        >
           {isCharacterSheet ? (
             <>
               <label className="block text-sm font-medium">
@@ -267,10 +270,10 @@ export function MotherlandAssetDrawer({
                     setCharacterSpec(event.target.value);
                     if (candidate) setCandidate(null);
                   }}
-                  rows={10}
+                  rows={8}
                   placeholder={copy.prompt}
                   disabled={busy}
-                  className="mt-2 w-full resize-none rounded-lg border border-border bg-surface p-3 leading-6 outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:opacity-60"
+                  className="mt-2 min-h-44 max-h-[45dvh] w-full resize-y rounded-lg border border-border bg-surface p-3 leading-6 outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:opacity-60"
                 />
               </label>
               <div className="flex flex-wrap gap-3">
@@ -310,7 +313,7 @@ export function MotherlandAssetDrawer({
           )}
 
           {candidate && (
-            <div className="min-h-0 overflow-hidden rounded-xl border border-border bg-subtle">
+            <div className="overflow-hidden rounded-xl border border-border bg-subtle">
               {imageFailed ? (
                 <div className="grid min-h-[220px] place-items-center px-5 py-8 text-center">
                   <div>
@@ -322,14 +325,30 @@ export function MotherlandAssetDrawer({
               ) : (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={candidatePreviewUrl} alt="Motherland generated candidate" onError={() => setImageFailed(true)} className="max-h-[320px] w-full object-contain" />
+                  <img
+                    src={candidatePreviewUrl}
+                    alt="Motherland generated candidate"
+                    onError={() => setImageFailed(true)}
+                    className="block h-auto w-full bg-surface object-contain"
+                  />
                 </>
               )}
               <div className="flex items-center justify-between gap-3 border-t border-border bg-surface px-4 py-3">
                 <span className={`status-badge ${state === "saved" ? "status-success" : "status-warning"}`}>
                   {state === "saved" ? "已确认保存" : "候选 · 待确认"}
                 </span>
-                {candidate.demoOnly && <span className="text-xs text-text-muted">仅演示会话</span>}
+                <div className="flex items-center gap-3">
+                  <a
+                    href={candidatePreviewUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                  >
+                    查看原图
+                    <ArrowSquareOut size={13} />
+                  </a>
+                  {candidate.demoOnly && <span className="text-xs text-text-muted">仅演示会话</span>}
+                </div>
               </div>
             </div>
           )}
@@ -341,7 +360,7 @@ export function MotherlandAssetDrawer({
           )}
         </div>
 
-        <footer className="shrink-0 flex flex-wrap justify-end gap-3 border-t border-border px-5 py-4">
+        <footer className="relative z-10 flex flex-wrap justify-end gap-3 border-t border-border bg-surface px-5 py-4 shadow-[0_-8px_20px_rgba(15,23,42,0.06)]">
           <button type="button" onClick={onClose} disabled={busy} className="button-secondary">取消</button>
           {!isCharacterSheet && (
             <button type="button" onClick={() => void generate()} disabled={!prompt.trim() || busy} className="button-secondary">

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ArrowSquareOut, File } from "@phosphor-icons/react";
 import { getApiBaseUrl } from "@/shared/api/http-client";
+import { MarkdownContent } from "./markdown-content";
 import type { RuntimeAttachment } from "./types";
 
 export function resolveRuntimeUrl(value?: string): string | undefined {
@@ -22,7 +23,7 @@ export function RuntimeMessageContent({ content, attachments = [], audioUrl, doc
   const resolvedImage = resolveRuntimeUrl(imageUrl);
   const resolvedDocx = resolveRuntimeUrl(docxUrl);
   return <>
-    <p className="whitespace-pre-wrap">{content}</p>
+    {content && <MarkdownContent content={content} />}
     {resolvedAudio && <audio controls preload="metadata" src={resolvedAudio} className="mt-3 w-full" aria-label="Agent 语音回复" />}
     {resolvedImage && <a href={resolvedImage} target="_blank" rel="noreferrer" className="mt-3 block overflow-hidden rounded-lg border border-border"><Image src={resolvedImage} alt="Agent 生成图片" width={420} height={240} unoptimized className="max-h-60 w-full object-cover" /></a>}
     {resolvedDocx && <a href={resolvedDocx} target="_blank" rel="noreferrer" className="mt-3 flex items-center gap-2 rounded-lg border border-border bg-subtle px-3 py-2 text-xs"><File size={16} />下载 Word 文档<ArrowSquareOut size={14} /></a>}
