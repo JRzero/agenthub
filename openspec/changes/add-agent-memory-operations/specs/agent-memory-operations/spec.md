@@ -29,6 +29,14 @@ The system SHALL present the Agent context, four summary metrics, relationship a
 - **WHEN** the operational page renders
 - **THEN** its primary labels use “记忆关系”“关系数据完整度”“情绪数据完整度”“情绪记录”“已获取”“暂未获取”“已有记录”“尚未积累” instead of raw English contract terms
 
+#### Scenario: Neutral and accessible channel presentation
+- **WHEN** relationship, emotion, and unavailable aggregates are shown
+- **THEN** the system uses distinct neutral channel colors plus visible labels and values, does not imply good/bad meaning through a red/green pair, and keeps the layout readable without horizontal scrolling at narrow widths
+
+#### Scenario: Sparse sample remains compact
+- **WHEN** a single anonymous sample produces 100% relationship and emotion completeness
+- **THEN** the channel modules use the same font family, title scale, and compact panel spacing as the Agent Asset workspace without expanding the percentage into an oversized display card
+
 ### Requirement: Correct denominator and null semantics
 The system MUST calculate coverage against `total_active_memories`, relationship stage shares against `relationship_available`, emotion formation and state shares against `emotion_available`, and MUST preserve `null` as unavailable rather than converting it to zero.
 
@@ -99,7 +107,7 @@ The system SHALL provide manual refresh, MUST NOT poll or automatically refetch 
 
 #### Scenario: Manual refresh
 - **WHEN** the creator activates the refresh control
-- **THEN** the system refetches the current Agent aggregate, shows progress, and updates the retrieval time after success
+- **THEN** the system refetches the current Agent aggregate, shows progress, updates the retrieval time after success, and provides a clearly labeled touch target at least 44 pixels high
 
 #### Scenario: No automatic refresh
 - **WHEN** the creator leaves the page open, switches window focus, or reconnects to the network

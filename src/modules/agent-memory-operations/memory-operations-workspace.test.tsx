@@ -73,6 +73,63 @@ describe("memory operations states and interactions", () => {
     expect(markup).not.toContain(">0%</span>");
   });
 
+  it("uses neutral channel colors with visible labels instead of red-green semantics", () => {
+    const markup = renderToStaticMarkup(
+      <OperationsContent
+        model={toAgentMemoryOperationsModel(demoAgentMemoryAnalytics(9))}
+      />,
+    );
+
+    expect(markup).toContain('data-memory-channel="relationship"');
+    expect(markup).toContain("bg-indigo-600");
+    expect(markup).toContain('data-memory-channel="emotion"');
+    expect(markup).toContain("bg-cyan-600");
+    expect(markup).not.toContain("bg-rose-500");
+    expect(markup).toContain("已获取");
+    expect(markup).toContain("暂未获取");
+  });
+
+  it("keeps sparse relationship and emotion channels at compact workspace density", () => {
+    const markup = renderToStaticMarkup(
+      <OperationsContent
+        model={toAgentMemoryOperationsModel({
+          agent_id: 9,
+          coverage: {
+            total_active_memories: 1,
+            relationship_available: 1,
+            relationship_unavailable: 0,
+            emotion_available: 1,
+            emotion_unavailable: 0,
+          },
+          relationship: {
+            stage_distribution: { known: 1 },
+            average_affection: null,
+            average_trust: null,
+            average_familiarity: null,
+            milestone_count: 0,
+            score_scales: {},
+          },
+          emotion: {
+            status_distribution: { ready: 1 },
+            sample_count: 1,
+            state_distribution: {},
+            mood_distribution: {},
+            mean_valence: null,
+            mean_arousal: null,
+            relationship_level: null,
+            recent_affection: null,
+            score_scales: {},
+          },
+          partial: false,
+        })}
+      />,
+    );
+
+    expect(markup.match(/data-density="compact"/g)).toHaveLength(2);
+    expect(markup).toContain("text-lg font-semibold leading-none");
+    expect(markup).not.toContain("text-2xl font-semibold tracking-tight tabular-nums");
+  });
+
   it("provides manual refresh without automatic-refresh controls", async () => {
     const onRefresh = vi.fn();
     const container = document.createElement("div");
@@ -94,6 +151,7 @@ describe("memory operations states and interactions", () => {
 
     expect(container.querySelector('[role="switch"]')).toBeNull();
     expect(container.textContent).not.toContain("自动刷新");
+    expect(refresh?.className).toContain("h-11");
 
     await act(async () => {
       refresh?.dispatchEvent(new MouseEvent("click", { bubbles: true }));

@@ -2,7 +2,7 @@
 
 ## 结论
 
-Agent Asset 级“记忆服务状态”页面已在真实 AgentHub shell 中完成视觉与交互验证。默认部分数据、无样本、请求错误和手动刷新状态均符合产品合同；页面不进行轮询、窗口聚焦或网络重连自动刷新，浏览器控制台错误为 0。
+Agent Asset 级“记忆服务状态”页面已在真实 AgentHub shell 中完成视觉与交互验证。默认部分数据、无样本、请求错误和手动刷新状态均符合产品合同；页面不进行轮询、窗口聚焦或网络重连自动刷新，浏览器控制台错误为 0。UI 增量复核覆盖亮色桌面、深色桌面、`375 × 812` 窄屏，以及单样本 100% 完整度的紧凑布局。
 
 真实 LinkYun 后端健康检查可达，但当前 QA 环境没有可用的 Creator API Key，因此未取得真实 `200 memory-analytics` 响应。Live 请求合同由 Vitest 覆盖，视觉状态使用明确的 Demo 隔离 fixture 验证。
 
@@ -19,7 +19,7 @@ Agent Asset 级“记忆服务状态”页面已在真实 AgentHub shell 中完�
   - `docs/qa/design-reference/agentmem-operations-target-2026-07-31.png`
   - `docs/qa/design-reference/agentmem-operations-prototype-2026-07-31.png`
 
-用户指定的 `http://localhost:3002` 已被 `/Users/king/Projects/linkyun/agenthub` 的既有开发进程占用。为避免中断用户进程，本工作树的浏览器 QA 临时运行在 `http://localhost:3003`；路由、shell 和构建产物与 3002 启动方式相同。
+`http://localhost:3002` 最终按仓库默认配置恢复为 Live 开发模式。为避免将 Live 进程切换为 Demo，本次视觉 QA 在同一工作树临时启动隔离的 `http://localhost:3003` Demo 进程；截图完成后停止该进程，路由、shell 和源码与 3002 一致。复核时发现占用 3002 的旧进程曾以 Demo 环境启动，已停止该进程并使用无 Demo 环境变量的 `npm run dev` 重启；重新打开页面进入 Live 登录流程，未再出现 Demo 标记或 fixture 内容。
 
 ## 浏览器证据
 
@@ -69,11 +69,23 @@ Agent Asset 级“记忆服务状态”页面已在真实 AgentHub shell 中完�
 ## 视觉与可访问性
 
 - 使用现有 AgentHub shell、panel、按钮、状态 badge、颜色 tokens 和 Phosphor 图标。
-- 关系通道使用玫红，情绪通道使用绿色；灰/橙仅表示暂未获取，不表示价值好坏。
+- 根据 `ui-ux-pro-max` 数据仪表盘、可访问性和颜色建议优化信息层级，但未引入推荐字体、动画库或外部图表依赖。
+- 字体继续继承全站 `ui-sans-serif/system-ui/PingFang SC/Microsoft YaHei` 栈；浏览器实测记忆页和版本页的页面标题均为 `20px`、`H2`，未引入单页字体或不一致的标题层级。
+- 关系通道使用靛蓝紫，情绪通道使用青蓝；琥珀仅表示暂未获取，避免红绿组合暗示业务好坏。
+- KPI 使用四张可响应重排的独立卡片，数值采用 tabular figures；完整度使用可访问 `progressbar` 和同步文字标签。
+- 单样本 `100%` 视觉复核中，摘要卡高度为 `136px`，关系/情绪通道分别为 `259px/260px`，完整度百分比为 `18px`；不再使用原先的 `24px` 独立展示型数值卡。
 - 桌面首屏包含页头、刷新控件、摘要、双通道完整度、当前情况和当前互动感受入口。
 - 全页截图包含聚合体验信号和指标/隐私说明。
-- 刷新、重试和导航均有语义角色或可访问名称。
+- 刷新、重试和导航均有语义角色或可访问名称；手动刷新按钮实测高度 `44px`。
+- `1440 × 1024` 与 `375 × 812` 下 `scrollWidth` 均等于可用 viewport 宽度，无页面级横向溢出。
+- 深色模式单独完成视觉复核，之后恢复原“跟随系统”主题设置。
 - 最终页面浏览器控制台 `error` 数量：`0`。
+
+补充截图：
+
+- `docs/qa/images/agentmem-operations-ui-narrow-2026-07-31.png`
+- `docs/qa/images/agentmem-operations-ui-dark-viewport-2026-07-31.png`
+- `docs/qa/images/agentmem-operations-ui-sparse-viewport-2026-07-31.png`
 
 ## 真实后端联调
 
@@ -90,9 +102,9 @@ Agent Asset 级“记忆服务状态”页面已在真实 AgentHub shell 中完�
 
 - `npm run lint`：通过。
 - `npm run typecheck`：通过。
-- `npm test`：59 个测试文件、270 项测试通过。
+- `npm test`：59 个测试文件、273 项测试通过。
 - `npm run build`：通过，包含动态路由 `/assets/[agentId]/memory`。
-- `openspec validate --all --strict`：由最终门禁执行。
+- `openspec validate --all --strict`：28 个 change 全部通过。
 
 ## 最终结果
 

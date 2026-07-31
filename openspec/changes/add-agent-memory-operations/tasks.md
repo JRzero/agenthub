@@ -29,3 +29,14 @@
 
 - [x] 5.1 Remove interval, focus, and reconnect refresh behavior plus automatic-refresh controls; update tests and QA documentation
 - [x] 5.2 Re-run targeted tests, lint, typecheck, production build, strict OpenSpec validation, and browser QA
+
+## 6. UI and color refinement
+
+- [x] 6.1 Refine the header, KPI hierarchy, channel panels, diagnostics, signal cards, empty/error/loading states, and metric disclosure using existing components and tokens
+- [x] 6.2 Replace value-implying red/green channel colors with accessible indigo/cyan semantics, improve touch targets and narrow-screen reflow, and add visual contract tests
+- [x] 6.3 Re-run automated gates and desktop/narrow-screen browser QA; update final screenshots and QA report
+
+## 7. Asset workspace density alignment
+
+- [x] 7.1 Align the page title, summary cards, module padding, and relationship/emotion completeness bands with the typography and density of existing Agent Asset pages
+- [x] 7.2 Add sparse-sample density coverage, re-run automated gates, and update browser QA evidence

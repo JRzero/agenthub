@@ -5,10 +5,12 @@ import {
   ArrowClockwise,
   ChartBar,
   CheckCircle,
+  Clock,
   Database,
   Heart,
   Info,
   Pulse,
+  ShieldCheck,
   Smiley,
   WarningCircle,
   WaveSine,
@@ -30,17 +32,45 @@ import type {
 } from "./types";
 
 const relationshipColors = [
-  "bg-rose-500",
-  "bg-rose-400",
-  "bg-orange-400",
-  "bg-pink-300",
+  "bg-indigo-600 dark:bg-indigo-400",
+  "bg-violet-500 dark:bg-violet-400",
+  "bg-blue-500 dark:bg-blue-400",
+  "bg-fuchsia-500 dark:bg-fuchsia-400",
 ];
 const emotionColors = [
-  "bg-emerald-500",
-  "bg-emerald-400",
-  "bg-lime-500",
-  "bg-teal-400",
+  "bg-cyan-600 dark:bg-cyan-400",
+  "bg-teal-500 dark:bg-teal-400",
+  "bg-sky-500 dark:bg-sky-400",
+  "bg-emerald-500 dark:bg-emerald-400",
 ];
+
+type VisualTone = "neutral" | "relationship" | "emotion" | "activity";
+
+const summaryToneClass: Record<
+  VisualTone,
+  { accent: string; icon: string; emphasis: string }
+> = {
+  neutral: {
+    accent: "bg-primary",
+    icon: "bg-primary-soft text-primary",
+    emphasis: "text-primary",
+  },
+  relationship: {
+    accent: "bg-indigo-600 dark:bg-indigo-400",
+    icon: "bg-indigo-50 text-indigo-700 dark:bg-indigo-400/10 dark:text-indigo-300",
+    emphasis: "text-indigo-700 dark:text-indigo-300",
+  },
+  emotion: {
+    accent: "bg-cyan-600 dark:bg-cyan-400",
+    icon: "bg-cyan-50 text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300",
+    emphasis: "text-cyan-700 dark:text-cyan-300",
+  },
+  activity: {
+    accent: "bg-amber-500 dark:bg-amber-400",
+    icon: "bg-amber-50 text-amber-700 dark:bg-amber-400/10 dark:text-amber-300",
+    emphasis: "text-amber-700 dark:text-amber-300",
+  },
+};
 function formatRetrievedAt(timestamp: number): string {
   if (!timestamp) return "等待首次获取";
   return new Intl.DateTimeFormat("zh-CN", {
@@ -68,39 +98,49 @@ function scaleDescription(score: MemoryScoreItem): string {
 
 function SummaryCard({
   icon,
-  iconClass,
   label,
   value,
   emphasis,
   helper,
+  tone,
 }: {
   icon: React.ReactNode;
-  iconClass: string;
   label: string;
   value: string;
   emphasis?: string;
   helper: string;
+  tone: VisualTone;
 }) {
+  const toneClass = summaryToneClass[tone];
+
   return (
-    <div className="flex min-h-[132px] min-w-0 gap-3 px-5 py-5">
-      <span
-        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${iconClass}`}
-      >
-        {icon}
-      </span>
-      <div className="min-w-0">
+    <article
+      data-summary-tone={tone}
+      className="panel relative min-h-[132px] min-w-0 overflow-hidden p-4"
+    >
+      <span className={`absolute inset-x-0 top-0 h-0.5 ${toneClass.accent}`} />
+      <div className="flex items-center justify-between gap-3">
         <p className="text-sm font-semibold text-text-strong">{label}</p>
-        <p className="mt-1 flex flex-wrap items-baseline gap-2">
-          <span className="text-[26px] font-semibold leading-none tracking-tight">
+        <span
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${toneClass.icon}`}
+        >
+          {icon}
+        </span>
+      </div>
+      <div className="mt-2.5 min-w-0">
+        <p className="flex flex-wrap items-baseline gap-2">
+          <span className="text-2xl font-semibold leading-none tracking-tight tabular-nums">
             {value}
           </span>
           {emphasis && (
-            <span className="text-sm font-semibold text-primary">{emphasis}</span>
+            <span className={`text-sm font-semibold tabular-nums ${toneClass.emphasis}`}>
+              {emphasis}
+            </span>
           )}
         </p>
-        <p className="mt-2 text-xs leading-5 text-text-muted">{helper}</p>
+        <p className="mt-2.5 text-xs leading-5 text-text-muted">{helper}</p>
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -114,7 +154,7 @@ export function MemoryRefreshButton({
   return (
     <button
       type="button"
-      className="button-primary control-compact"
+      className="button-primary h-11 min-h-11 rounded-lg px-4 shadow-sm shadow-primary/20"
       onClick={onRefresh}
       disabled={refreshing}
     >
@@ -142,15 +182,15 @@ function DistributionStrip({
 }) {
   if (!items) {
     return (
-      <div className="rounded-md border border-dashed border-border bg-subtle/50 px-4 py-4">
+      <div className="rounded-lg border border-dashed border-border bg-subtle/50 px-4 py-4">
         <p className="text-sm font-semibold">{title}</p>
-        <p className="mt-1 text-xs text-text-muted">{emptyText}</p>
+        <p className="mt-1 text-xs leading-5 text-text-muted">{emptyText}</p>
       </div>
     );
   }
   if (items.length === 0) {
     return (
-      <div className="rounded-md bg-subtle px-4 py-3 text-xs text-text-muted">
+      <div className="rounded-lg bg-subtle px-4 py-3 text-xs text-text-muted">
         {title}：暂无样本
       </div>
     );
@@ -164,7 +204,10 @@ function DistributionStrip({
           <span className="status-badge status-warning">上游阶段口径待确认</span>
         )}
       </div>
-      <div className="mt-3 flex h-1.5 overflow-hidden rounded-full bg-subtle">
+      <div
+        className="mt-3 flex h-2 overflow-hidden rounded-full bg-subtle"
+        aria-label={`${title}分布`}
+      >
         {items.map((item, index) => (
           <span
             key={item.key}
@@ -173,14 +216,19 @@ function DistributionStrip({
           />
         ))}
       </div>
-      <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-2.5 grid gap-2 sm:grid-cols-2 2xl:grid-cols-3">
         {items.map((item, index) => (
-          <div key={item.key} className="flex items-center gap-2 text-xs">
+          <div
+            key={item.key}
+            className="flex min-w-0 items-center gap-2 rounded-lg bg-subtle/65 px-3 py-2 text-xs"
+          >
             <span
-              className={`h-2 w-2 shrink-0 rounded-full ${colors[index % colors.length]}`}
+              className={`h-2.5 w-2.5 shrink-0 rounded-full ${colors[index % colors.length]}`}
             />
-            <span className="font-medium text-text-strong">{item.label}</span>
-            <span className="text-text-muted">
+            <span className="min-w-0 flex-1 font-medium text-text-strong">
+              {item.label}
+            </span>
+            <span className="shrink-0 text-text-muted tabular-nums">
               {item.count} · {formatPercentage(item.share)}
             </span>
           </div>
@@ -207,52 +255,84 @@ function CoverageLane({
   tone: "relationship" | "emotion";
   children: React.ReactNode;
 }) {
-  const availableClass = tone === "relationship" ? "bg-rose-500" : "bg-emerald-500";
+  const availableClass =
+    tone === "relationship"
+      ? "bg-gradient-to-r from-indigo-600 to-violet-500 dark:from-indigo-400 dark:to-violet-400"
+      : "bg-gradient-to-r from-cyan-600 to-teal-500 dark:from-cyan-400 dark:to-teal-400";
   const iconClass =
     tone === "relationship"
-      ? "bg-rose-50 text-rose-600 dark:bg-rose-400/10 dark:text-rose-300"
-      : "bg-emerald-50 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-300";
+      ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-400/10 dark:text-indigo-300"
+      : "bg-cyan-50 text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300";
+  const availablePill =
+    tone === "relationship"
+      ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-400/10 dark:text-indigo-300"
+      : "bg-cyan-50 text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300";
 
   return (
-    <section className="px-5 py-5">
+    <section
+      data-memory-channel={tone}
+      data-density="compact"
+      className="px-4 py-4 sm:px-5"
+    >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <span
-            className={`flex h-8 w-8 items-center justify-center rounded-full ${iconClass}`}
+            className={`flex h-8 w-8 items-center justify-center rounded-lg ${iconClass}`}
           >
-            {tone === "relationship" ? <Heart size={17} /> : <Pulse size={17} />}
+            {tone === "relationship" ? (
+              <Heart size={18} weight="duotone" />
+            ) : (
+              <Pulse size={18} weight="duotone" />
+            )}
           </span>
           <h2 className="text-base font-semibold">{title}</h2>
         </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-muted">
-          <span>已获取：{available}</span>
-          <span>暂未获取：{unavailable}</span>
-          <span>单位：份记忆关系</span>
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className={`rounded-full px-2.5 py-1 font-medium ${availablePill}`}>
+            已获取 {available}
+          </span>
+          <span className="rounded-full bg-slate-100 px-2.5 py-1 font-medium text-slate-600 dark:bg-slate-700/60 dark:text-slate-300">
+            暂未获取 {unavailable}
+          </span>
         </div>
       </div>
       {total === 0 ? (
-        <div className="mt-4 rounded-md bg-subtle px-4 py-4 text-sm text-text-muted">
+        <div className="mt-3 rounded-lg bg-subtle px-3.5 py-3 text-sm text-text-muted">
           暂无样本，形成真实记忆关系后会在这里显示完整度。
         </div>
       ) : (
         <>
-          <div className="mt-4 flex items-center gap-3">
-            <div className="flex h-8 min-w-0 flex-1 overflow-hidden rounded-md bg-slate-200 dark:bg-slate-700">
-              <span
-                className={`${availableClass} flex items-center justify-center text-xs font-semibold text-white`}
-                style={{ width: `${(coverage || 0) * 100}%` }}
-              >
-                {available > 0 ? `${available}（${formatPercentage(coverage)}）` : ""}
-              </span>
-              {unavailable > 0 && (
-                <span className="flex flex-1 items-center justify-center text-xs font-semibold text-slate-600 dark:text-slate-200">
-                  {unavailable}
+          <div className="mt-3 rounded-lg border border-border bg-subtle/40 px-3.5 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="flex items-baseline gap-2">
+                <span className="text-xs font-medium text-text-muted">数据完整度</span>
+                <span className="text-lg font-semibold leading-none tracking-tight tabular-nums">
+                  {formatPercentage(coverage)}
                 </span>
-              )}
+              </p>
+              <p className="text-xs font-medium text-text-muted tabular-nums">
+                {available} / {total} 份记忆关系
+              </p>
             </div>
-            <span className="w-12 text-right text-sm font-semibold">/ {total}</span>
+            <div
+              role="progressbar"
+              aria-label={`${title}完整度`}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round((coverage || 0) * 100)}
+              className="mt-2.5 flex h-2 min-w-0 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700"
+            >
+              <span
+                className={availableClass}
+                style={{ width: `${(coverage || 0) * 100}%` }}
+              />
+            </div>
+            <div className="mt-1.5 flex items-center justify-between gap-3 text-xs text-text-muted">
+              <span>已获取 {available}</span>
+              <span>暂未获取 {unavailable}</span>
+            </div>
           </div>
-          <div className="mt-5">{children}</div>
+          <div className="mt-4">{children}</div>
         </>
       )}
     </section>
@@ -266,23 +346,54 @@ const diagnosticToneClass: Record<MemoryDiagnosticTone, string> = {
   empty: "status-neutral",
 };
 
+const diagnosticAccentClass: Record<MemoryDiagnosticTone, string> = {
+  complete: "bg-success",
+  partial: "bg-warning",
+  accumulating: "bg-primary",
+  empty: "bg-slate-400 dark:bg-slate-500",
+};
+
+function DiagnosticIcon({ tone }: { tone: MemoryDiagnosticTone }) {
+  if (tone === "complete") return <CheckCircle size={20} weight="duotone" />;
+  if (tone === "partial") return <WarningCircle size={20} weight="duotone" />;
+  if (tone === "accumulating") return <Pulse size={20} weight="duotone" />;
+  return <Database size={20} weight="duotone" />;
+}
+
 function DiagnosticPanel({ model }: { model: AgentMemoryOperationsModel }) {
   return (
-    <aside className="panel p-5">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-base font-semibold">当前情况</h2>
+    <aside
+      data-diagnostic-tone={model.diagnostic.tone}
+      className="panel relative h-fit overflow-hidden p-5"
+    >
+      <span
+        className={`absolute inset-x-0 top-0 h-0.5 ${diagnosticAccentClass[model.diagnostic.tone]}`}
+      />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-soft text-primary">
+            <DiagnosticIcon tone={model.diagnostic.tone} />
+          </span>
+          <h2 className="text-base font-semibold">当前情况</h2>
+        </div>
         <span className={`status-badge ${diagnosticToneClass[model.diagnostic.tone]}`}>
           {model.diagnostic.badge}
         </span>
       </div>
-      <p className="mt-6 text-sm font-medium leading-6">{model.diagnostic.summary}</p>
-      <div className="my-5 h-px bg-border" />
-      <h3 className="text-sm font-semibold">建议</h3>
-      <p className="mt-2 text-sm leading-6 text-text-muted">
-        {model.diagnostic.advice}
-      </p>
-      <div className="mt-6 rounded-md bg-subtle px-3 py-3 text-xs leading-5 text-text-muted">
-        本页面只展示当前 Agent 的匿名聚合，不包含用户或单份记忆内容。
+      <p className="mt-4 text-sm font-medium leading-6">{model.diagnostic.summary}</p>
+      <div className="mt-4 rounded-lg border border-primary/10 bg-primary-soft/55 p-3.5">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-primary">
+          建议
+        </h3>
+        <p className="mt-2 text-sm leading-6 text-text-muted">
+          {model.diagnostic.advice}
+        </p>
+      </div>
+      <div className="mt-4 flex items-start gap-2.5 rounded-lg bg-subtle px-3.5 py-3 text-xs leading-5 text-text-muted">
+        <ShieldCheck size={18} weight="duotone" className="mt-0.5 shrink-0 text-primary" />
+        <p>
+          本页面只展示当前 Agent 的匿名聚合，不包含用户或单份记忆内容。
+        </p>
       </div>
     </aside>
   );
@@ -294,51 +405,61 @@ function DistributionPanel({
   items,
   colors,
   unavailable,
+  tone,
 }: {
   title: string;
   subtitle: string;
   items: MemoryDistributionItem[] | null;
   colors: string[];
   unavailable: string;
+  tone: "relationship" | "emotion";
 }) {
+  const accentClass =
+    tone === "relationship"
+      ? "bg-indigo-600 dark:bg-indigo-400"
+      : "bg-cyan-600 dark:bg-cyan-400";
+
   return (
-    <section className="panel p-5">
+    <section className="panel relative overflow-hidden p-5">
+      <span className={`absolute inset-x-0 top-0 h-0.5 ${accentClass}`} />
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold">{title}</h2>
-          <p className="mt-1 text-xs text-text-muted">{subtitle}</p>
+          <h3 className="text-base font-semibold">{title}</h3>
+          <p className="mt-1 text-xs leading-5 text-text-muted">{subtitle}</p>
         </div>
-        <span className="text-xs text-text-muted">份记忆关系</span>
+        <span className="shrink-0 rounded-full bg-subtle px-2.5 py-1 text-xs text-text-muted">
+          份记忆关系
+        </span>
       </div>
       {!items ? (
-        <div className="mt-5 rounded-md border border-dashed border-border bg-subtle/50 px-4 py-8 text-center">
+        <div className="mt-4 rounded-lg border border-dashed border-border bg-subtle/50 px-4 py-7 text-center">
           <p className="text-sm font-semibold">暂未获取</p>
           <p className="mt-1 text-xs text-text-muted">{unavailable}</p>
         </div>
       ) : items.length === 0 ? (
-        <div className="mt-5 rounded-md bg-subtle px-4 py-8 text-center text-sm text-text-muted">
+        <div className="mt-4 rounded-lg bg-subtle px-4 py-7 text-center text-sm text-text-muted">
           尚未积累
         </div>
       ) : (
-        <div className="mt-5 space-y-4">
+        <div className="mt-4 space-y-3.5" aria-label={`${title}分布`}>
           {items.map((item, index) => (
             <div
               key={item.key}
-              className="grid grid-cols-[72px_minmax(0,1fr)_74px] items-center gap-3 text-sm"
+              className="grid grid-cols-[minmax(72px,0.8fr)_minmax(80px,2fr)_auto] items-center gap-3 text-sm"
             >
               <span className="flex items-center gap-2 font-medium">
                 <span
-                  className={`h-2 w-2 shrink-0 rounded-full ${colors[index % colors.length]}`}
+                  className={`h-2.5 w-2.5 shrink-0 rounded-full ${colors[index % colors.length]}`}
                 />
                 {item.label}
               </span>
-              <div className="h-1.5 overflow-hidden rounded-full bg-subtle">
+              <div className="h-2 overflow-hidden rounded-full bg-subtle">
                 <div
                   className={`h-full rounded-full ${colors[index % colors.length]}`}
                   style={{ width: `${Math.min((item.share || 0) * 100, 100)}%` }}
                 />
               </div>
-              <span className="text-right text-xs text-text-muted">
+              <span className="text-right text-xs text-text-muted tabular-nums">
                 {item.count} · {formatPercentage(item.share)}
               </span>
             </div>
@@ -354,18 +475,39 @@ function ScorePanel({
   helper,
   scores,
   sampleCount,
+  tone,
 }: {
   title: string;
   helper: string;
   scores: MemoryScoreItem[] | null;
   sampleCount?: number | null;
+  tone: "relationship" | "emotion";
 }) {
+  const accentClass =
+    tone === "relationship"
+      ? "bg-indigo-600 dark:bg-indigo-400"
+      : "bg-cyan-600 dark:bg-cyan-400";
+  const iconClass =
+    tone === "relationship"
+      ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-400/10 dark:text-indigo-300"
+      : "bg-cyan-50 text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300";
+
   return (
-    <section className="panel p-5">
+    <section className="panel relative overflow-hidden p-5">
+      <span className={`absolute inset-x-0 top-0 h-0.5 ${accentClass}`} />
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <h2 className="text-base font-semibold">{title}</h2>
-          <p className="mt-1 text-xs text-text-muted">{helper}</p>
+        <div className="flex items-start gap-3">
+          <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${iconClass}`}>
+            {tone === "relationship" ? (
+              <Heart size={18} weight="duotone" />
+            ) : (
+              <WaveSine size={18} weight="duotone" />
+            )}
+          </span>
+          <div>
+            <h3 className="text-base font-semibold">{title}</h3>
+            <p className="mt-1 text-xs leading-5 text-text-muted">{helper}</p>
+          </div>
         </div>
         {sampleCount !== undefined && sampleCount !== null && (
           <span className="status-badge status-neutral">
@@ -374,19 +516,22 @@ function ScorePanel({
         )}
       </div>
       {!scores ? (
-        <div className="mt-5 rounded-md border border-dashed border-border bg-subtle/50 px-4 py-8 text-center">
+        <div className="mt-4 rounded-lg border border-dashed border-border bg-subtle/50 px-4 py-7 text-center">
           <p className="text-sm font-semibold">暂未获取</p>
           <p className="mt-1 text-xs text-text-muted">对应服务信号当前不可用</p>
         </div>
       ) : (
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {scores.map((score) => (
-            <div key={score.key} className="rounded-md border border-border px-4 py-3">
+            <div
+              key={score.key}
+              className="rounded-xl border border-border bg-subtle/35 px-4 py-3.5"
+            >
               <p className="text-xs text-text-muted">{score.label}</p>
-              <p className="mt-1 text-xl font-semibold">
+              <p className="mt-1 text-xl font-semibold tracking-tight tabular-nums">
                 {formatMetric(score.value)}
               </p>
-              <p className="mt-1 text-[11px] text-text-muted">
+              <p className="mt-1 text-xs leading-5 text-text-muted">
                 {score.value === null
                   ? "暂无可计算样本"
                   : scaleDescription(score)}
@@ -401,14 +546,21 @@ function ScorePanel({
 
 function EmptyMemoryState() {
   return (
-    <section className="panel flex min-h-[300px] flex-col items-center justify-center px-6 py-12 text-center">
-      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-soft text-primary">
-        <Database size={28} weight="duotone" />
-      </span>
-      <h2 className="mt-4 text-lg font-semibold">记忆关系尚未积累</h2>
-      <p className="mt-2 max-w-lg text-sm leading-6 text-text-muted">
-        当前没有可分析的匿名样本。真实用户与 Agent 互动并形成记忆关系后，这里会显示数据完整度和信号分布。
-      </p>
+    <section className="panel relative flex min-h-[320px] overflow-hidden px-6 py-12">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-soft/70 via-transparent to-cyan-50/70 dark:to-cyan-400/5" />
+      <div className="relative m-auto flex max-w-xl flex-col items-center text-center">
+        <span className="flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/10 bg-surface text-primary shadow-sm">
+          <Database size={30} weight="duotone" />
+        </span>
+        <h2 className="mt-5 text-xl font-semibold">记忆关系尚未积累</h2>
+        <p className="mt-2 text-sm leading-6 text-text-muted">
+          当前没有可分析的匿名样本。真实用户与 Agent 互动并形成记忆关系后，这里会显示数据完整度和信号分布。
+        </p>
+        <div className="mt-5 flex items-center gap-2 rounded-full bg-surface/80 px-3 py-1.5 text-xs text-text-muted ring-1 ring-inset ring-border">
+          <ShieldCheck size={16} weight="duotone" className="text-primary" />
+          仅展示匿名聚合数据
+        </div>
+      </div>
     </section>
   );
 }
@@ -421,12 +573,19 @@ function MemoryAnalyticsErrorPanel({
   onRetry: () => void;
 }) {
   return (
-    <section className="panel flex min-h-[360px] flex-col items-center justify-center px-6 text-center">
-      <WarningCircle size={34} className="text-warning" />
-      <h1 className="mt-4 text-lg font-semibold">{state.title}</h1>
+    <section className="panel relative flex min-h-[360px] flex-col items-center justify-center overflow-hidden px-6 text-center">
+      <div className="absolute inset-x-0 top-0 h-1 bg-warning" />
+      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50 text-warning dark:bg-amber-400/10">
+        <WarningCircle size={30} weight="duotone" />
+      </span>
+      <h2 className="mt-5 text-xl font-semibold">{state.title}</h2>
       <p className="mt-2 max-w-md text-sm leading-6 text-text-muted">{state.message}</p>
       {state.retryable && (
-        <button type="button" className="button-secondary mt-5" onClick={onRetry}>
+        <button
+          type="button"
+          className="button-secondary mt-6 h-11 min-h-11 rounded-lg"
+          onClick={onRetry}
+        >
           <ArrowClockwise size={17} />
           重试
         </button>
@@ -435,36 +594,85 @@ function MemoryAnalyticsErrorPanel({
   );
 }
 
+function SectionHeading({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="mb-3 flex items-start gap-3">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary">
+        {icon}
+      </span>
+      <div>
+        <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+        <p className="mt-0.5 text-xs leading-5 text-text-muted">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+function MemoryOperationsSkeleton() {
+  return (
+    <div className="space-y-4" role="status" aria-busy="true">
+      <span className="sr-only">正在获取记忆服务状态…</span>
+      <div className="panel h-[116px] animate-pulse bg-gradient-to-br from-surface to-primary-soft/50 p-5">
+        <div className="skeleton h-5 w-40" />
+        <div className="skeleton mt-3 h-4 w-72 max-w-full" />
+        <div className="skeleton mt-5 h-4 w-52 max-w-full" />
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {[0, 1, 2, 3].map((item) => (
+          <div key={item} className="panel min-h-[132px] p-4">
+            <div className="flex items-center justify-between">
+              <div className="skeleton h-4 w-24" />
+              <div className="skeleton h-9 w-9 rounded-lg" />
+            </div>
+            <div className="skeleton mt-4 h-7 w-28" />
+            <div className="skeleton mt-4 h-3 w-36 max-w-full" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function OperationsContent({ model }: { model: AgentMemoryOperationsModel }) {
   return (
     <>
-      <section className="panel grid divide-y divide-border lg:grid-cols-4 lg:divide-x lg:divide-y-0">
+      <section
+        aria-label="记忆服务摘要"
+        className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+      >
         <SummaryCard
           icon={<Database size={22} weight="duotone" />}
-          iconClass="bg-primary-soft text-primary"
           label="记忆关系"
           value={String(model.totalMemories)}
           helper="每位用户与 Agent 对应一份独立记忆关系"
+          tone="neutral"
         />
         <SummaryCard
           icon={<Heart size={22} weight="duotone" />}
-          iconClass="bg-rose-50 text-rose-600 dark:bg-rose-400/10 dark:text-rose-300"
           label="关系数据完整度"
           value={`${model.relationshipAvailable} / ${model.totalMemories}`}
           emphasis={formatPercentage(model.relationshipCoverage)}
           helper="已获取 / 记忆关系总数"
+          tone="relationship"
         />
         <SummaryCard
           icon={<Pulse size={22} weight="duotone" />}
-          iconClass="bg-emerald-50 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-300"
           label="情绪数据完整度"
           value={`${model.emotionAvailable} / ${model.totalMemories}`}
           emphasis={formatPercentage(model.emotionCoverage)}
           helper="已获取 / 记忆关系总数"
+          tone="emotion"
         />
         <SummaryCard
           icon={<WaveSine size={22} weight="duotone" />}
-          iconClass="bg-orange-50 text-orange-600 dark:bg-orange-400/10 dark:text-orange-300"
           label="情绪记录"
           value={model.emotionSampleCount === null ? "—" : String(model.emotionSampleCount)}
           helper={
@@ -474,6 +682,7 @@ export function OperationsContent({ model }: { model: AgentMemoryOperationsModel
                 : "对应数据暂未获取"
               : "已形成的匿名情绪记录总数"
           }
+          tone="activity"
         />
       </section>
 
@@ -482,7 +691,7 @@ export function OperationsContent({ model }: { model: AgentMemoryOperationsModel
       ) : (
         <>
           <div className="grid gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(300px,0.65fr)]">
-            <div className="panel divide-y divide-border">
+            <div className="panel overflow-hidden divide-y divide-border">
               <CoverageLane
                 title="关系数据"
                 available={model.relationshipAvailable}
@@ -519,10 +728,11 @@ export function OperationsContent({ model }: { model: AgentMemoryOperationsModel
           </div>
 
           <section>
-            <div className="mb-3 flex items-center gap-2">
-              <Smiley size={20} className="text-primary" />
-              <h2 className="text-lg font-semibold">当前互动感受</h2>
-            </div>
+            <SectionHeading
+              icon={<Smiley size={20} weight="duotone" />}
+              title="当前互动感受"
+              description="按已获取的匿名情绪数据展示当前状态，不代表价值判断"
+            />
             <div className="grid gap-4 lg:grid-cols-2">
               <DistributionPanel
                 title="近期状态"
@@ -530,6 +740,7 @@ export function OperationsContent({ model }: { model: AgentMemoryOperationsModel
                 items={model.recentStates}
                 colors={relationshipColors}
                 unavailable="情绪服务信号恢复后会显示近期状态"
+                tone="relationship"
               />
               <DistributionPanel
                 title="整体心境"
@@ -537,41 +748,47 @@ export function OperationsContent({ model }: { model: AgentMemoryOperationsModel
                 items={model.moods}
                 colors={emotionColors}
                 unavailable="情绪服务信号恢复后会显示整体心境"
+                tone="emotion"
               />
             </div>
           </section>
 
           <section>
-            <div className="mb-3 flex items-center gap-2">
-              <ChartBar size={20} className="text-primary" />
-              <h2 className="text-lg font-semibold">聚合体验信号</h2>
-            </div>
+            <SectionHeading
+              icon={<ChartBar size={20} weight="duotone" />}
+              title="聚合体验信号"
+              description="不同量纲分别解释，仅用于理解当前匿名样本"
+            />
             <div className="grid gap-4 lg:grid-cols-2">
               <ScorePanel
                 title="记忆关系信号"
                 helper="仅用于理解当前匿名样本，不代表好坏评分"
                 scores={model.relationshipScores}
+                tone="relationship"
               />
               <ScorePanel
                 title="情绪记录信号"
                 helper="服务端按情绪记录数加权，不与其他量纲横向比较"
                 scores={model.emotionScores}
                 sampleCount={model.emotionSampleCount}
+                tone="emotion"
               />
             </div>
           </section>
         </>
       )}
 
-      <details className="panel group p-5">
-        <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold">
-          <Info size={18} className="text-primary" />
+      <details className="panel group overflow-hidden">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 px-5 py-3 text-sm font-semibold transition-colors hover:bg-subtle/70 sm:px-6">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-soft text-primary">
+            <Info size={18} weight="duotone" />
+          </span>
           指标说明与隐私边界
           <span className="ml-auto text-xs font-normal text-text-muted group-open:hidden">
             展开查看
           </span>
         </summary>
-        <div className="mt-4 grid gap-4 border-t border-border pt-4 text-xs leading-6 text-text-muted md:grid-cols-2">
+        <div className="grid gap-4 border-t border-border bg-subtle/30 px-5 py-5 text-xs leading-6 text-text-muted md:grid-cols-2 sm:px-6">
           <ul className="space-y-1 pl-4">
             <li>数据完整度以当前全部记忆关系为分母。</li>
             <li>关系阶段以已获取关系数据为分母。</li>
@@ -602,12 +819,7 @@ export function MemoryOperationsWorkspace({ agentId }: { agentId: number }) {
   }
 
   if (query.isPending) {
-    return (
-      <div className="panel flex min-h-[360px] items-center justify-center">
-        <span className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
-        <span className="text-sm text-text-muted">正在获取记忆服务状态…</span>
-      </div>
-    );
+    return <MemoryOperationsSkeleton />;
   }
 
   if (!query.data && query.error) {
@@ -623,45 +835,61 @@ export function MemoryOperationsWorkspace({ agentId }: { agentId: number }) {
 
   return (
     <div className="space-y-4 pb-6">
-      <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight">记忆服务状态</h1>
-            <span
-              className={`status-badge ${DATA_MODE === "demo" ? "status-info" : "status-success"}`}
-            >
-              {DATA_MODE === "demo" ? "Demo 演示数据" : "实时匿名聚合"}
+      <header className="panel relative overflow-hidden bg-gradient-to-br from-surface via-surface to-primary-soft/60 p-4 sm:p-5">
+        <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-primary/5 blur-3xl" />
+        <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/10 bg-primary-soft text-primary">
+              <Database size={22} weight="duotone" />
             </span>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-xl font-bold tracking-tight">记忆服务状态</h2>
+                <span
+                  className={`status-badge ${DATA_MODE === "demo" ? "status-info" : "status-success"}`}
+                >
+                  {DATA_MODE === "demo" ? "Demo 演示数据" : "实时匿名聚合"}
+                </span>
+              </div>
+              <p className="mt-1.5 max-w-2xl text-sm leading-6 text-text-muted">
+                查看这个 Agent 已形成多少份记忆关系，以及关系与情绪数据是否完整
+              </p>
+            </div>
           </div>
-          <p className="mt-1 text-sm text-text-muted">
-            查看这个 Agent 已形成多少份记忆关系，以及数据是否完整
-          </p>
-        </div>
-        <div className="flex flex-col items-start gap-2 lg:items-end">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-muted">
-            <span>
-              {stale ? "上次获取时间" : "本次获取时间"}：
-              {formatRetrievedAt(query.dataUpdatedAt)}
-            </span>
+          <div className="flex flex-col items-stretch gap-3 rounded-xl border border-border bg-surface/80 p-3 shadow-sm sm:flex-row sm:items-center">
+            <div className="flex min-w-0 items-center gap-2.5 px-1 text-xs text-text-muted">
+              <Clock size={17} weight="duotone" className="shrink-0 text-primary" />
+              <span className="min-w-0">
+                {stale ? "上次获取时间" : "本次获取时间"}
+                <span className="ml-1 font-medium text-text-strong tabular-nums">
+                  {formatRetrievedAt(query.dataUpdatedAt)}
+                </span>
+              </span>
+            </div>
             {feedback && (
-              <span className={feedback.startsWith("数据已") ? "text-success" : "text-warning"}>
+              <span
+                role="status"
+                className={`text-xs font-medium ${
+                  feedback.startsWith("数据已") ? "text-success" : "text-warning"
+                }`}
+              >
                 {feedback}
               </span>
             )}
+            <MemoryRefreshButton
+              refreshing={query.isFetching}
+              onRefresh={() => void handleRefresh()}
+            />
           </div>
-          <MemoryRefreshButton
-            refreshing={query.isFetching}
-            onRefresh={() => void handleRefresh()}
-          />
         </div>
       </header>
 
       {stale && (
         <div
           role="status"
-          className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200"
+          className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5 text-sm text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200"
         >
-          <WarningCircle size={18} className="mt-0.5 shrink-0" />
+          <WarningCircle size={19} weight="duotone" className="mt-0.5 shrink-0" />
           <span>
             本次刷新失败，下面保留的是上次成功获取的匿名快照。稍后可再次刷新。
           </span>
@@ -671,9 +899,9 @@ export function MemoryOperationsWorkspace({ agentId }: { agentId: number }) {
       {query.data.partial && !stale && (
         <div
           role="status"
-          className="flex items-start gap-2 rounded-md border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-800 dark:border-orange-400/20 dark:bg-orange-400/10 dark:text-orange-200"
+          className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5 text-sm text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200"
         >
-          <Info size={18} className="mt-0.5 shrink-0" />
+          <Info size={19} weight="duotone" className="mt-0.5 shrink-0" />
           <span>本次部分数据暂未获取，已获取的匿名聚合仍可正常查看。</span>
         </div>
       )}
