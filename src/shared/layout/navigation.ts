@@ -40,6 +40,7 @@ export const assetNavigation = [
   { label: "概览", segment: "overview" },
   { label: "构建", segment: "build" },
   { label: "测试评估", segment: "test" },
+  { label: "记忆服务", segment: "memory" },
   { label: "版本", segment: "versions" },
   { label: "发行", segment: "distribution" },
 ] as const;
