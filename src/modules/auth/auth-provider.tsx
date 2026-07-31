@@ -9,9 +9,12 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { DATA_MODE } from "@/config/capabilities";
 import { login, register, type AuthResult, type RegistrationInput } from "./api";
+import { clearAccountScopedCache } from "./account-cache";
 import {
+  AUTH_STORAGE_KEY,
   clearAuthSession,
   readAuthSession,
   writeAuthSession,
@@ -36,6 +39,7 @@ function toSession(result: AuthResult): AuthSession {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [session, setSession] = useState<AuthSession | null>(null);
   const [ready, setReady] = useState(false);
   const demo = DATA_MODE === "demo";
@@ -47,14 +51,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const persistResult = useCallback((result: AuthResult) => {
     const next = toSession(result);
+    clearAccountScopedCache(queryClient);
     writeAuthSession(next);
     setSession(next);
-  }, []);
+  }, [queryClient]);
 
   const signOut = useCallback(() => {
+    clearAccountScopedCache(queryClient);
     if (!demo) clearAuthSession();
     setSession(demo ? DEMO_SESSION : null);
-  }, [demo]);
+  }, [demo, queryClient]);
 
   const updateSessionUsername = useCallback((username: string) => {
     setSession((current) => {
@@ -70,6 +76,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.addEventListener("agenthub:unauthorized", handleUnauthorized);
     return () => window.removeEventListener("agenthub:unauthorized", handleUnauthorized);
   }, [signOut]);
+
+  useEffect(() => {
+    if (demo) return;
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== AUTH_STORAGE_KEY) return;
+      clearAccountScopedCache(queryClient);
+      setSession(readAuthSession());
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, [demo, queryClient]);
 
   const signIn = useCallback(async (username: string, password: string) => {
     if (demo) {
