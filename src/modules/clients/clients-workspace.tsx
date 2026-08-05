@@ -15,10 +15,12 @@ import { Select } from "@/shared/ui/select";
 import { SourceBadge } from "@/shared/ui/source-badge";
 import { ClientIcon } from "./client-icon";
 import {
+  clientEnvironmentLabel,
   clientSyncLabel,
   clientTypeLabel,
   filterWorkspaceAgentClients,
   formatClientDate,
+  maskClientKey,
   type ClientFilters,
   type ClientSyncStatus,
 } from "./model";
@@ -65,6 +67,9 @@ export function ClientsWorkspace() {
   const synced = data.rows.filter(
     (row) => row.syncStatus === "synced",
   ).length;
+  const attention = data.rows.filter(
+    (row) => row.syncStatus === "pending" || row.syncStatus === "unconfirmed",
+  ).length;
 
   if (data.agentsError) {
     return (
@@ -95,10 +100,11 @@ export function ClientsWorkspace() {
     <section className="space-y-5 pb-8">
       <PageHeader />
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="panel grid divide-y divide-border overflow-hidden sm:grid-cols-4 sm:divide-x sm:divide-y-0">
         <Summary label="接入记录" value={data.rows.length} hint="每条对应一个 Agent" />
         <Summary label="已启用" value={enabled} hint="正在跟随平台当前版本" />
         <Summary label="已同步" value={synced} hint="最近确认版本一致" />
+        <Summary label="待确认" value={attention} hint="等待 Client 回报版本" warning={attention > 0} />
       </div>
 
       {data.failures.length > 0 && (
@@ -210,12 +216,13 @@ export function ClientsWorkspace() {
           />
         </div>
 
-        <div className="hidden grid-cols-[minmax(260px,1.3fr)_minmax(180px,.8fr)_140px_150px_150px_36px] gap-4 border-b border-border bg-subtle/70 px-5 py-2.5 text-xs font-semibold text-text-muted lg:grid">
+        <div className="hidden grid-cols-[minmax(250px,1.2fr)_110px_minmax(150px,.8fr)_120px_130px_130px_28px] gap-3 border-b border-border bg-subtle/70 px-5 py-2.5 text-xs font-semibold text-text-muted lg:grid">
           <span>Client 接入</span>
+          <span>环境</span>
           <span>所属 Agent</span>
           <span>平台当前版本</span>
           <span>同步状态</span>
-          <span>最近连接</span>
+          <span>最近活动</span>
           <span />
         </div>
 
@@ -232,13 +239,13 @@ export function ClientsWorkspace() {
               <Link
                 key={row.client.id}
                 href={`/clients/${row.client.id}?agentId=${row.agent.id}`}
-                className="grid gap-3 px-4 py-4 transition hover:bg-subtle/70 lg:grid-cols-[minmax(260px,1.3fr)_minmax(180px,.8fr)_140px_150px_150px_36px] lg:items-center lg:gap-4 lg:px-5"
+                className="grid gap-3 px-4 py-4 transition hover:bg-subtle/70 lg:grid-cols-[minmax(250px,1.2fr)_110px_minmax(150px,.8fr)_120px_130px_130px_28px] lg:items-center lg:gap-3 lg:px-5"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <span
                     className={`grid size-10 shrink-0 place-items-center rounded-lg ${
                       row.client.status === "enabled"
-                        ? "bg-primary text-white"
+                        ? "bg-primary text-canvas"
                         : "bg-slate-200 text-slate-500 dark:bg-slate-700"
                     }`}
                   >
@@ -247,10 +254,12 @@ export function ClientsWorkspace() {
                   <span className="min-w-0">
                     <strong className="block truncate">{row.client.name}</strong>
                     <span className="mt-0.5 block truncate text-xs text-text-muted">
-                      {clientTypeLabel(row.client.client_type)} ·{" "}
-                      {row.client.client_key}
+                      {clientTypeLabel(row.client.client_type)} · {maskClientKey(row.client.client_key)}
                     </span>
                   </span>
+                </div>
+                <div className="text-sm text-text-secondary">
+                  {clientEnvironmentLabel(row.client)}
                 </div>
                 <div className="flex min-w-0 items-center gap-2">
                   <AgentAvatar agent={row.agent} size={30} />
@@ -305,7 +314,7 @@ function PageHeader() {
     <header className="flex flex-wrap items-start justify-between gap-4">
       <div>
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold tracking-tight">客户端接入</h1>
+          <h1 className="text-3xl font-bold tracking-tight">接入管理</h1>
           <SourceBadge source={DATA_MODE === "demo" ? "demo" : "live"} />
         </div>
         <p className="mt-1.5 text-sm text-text-muted">
@@ -324,16 +333,18 @@ function Summary({
   label,
   value,
   hint,
+  warning = false,
 }: {
   label: string;
   value: number;
   hint: string;
+  warning?: boolean;
 }) {
   return (
-    <div className="panel px-4 py-3.5">
+    <div className="px-4 py-3.5">
       <div className="flex items-baseline justify-between gap-3">
         <span className="text-sm font-medium">{label}</span>
-        <strong className="text-2xl tracking-tight">{value}</strong>
+        <strong className={`text-2xl tracking-tight ${warning ? "text-warning" : ""}`}>{value}</strong>
       </div>
       <p className="mt-1 text-xs text-text-muted">{hint}</p>
     </div>

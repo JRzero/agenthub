@@ -20,16 +20,22 @@ describe("operations session model", () => {
     expect(filterSessions(DEMO_SHARED_SESSIONS, "", 19, "active")).toHaveLength(1);
   });
 
-  it("keeps planning placeholders routable while hiding Client configuration", () => {
+  it("only exposes session and moment capabilities that are currently supported", () => {
     expect(OPERATIONS_TABS.map(([id]) => id)).toEqual([
       "sessions",
       "moments",
-      "feedback",
-      "memory",
-      "campaign",
     ]);
-    expect(resolveOperationsModule("feedback")).toBe("feedback");
+    expect(resolveOperationsModule("feedback")).toBe("sessions");
     expect(resolveOperationsModule("binding")).toBe("sessions");
-    expect(operationsModuleLabel("memory")).toBe("记忆问题");
+    expect(operationsModuleLabel("moments")).toBe("朋友圈管理");
+  });
+
+  it("does not expose an internal session id as the fallback label", () => {
+    const row = {
+      ...DEMO_SHARED_SESSIONS[0],
+      session: { ...DEMO_SHARED_SESSIONS[0].session, title: "" },
+    };
+    expect(sessionLabel(row)).toBe(`${row.agent.name} 的会话`);
+    expect(sessionLabel(row)).not.toContain(String(row.session.id));
   });
 });

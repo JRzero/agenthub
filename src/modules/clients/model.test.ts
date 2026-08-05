@@ -4,6 +4,8 @@ import type { Agent } from "@/modules/agents/types";
 import {
   createWorkspaceAgentClient,
   filterWorkspaceAgentClients,
+  clientEnvironmentLabel,
+  maskClientKey,
   resolveClientSyncStatus,
 } from "./model";
 
@@ -81,5 +83,21 @@ describe("workspace AgentClient model", () => {
         syncStatus: "disabled",
       }).map((row) => row.client.id),
     ).toEqual([2]);
+  });
+
+  it("always masks a Client Key before presentation", () => {
+    expect(maskClientKey("wec_live_8f2a0d91")).toBe("wec_***0d91");
+    expect(maskClientKey("wec_****8f2a")).toBe("wec_****8f2a");
+    expect(maskClientKey("key1")).toBe("ke***");
+    expect(maskClientKey(" ")).toBe("未提供");
+  });
+
+  it("labels the real configured environment without inventing one", () => {
+    expect(clientEnvironmentLabel(client({ id: 1, name: "Web" }))).toBe("Web");
+    expect(
+      clientEnvironmentLabel(
+        client({ id: 2, name: "API", client_type: "api", config: { environment: "staging" } }),
+      ),
+    ).toBe("staging");
   });
 });
