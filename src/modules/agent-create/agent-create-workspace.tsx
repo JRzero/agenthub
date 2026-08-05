@@ -140,7 +140,7 @@ function CandidateImage({
 
 function ProgressRail({ state, onStep }: { state: CreateAgentState; onStep: (step: Exclude<CreateStep, "complete">) => void }) {
   return (
-    <aside className="min-h-0 border-r border-border bg-surface px-4 py-5" aria-label="创建进度">
+    <aside className="min-h-0 border-r border-border bg-canvas px-4 py-6" aria-label="创建进度">
       <p className="px-2 text-xs font-semibold uppercase tracking-[0.16em] text-text-muted">创建进度</p>
       <ol className="mt-4 space-y-2">
         {STEP_ORDER.map((step) => {
@@ -150,15 +150,15 @@ function ProgressRail({ state, onStep }: { state: CreateAgentState; onStep: (ste
           const enabled = canOpenStep(state, step);
           return (
             <li key={step}>
-              <button type="button" disabled={!enabled} onClick={() => onStep(step)} className={`flex min-h-14 w-full items-center gap-3 rounded-lg px-3 text-left transition ${active ? "bg-primary-soft text-primary" : enabled ? "hover:bg-subtle" : "cursor-not-allowed text-text-muted"}`}>
-                <span className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-semibold ${done ? "bg-emerald-500 text-white" : active ? "bg-primary text-white" : "border border-border bg-surface"}`}>{done ? <Check size={15} weight="bold" /> : copy.index}</span>
+              <button type="button" disabled={!enabled} onClick={() => onStep(step)} className={`relative flex min-h-14 w-full items-center gap-3 rounded-lg px-3 text-left transition ${active ? "bg-surface-elevated text-primary before:absolute before:inset-y-3 before:left-0 before:w-0.5 before:rounded-full before:bg-primary" : enabled ? "hover:bg-surface-elevated" : "cursor-not-allowed text-text-muted"}`}>
+                <span className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-semibold ${done ? "bg-success text-canvas" : active ? "bg-primary text-canvas" : "border border-border bg-surface"}`}>{done ? <Check size={15} weight="bold" /> : copy.index}</span>
                 <span className="min-w-0"><strong className="block text-sm">{copy.title}</strong>{"optional" in copy && copy.optional ? <span className="text-xs text-text-muted">可跳过</span> : null}</span>
               </button>
             </li>
           );
         })}
       </ol>
-      <div className="mt-6 rounded-lg bg-subtle px-3 py-3 text-xs leading-5 text-text-muted">
+      <div className="mt-6 rounded-lg border border-border bg-surface-elevated px-3 py-3 text-xs leading-5 text-text-muted">
         {state.lifecycle === "before-draft" ? "基础设定生成成功后才会建立创建中草稿。" : state.saveState === "saving" ? "正在保存当前草稿…" : state.saveState === "error" || state.saveState === "conflict" ? "当前更改尚未保存。" : "创建结果确认后自动保存。"}
       </div>
     </aside>
@@ -635,19 +635,19 @@ export function AgentCreateWorkspace() {
   const title = state.step === "complete" ? "Agent 创建完成" : STEP_COPY[state.step].title;
   const helper = state.step === "complete" ? "当前 Agent 仍是未发布草稿。" : STEP_COPY[state.step].helper;
   return (
-      <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
-      <header className="flex min-h-[72px] shrink-0 items-center justify-between gap-4 border-b border-border px-5">
+      <div className="-mx-4 flex h-full min-h-0 flex-col overflow-hidden border-y border-border bg-canvas sm:-mx-6 lg:-mx-7">
+      <header className="flex min-h-[76px] shrink-0 items-center justify-between gap-4 border-b border-border bg-canvas px-5 sm:px-7">
         <div><div className="flex items-center gap-3"><h1 className="text-xl font-bold">创建 Agent</h1><span className={`status-badge ${state.lifecycle === "before-draft" ? "status-neutral" : state.lifecycle === "complete" ? "status-success" : "status-info"}`}>{state.lifecycle === "before-draft" ? "尚未创建" : state.lifecycle === "complete" ? "创建完成" : "创建中"}</span></div><p className="mt-1 text-xs text-text-muted">四步完成角色初稿，创建完成后仍为未发布草稿。</p></div>
         <div className="flex items-center gap-2">{state.lifecycle !== "before-draft" && state.step !== "complete" ? <button type="button" onClick={exit} className="button-secondary"><FloppyDisk size={17} />保存并退出</button> : <button type="button" onClick={exit} className="button-secondary">退出</button>}</div>
       </header>
 
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[210px_minmax(0,1fr)]">
         <ProgressRail state={state} onStep={(step) => dispatch({ type: "go-to-step", step })} />
-        <main className="flex min-h-0 min-w-0 flex-col bg-surface px-6 py-5">
-          <div className="mx-auto w-full max-w-[1320px] shrink-0"><h2 className="text-xl font-bold">{title}</h2><p className="mt-1 text-sm text-text-muted">{helper}</p></div>
+        <main className="flex min-h-0 min-w-0 flex-col bg-canvas px-6 py-5">
+          <div className="mx-auto w-full max-w-[1120px] shrink-0"><p className="text-xs font-medium uppercase tracking-[0.12em] text-primary">第 {state.step === "complete" ? 4 : STEP_COPY[state.step].index} 步，共 4 步</p><h2 className="mt-1 text-2xl font-bold">{title}</h2><p className="mt-1 text-sm text-text-muted">{helper}</p></div>
           {busy === "basic" ? <div role="status" className="mt-4 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:bg-blue-400/10 dark:text-blue-200"><CircleNotch size={17} className="mr-2 inline animate-spin" />正在生成基础设定，成功后将建立创建中草稿…</div> : null}
           {state.error ? <div role="alert" className="mt-4 rounded-lg border border-danger/20 bg-red-50 px-4 py-3 text-sm text-danger dark:bg-red-400/10 dark:text-red-300">{state.error}</div> : null}
-          <div className="mx-auto mt-5 flex min-h-0 w-full max-w-[1320px] flex-1 flex-col">
+          <div className="mx-auto mt-5 flex min-h-0 w-full max-w-[1120px] flex-1 flex-col rounded-xl border border-border bg-surface p-5">
             {restoring ? <div className="grid h-full place-items-center text-sm text-text-muted"><span><CircleNotch size={20} className="mr-2 inline animate-spin" />正在恢复创建进度…</span></div> : null}
             {!restoring && state.step === "basic" && !state.basicCandidate ? <BasicInputStep state={state} dispatch={dispatch} errors={submitted ? validation : {}} /> : null}
             {!restoring && state.step === "basic" && state.basicCandidate ? <GeneratedBasicReview state={state} dispatch={dispatch} /> : null}
@@ -657,7 +657,7 @@ export function AgentCreateWorkspace() {
             {!restoring && state.step === "complete" ? <CompleteStep state={state} skills={skills} /> : null}
           </div>
 
-          <footer className="mx-auto mt-4 flex min-h-12 w-full max-w-[1320px] shrink-0 items-center justify-between border-t border-border pt-4">
+          <footer className="mx-auto mt-4 flex min-h-12 w-full max-w-[1120px] shrink-0 items-center justify-between border-t border-border pt-4">
             {state.step !== "basic" && state.step !== "complete" ? <button type="button" onClick={() => { const currentStep = state.step as Exclude<CreateStep, "complete">; const index = STEP_ORDER.indexOf(currentStep); dispatch({ type: "go-to-step", step: STEP_ORDER[Math.max(0, index - 1)] }); }} className="button-secondary"><ArrowLeft size={17} />返回</button> : <span />}
             {state.step === "basic" && !state.basicCandidate ? <button type="button" disabled={busy === "basic"} onClick={() => void generateBasic()} className="button-primary"><MagicWand size={17} />{busy === "basic" ? "正在生成…" : "生成基础设定"}</button> : null}
             {state.step === "basic" && state.basicCandidate ? <div className="flex gap-2"><button type="button" onClick={() => void generateBasic()} disabled={Boolean(busy)} className="button-secondary">重新生成</button><button type="button" onClick={() => void confirmBasic()} disabled={Boolean(busy)} className="button-primary">{busy === "confirm-basic" ? "正在保存…" : "确认并创建头像"}<ArrowRight size={17} /></button></div> : null}

@@ -74,7 +74,7 @@ export function BuildSectionRail({
   }, []);
 
   return (
-    <aside className="min-h-0 min-w-0 border-b border-border bg-surface lg:h-full lg:border-b-0 lg:border-r">
+    <aside className="min-h-0 min-w-0 border-b border-border bg-canvas lg:h-full lg:border-b-0 lg:border-r">
       <nav
         ref={navRef}
         aria-label="专业配置"

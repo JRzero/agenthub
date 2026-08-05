@@ -11,22 +11,22 @@ describe("Agent Asset Library visual hierarchy", () => {
   it("keeps collection context and discovery controls visible", () => {
     expect(source).toContain('aria-label="Agent 资产筛选"');
     expect(source).toContain('placeholder="搜索 Agent 名称、编码或描述"');
-    expect(source).toContain("显示 {agents.length} / {allAgents.length}");
-    expect(source).not.toContain('aria-label="Agent 资产概览"');
-    expect(source).not.toContain("SummaryMetric");
-    expect(source).not.toContain("filtersOpen");
+    expect(source).toContain('ariaLabel="Agent 排序"');
+    expect(source).toContain('aria-label="卡片视图"');
+    expect(source).toContain('aria-label="列表视图"');
   });
 
   it("presents structured card metadata and navigation", () => {
     expect(source).toContain('label="运行模型"');
     expect(source).toContain('label="最近更新"');
+    expect(source).toContain('aria-label="Agent 资产卡片"');
     expect(source).toContain('aria-label="Agent 资产列表"');
-    expect(source).toContain('creating ? "继续创建" : "查看资产"');
+    expect(source).toContain('href={assetHref(agent)}');
   });
 
   it("shows resumable creation progress without fabricating a version", () => {
     expect(source).toContain("创建中 · 第 ${index}/4 步");
-    expect(source).toContain('creating ? "尚未发布版本"');
+    expect(source).toContain('return "尚未发布版本"');
     expect(source).toContain('href={assetHref(agent)}');
   });
 
