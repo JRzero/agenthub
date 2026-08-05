@@ -37,7 +37,7 @@ export function Workbench() {
         {focusAgent ? <div data-testid="workbench-agent-hero" className="panel grid min-h-[420px] overflow-hidden xl:h-[460px] xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.55fr)]">
           <div className="relative min-h-[360px] overflow-hidden bg-surface-elevated">
             <AgentArtwork agent={focusAgent} className="object-center" />
-            <div className="absolute inset-x-0 bottom-0 border-t border-border bg-canvas/90 p-5 backdrop-blur-sm sm:p-6">
+            <div className="absolute inset-x-0 bottom-0 [background:color-mix(in_srgb,var(--color-canvas)_90%,transparent)] p-5 before:pointer-events-none before:absolute before:inset-x-0 before:-top-16 before:h-16 before:bg-gradient-to-b before:from-transparent before:to-canvas before:opacity-90 sm:p-6">
               <div className="flex flex-wrap items-center gap-2"><span className={`status-badge ${resolveAgentLifecycle(focusAgent).badgeClassName}`}>{resolveAgentLifecycle(focusAgent).label}</span><span className="text-xs text-text-muted">{focusAgent.current_version_id ? `v${focusAgent.version}` : "未发布草稿"}</span></div>
               <h3 className="mt-3 truncate text-2xl font-semibold" title={focusAgent.name}>{focusAgent.name}</h3>
               <p className="mt-2 line-clamp-2 max-w-2xl text-sm leading-6 text-text-secondary">{focusAgent.description || "继续完善身份、人设与运行配置。"}</p>

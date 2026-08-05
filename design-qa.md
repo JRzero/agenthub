@@ -55,6 +55,65 @@
 ### Final result
 
 final result: passed
+
+---
+
+# LYN-004-R3 Workbench Divider Design QA
+
+## Comparison target
+
+- Source visual truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/16-workbench-divider-feedback.png`.
+- Accepted workbench baseline: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/01-workbench.png`.
+- Browser-rendered implementation: `docs/qa/images/lyn-004-r3-workbench-after-1440.png`.
+- Same-state before evidence: `docs/qa/images/lyn-004-r3-workbench-before-1440.png`.
+- Responsive evidence: `docs/qa/images/lyn-004-r3-workbench-after-1280.png`, `docs/qa/images/lyn-004-r3-workbench-after-200pct-equivalent.png`, and `docs/qa/images/lyn-004-r3-workbench-after-200pct-equivalent-full.png`.
+- State: current authenticated Live workbench, dark theme, `弦野` draft selected as the continue-creation Agent, current backend-provided completion and metadata visible.
+- Source pixels: feedback capture `3024 × 1730`; accepted baseline `1536 × 1094`.
+- Implementation pixels and CSS viewports: `1440 × 655` raster at `1440 × 960` CSS px, `1280 × 582` raster at `1280 × 800` CSS px, and `720 × 328` viewport raster plus `720 × 1915` full-page raster at the `720 × 480` CSS-pixel equivalent of a 1440px display at 200% zoom. Device pixel ratio was `1`; no density resampling was used.
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains.
+- The feedback source and same-state before capture show a one-pixel border running through the hero at the image/information transition. The final 1440 capture removes that line and replaces the abrupt edge with a 64px transparent-to-canvas fade.
+- Text remains readable on a 90% canvas-color information surface. The subject, crop, card bounds, right-side progress panel, copy, data, navigation, and CTA placement are unchanged.
+
+## Required fidelity surfaces
+
+- Fonts and typography: unchanged. Existing family, weight, size, line height, wrapping, truncation, and hierarchy remain intact; the final Live screenshot keeps the title and two-line description legible.
+- Spacing and layout rhythm: unchanged. The hero remains `460px` high at 1440px and 1280px; the information padding, card radius, grid tracks, surrounding spacing, and right-panel layout are untouched.
+- Colors and visual tokens: passed. The removed `border-border` is replaced by a 64px gradient that resolves to the existing `--color-canvas`; the information surface uses a 90% mix of the same token. No new color token, shadow, or band was introduced.
+- Image quality and asset fidelity: passed. The existing `AgentArtwork` asset, object position, sharpness, and crop are unchanged. No image was generated, added, replaced, stretched, or rasterized into the UI.
+- Copy and content: unchanged. All product chrome and backend-provided Agent content remain as rendered by the current Live state.
+
+## Full-view and focused comparison evidence
+
+- The source feedback capture, same-state before screenshot, and final 1440 screenshot were opened together in one comparison input. The red-boxed solid cut corresponds exactly to the removed overlay `border-top`; the final image is continuous through the subject with no new edge or mask discontinuity.
+- A separate focused crop was unnecessary because the affected boundary spans the full hero width and is clearly legible at native 1440 raster density. Computed-style evidence confirms `borderTopWidth: 0px`, a `64px` fade positioned at `top: -64px`, and a 90% canvas-color overlay.
+- At 1280px, `scrollWidth = innerWidth = 1280`; the hero remains `1024 × 460` and both CTAs remain present.
+- At the 720px CSS equivalent of 200% zoom, `scrollWidth = innerWidth = 720`; the hero stacks to `672 × 1004`, both CTA links retain `40px` height, and the full-page evidence shows no overlap, clipping, or horizontal overflow.
+
+## Interactions and accessibility
+
+- Keyboard activation of `打开工作区` navigated to `/assets/904/build`; keyboard activation of `测试` navigated to `/assets/904/test`. Both controls remain native links with unchanged destinations.
+- The final workbench console contained no errors or warnings.
+- The fade is pointer-transparent and does not introduce an interactive layer or alter focus order.
+
+## Comparison history
+
+1. Initial comparison — blocked.
+   - P2: the information overlay used `border-t border-border`, producing the user-reported full-width solid cut through the portrait.
+   - Fix: removed the border and blur boundary; added a 64px pointer-transparent fade above the existing information surface.
+2. First post-fix render — blocked.
+   - P2: Tailwind opacity modifiers on the hex-backed CSS variable resolved to transparent in computed styles, so the intended text-protection surface and fade endpoint were not guaranteed.
+   - Fix: expressed the overlay as a standards-based 90% `color-mix` of `--color-canvas` and applied opacity to a gradient ending at the unmodified canvas token.
+3. Final full-view and focused comparison — passed.
+   - Post-fix evidence: final 1440, 1280, and 200%-equivalent captures plus computed styles, keyboard navigation, overflow measurements, and a clean console.
+
+## Follow-up polish
+
+- None. Additional changes would exceed the intentionally narrow correction.
+
+final result: passed
 ---
 
 # Design QA: LYN-004-C Resources

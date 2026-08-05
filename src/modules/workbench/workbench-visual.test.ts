@@ -16,6 +16,8 @@ describe("workbench V1 composition", () => {
 
   it("promotes an existing Agent image without adding fake visual data", () => {
     expect(source).toContain("agent.config?.metadata?.avatar");
+    expect(source).toContain("before:bg-gradient-to-b before:from-transparent before:to-canvas before:opacity-90");
+    expect(source).not.toContain('bottom-0 border-t border-border bg-canvas/90');
     expect(source).not.toContain("DEMO_AGENTS");
     expect(source).not.toContain("fake");
   });
