@@ -3,9 +3,6 @@ import type { SharedSessionRow } from "./types";
 export const OPERATIONS_TABS = [
   ["sessions", "会话管理"],
   ["moments", "朋友圈管理"],
-  ["feedback", "用户反馈"],
-  ["memory", "记忆问题"],
-  ["campaign", "活动与渠道"],
 ] as const;
 
 export type OperationsModule = (typeof OPERATIONS_TABS)[number][0];
@@ -25,7 +22,7 @@ export function operationsModuleLabel(module: OperationsModule): string {
 }
 
 export function sessionLabel(row: SharedSessionRow): string {
-  return row.session.title?.trim() || `${row.agent.name} · #${row.session.id}`;
+  return row.session.title?.trim() || `${row.agent.name} 的会话`;
 }
 
 export function humanLabel(row: SharedSessionRow): string {

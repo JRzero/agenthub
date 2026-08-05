@@ -99,6 +99,35 @@ export function clientSyncLabel(status: ClientSyncStatus) {
   }[status];
 }
 
+export function maskClientKey(value: string) {
+  const key = value.trim();
+  if (!key) return "未提供";
+  if (key.includes("***")) return key;
+
+  const visibleStart = Math.min(4, Math.max(2, Math.floor(key.length / 3)));
+  const visibleEnd = Math.min(4, Math.max(2, Math.floor(key.length / 4)));
+  if (key.length <= visibleStart + visibleEnd) {
+    return `${key.slice(0, 2)}***`;
+  }
+  return `${key.slice(0, visibleStart)}***${key.slice(-visibleEnd)}`;
+}
+
+export function clientEnvironmentLabel(client: AgentClient) {
+  const configured = client.config?.environment || client.config?.env;
+  if (typeof configured === "string" && configured.trim()) {
+    return configured.trim();
+  }
+  if (client.client_type.includes("local") || client.client_type.includes("desktop")) {
+    return "本地运行";
+  }
+  if (client.client_type.includes("web") || client.client_type.includes("h5")) {
+    return "Web";
+  }
+  if (client.client_type.includes("mobile")) return "移动端";
+  if (client.client_type === "api") return "API";
+  return clientTypeLabel(client.client_type);
+}
+
 export function formatClientDate(value?: string | null) {
   if (!value) return "尚未连接";
   return new Intl.DateTimeFormat("zh-CN", {

@@ -1,5 +1,6 @@
 import type { Agent } from "@/modules/agents/types";
 import type { AgentVersion } from "@/modules/agent-versions/types";
+import type { CapabilitySource } from "@/config/capabilities";
 import type {
   DistributionChannel,
   DistributionChannelId,
@@ -16,6 +17,19 @@ export const DEMO_SHARE_LINK: ShareLink = {
   share_url: "https://linkyun.co/sharedAgent/lin-yue-demo",
   created_at: "2026-07-10T09:58:00+08:00",
 };
+
+export function distributionPublishState(currentVersionId?: number | null) {
+  return currentVersionId
+    ? { label: "已发布", tone: "success" as const }
+    : { label: "尚未发布", tone: "warning" as const };
+}
+
+export function canExportCurrentVersion(
+  currentVersionId: number | null | undefined,
+  packageExportSource: CapabilitySource,
+) {
+  return Boolean(currentVersionId) && packageExportSource === "live";
+}
 
 export function resolveShareUrl(
   link: ShareLink | null,

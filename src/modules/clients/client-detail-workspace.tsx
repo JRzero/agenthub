@@ -15,7 +15,7 @@ import {
   PlayCircle,
   WarningCircle,
 } from "@phosphor-icons/react";
-import { DATA_MODE } from "@/config/capabilities";
+import { capabilitySource, DATA_MODE } from "@/config/capabilities";
 import { AgentAvatar } from "@/modules/agents/agent-avatar";
 import { useAgent } from "@/modules/agents/queries";
 import {
@@ -40,6 +40,7 @@ import {
   formatClientDate,
   resolveClientSyncStatus,
   clientSyncLabel,
+  maskClientKey,
 } from "./model";
 
 type EditableConfig = {
@@ -135,6 +136,7 @@ export function ClientDetailWorkspace() {
     client,
     agent.current_version_id,
   );
+  const packageExportReady = capabilitySource("packageExport") === "live";
   const capabilities = client.capability_manifest?.capabilities || [];
   const auth = {
     apiKey: session?.apiKey || "",
@@ -288,11 +290,12 @@ export function ClientDetailWorkspace() {
           <button
             type="button"
             className="button-secondary"
-            disabled={exporting || !agent.current_version_id}
+            disabled={exporting || !agent.current_version_id || !packageExportReady}
             onClick={() => void exportCurrent()}
+            title={!packageExportReady ? "后端 ZIP 下载接口尚未就绪" : undefined}
           >
             <DownloadSimple size={17} />
-            {exporting ? "正在导出…" : "导出当前版本"}
+            {exporting ? "正在导出…" : packageExportReady ? "导出当前版本" : "版本导出不可用"}
           </button>
         </div>
       </header>
@@ -343,7 +346,7 @@ export function ClientDetailWorkspace() {
                   />
                 </Field>
                 <ReadOnly label="Client 类型" value={clientTypeLabel(client.client_type)} />
-                <ReadOnly label="Client Key" value={client.client_key} mono />
+                <ReadOnly label="Client Key（已脱敏）" value={maskClientKey(client.client_key)} mono />
                 <Field label="互动方式">
                   <input
                     value={form.interactionMode}
@@ -442,7 +445,7 @@ export function ClientDetailWorkspace() {
                 <p className="text-sm text-text-muted">尚未上报能力声明</p>
               )}
               <div className="mt-4 flex items-center gap-2 border-t border-border pt-4 text-xs text-text-muted">
-                <span>能力 Hash：{formatHash(client.capability_hash)}</span>
+                <span>能力 Hash：{maskClientKey(formatHash(client.capability_hash))}</span>
                 <button
                   type="button"
                   aria-label="复制能力 Hash"
@@ -489,7 +492,7 @@ export function ClientDetailWorkspace() {
                   client.last_ack_version_id
                     ? runtimeQuery.data
                       ? `v${runtimeQuery.data.current_version_no}`
-                      : `ID ${client.last_ack_version_id}`
+                      : "已确认（版本详情加载中）"
                     : "尚未确认"
                 }
               />
