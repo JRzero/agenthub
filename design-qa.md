@@ -1,3 +1,75 @@
+# LYN-004-R5 Status Label Theme Design QA
+
+## Comparison target
+
+- Source visual truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/18-status-label-live-feedback.png` and `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/19-status-label-draft-saved-feedback.png`.
+- Source pixels: live feedback `222 × 144`; draft/saved feedback `1604 × 246`.
+- Browser-rendered implementation: `docs/qa/images/lyn-004-r5-status-label-theme/after-live-resources-1440x900.png` and `docs/qa/images/lyn-004-r5-status-label-theme/after-live-build-1440x900.png`.
+- Same-viewport before/after evidence: `docs/qa/images/lyn-004-r5-status-label-theme/comparison-before-after-resources-1440x900.png` and `docs/qa/images/lyn-004-r5-status-label-theme/comparison-before-after-build-1440x900.png`.
+- Source/implementation comparisons: `docs/qa/images/lyn-004-r5-status-label-theme/comparison-reference-after-live-focused.png` and `docs/qa/images/lyn-004-r5-status-label-theme/comparison-reference-after-build-header.png`.
+- Responsive evidence: `docs/qa/images/lyn-004-r5-status-label-theme/after-live-build-1280x800.png`, `docs/qa/images/lyn-004-r5-status-label-theme/after-live-build-200pct-equivalent-720x900.png`, and `docs/qa/images/lyn-004-r5-status-label-theme/after-live-build-long-name-200pct-equivalent-720x900.png`.
+- State: authenticated local Live resource catalogue and Agent build workspace. Baselines were captured from R4 before port takeover; implementation captures use the same Live account, routes, selected Agent, content, and viewport after R5 takeover. No API mutation was triggered.
+- CSS viewports and density: `1440 × 900`, `1280 × 800`, and `720 × 900` at device scale factor `1`; `720px` is the 200% equivalent-width check for a 1440px display.
+- Browser screenshot pixels: `1440 × 655`, `1280 × 582`, and `720 × 328`. Chrome captures the visible content surface rather than the full overridden CSS height; comparison pairs use identical raster dimensions and no density resampling. Focus comparisons normalize only their matching source/implementation crops.
+
+## Findings
+
+- No actionable P0, P1, or P2 findings remain.
+- The three requested labels now use dedicated scoped variants: `status-live`, `status-draft`, and `status-saved`. Global `status-success`, `status-warning`, `status-info`, `status-danger`, Agent lifecycle badges, publishing states, and unrelated warning/error labels remain unchanged.
+- Live and saved labels render on `#141a0c` with lime `#9be228` text and a one-pixel inset `#536a23` border. Draft renders on `#1c160b` with restrained amber `#f5b82e` text and a one-pixel inset `#806222` border. None uses the former light solid surface.
+- Computed text contrast is `11.25:1` for live/saved and `10.08:1` for draft. Both exceed WCAG AA `4.5:1` for normal text. The main CTA remains a solid `#d7ff2f` surface, so all three labels retain a visibly lower action hierarchy.
+- Non-color cues are preserved: all labels keep their wording; saved keeps the existing check-circle icon; draft keeps its version/base wording. No state meaning, trigger, copy, icon semantics, save behavior, or state machine changed.
+
+## Required fidelity surfaces
+
+- Fonts and typography: passed. Existing font family, `12px` size, medium weight, line height, wrapping, antialiasing, and label dimensions are unchanged. Computed label height remains `24px`; no truncation was introduced.
+- Spacing and layout rhythm: passed. Padding, radius, header tracks, navigation, and four adjacent actions are unchanged. At 1280px all actions remain on the same row; at the 720px equivalent they wrap to the next row without overlap.
+- Colors and visual tokens: passed. The implementation adds only scoped positive/draft surface and border tokens derived from the existing lime and amber semantics. No gradient, white/cream surface, or new primary hue was introduced.
+- Image quality and asset fidelity: passed. This change has no image requirement; existing Agent artwork and Phosphor icons are unchanged. No generated asset, placeholder, inline SVG, CSS art, or text glyph substitution was added.
+- Copy and content: passed. `实时数据`, `当前草稿 · 基于 v1`, and `所有更改已保存` render unchanged from Live data and product chrome.
+
+## Full-view and focused comparison evidence
+
+- The full-view before/after comparisons place the identical Live route and viewport side by side. They show that only the three highlighted label surfaces changed; surrounding controls, layout, copy, imagery, navigation, and data remain stable.
+- The focused live comparison places the feedback crop and the post-fix resource badge in one image at readable scale. The light mint fill is replaced by a matte dark surface, fine lime border, and lime text.
+- The build-header source/implementation comparison keeps both draft and saved labels together with their neighboring actions. It confirms the cream/mint fills are removed while the draft/saved distinction and CTA hierarchy remain legible.
+- Separate focus crops beyond these two were unnecessary because the affected components are fully readable in the normalized comparisons and verified independently through computed styles.
+
+## Responsive, behavior, and accessibility evidence
+
+- 1440 × 900: both build labels remain `24px` high; `scrollWidth = clientWidth = 1440`.
+- 1280 × 800: draft, saved, reset, save, test, and publish controls remain visible and non-overlapping; `scrollWidth = innerWidth = 1280`.
+- 720 × 900 / 200% equivalent: labels and all four neighboring actions wrap into two stable rows; rightmost action ends at `614px`; `scrollWidth = innerWidth = 720`.
+- Long-content check: `Linkyun Architect` plus lifecycle, current-draft, saved, and all adjacent actions fit at the 720px equivalent without clipping or horizontal overflow.
+- Save-state regression: editing the Agent name changed the unchanged status machine to icon + `有未保存更改` and enabled Save; `放弃修改` restored icon + `所有更改已保存` with `status-saved`. The test change was discarded and never sent to the API.
+- A fresh Live build tab reported zero console errors and zero warnings.
+
+## Comparison history
+
+1. Baseline comparison — blocked.
+   - P2: `实时数据` and `所有更改已保存` used light mint/green solid fills, while `当前草稿` used a cream fill. These surfaces broke the dark/lime theme and competed with action hierarchy.
+   - Scope risk: the same global success/warning classes were used by Agent publishing, lifecycle, validation, error/warning, and other unrelated badges.
+2. Scoped implementation — passed.
+   - Fix: introduced four narrowly scoped background/border tokens and three label variants; mapped only Live source, current draft, and saved presentation to them.
+   - Post-fix evidence: source/implementation focus comparisons, exact same-viewport before/after pairs, computed colors, WCAG contrast calculations, 1440/1280/720 checks, long-content coverage, state regression, overflow measurements, and a clean console found no remaining P0/P1/P2 issue.
+
+## Implementation checklist
+
+- [x] Dedicated live, draft, and saved variants without global Badge drift
+- [x] Dark matte surfaces, thin semantic borders, semantic text, and preserved non-color cues
+- [x] WCAG AA normal-text contrast
+- [x] 1440px, 1280px, 200% equivalent, long-content, and adjacent-action coverage
+- [x] Save-state behavior and Live source rendering regression coverage
+- [x] Same-viewport before/after and source/implementation combined comparisons
+
+## Follow-up polish
+
+- None. Additional Badge changes would exceed the intentionally narrow R5 scope.
+
+final result: passed
+
+---
+
 # Design QA: 工作空间侧栏方案 1
 
 ## 2026-07-28 静默全量导航

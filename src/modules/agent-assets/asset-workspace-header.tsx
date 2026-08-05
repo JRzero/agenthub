@@ -107,7 +107,7 @@ export function AssetWorkspaceHeader({
             </span>
             {buildRoute ? (
               <>
-                <span className="status-badge status-warning">
+                <span className="status-badge status-draft">
                   当前草稿 · {draftBaseLabel}
                 </span>
               </>

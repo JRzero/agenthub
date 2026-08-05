@@ -17,6 +17,10 @@ const expectedTokens = {
   "--color-warning": "#f5b82e",
   "--color-danger": "#f05f5f",
   "--color-info": "#65a7ff",
+  "--color-status-positive-bg": "#141a0c",
+  "--color-status-positive-border": "#536a23",
+  "--color-status-draft-bg": "#1c160b",
+  "--color-status-draft-border": "#806222",
 } as const;
 
 describe("AgentHub V1 semantic theme", () => {
@@ -45,6 +49,21 @@ describe("AgentHub V1 semantic theme", () => {
     ];
 
     surfaces.forEach((surface) => expect(contrastRatio(muted, surface)).toBeGreaterThanOrEqual(4.5));
+  });
+
+  it("keeps scoped live, saved, and draft labels above WCAG AA text contrast", () => {
+    expect(
+      contrastRatio(
+        expectedTokens["--color-success"],
+        expectedTokens["--color-status-positive-bg"],
+      ),
+    ).toBeGreaterThanOrEqual(4.5);
+    expect(
+      contrastRatio(
+        expectedTokens["--color-warning"],
+        expectedTokens["--color-status-draft-bg"],
+      ),
+    ).toBeGreaterThanOrEqual(4.5);
   });
 });
 

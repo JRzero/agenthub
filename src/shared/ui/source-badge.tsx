@@ -1,7 +1,7 @@
 import type { CapabilitySource } from "@/config/capabilities";
 
 const sourceCopy: Record<CapabilitySource, { label: string; className: string }> = {
-  live: { label: "实时数据", className: "status-success" },
+  live: { label: "实时数据", className: "status-live" },
   derived: { label: "前端派生", className: "status-info" },
   demo: { label: "演示数据", className: "status-warning" },
   unavailable: { label: "待接入", className: "status-neutral" },

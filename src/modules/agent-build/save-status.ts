@@ -10,5 +10,5 @@ export function resolveBuildSaveStatus({ dirty, saving, error }: { dirty: boolea
   if (saving) return { status: "saving", label: "保存中…", className: "status-info" };
   if (error) return { status: "failed", label: "保存失败", className: "status-danger" };
   if (dirty) return { status: "unsaved", label: "有未保存更改", className: "status-warning" };
-  return { status: "saved", label: "所有更改已保存", className: "status-success" };
+  return { status: "saved", label: "所有更改已保存", className: "status-saved" };
 }
