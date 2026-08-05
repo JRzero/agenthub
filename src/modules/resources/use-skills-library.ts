@@ -15,7 +15,12 @@ import {
   updateCreatorSkill,
 } from "./api";
 import { DEMO_CREATOR_SKILLS, DEMO_MARKETPLACE_SKILLS } from "./fixtures";
+import { getSafeResourceError } from "./resource-feedback";
 import type { CreatorSkill, MarketplaceSkill } from "./types";
+
+export function isSkillAttached(skills: string[] | undefined, skillName: string): boolean {
+  return Boolean(skills?.includes(skillName));
+}
 
 export function useSkillsLibrary() {
   const { session } = useAuth();
@@ -35,6 +40,7 @@ export function useSkillsLibrary() {
   const [attachOpen, setAttachOpen] = useState(false);
   const [agentId, setAgentId] = useState<number | "">("");
   const [manageSkill, setManageSkill] = useState<CreatorSkill | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (demo || !session?.apiKey) return;
@@ -45,16 +51,16 @@ export function useSkillsLibrary() {
         setCreatorSkills(owned);
         setSelectedId(marketplace[0]?.id || 0);
       })
-      .catch((err: Error) => setError(err.message || "无法加载技能库"))
+      .catch((err: unknown) => setError(getSafeResourceError(err, "无法加载技能库")))
       .finally(() => setLoading(false));
-  }, [demo, session?.apiKey, workspaceCode]);
+  }, [demo, reloadKey, session?.apiKey, workspaceCode]);
 
   useEffect(() => {
     const listItem = skills.find((skill) => skill.id === selectedId) || null;
     if (!selectedId || demo || !session?.apiKey) { setDetail(listItem); return; }
     getMarketplaceSkill(session.apiKey, workspaceCode, selectedId)
       .then(setDetail)
-      .catch((err: Error) => { setDetail(listItem); setError(err.message || "无法加载技能详情"); });
+      .catch((err: unknown) => { setDetail(listItem); setError(getSafeResourceError(err, "无法加载技能详情")); });
   }, [demo, selectedId, session?.apiKey, skills, workspaceCode]);
 
   const categories = useMemo(() => ["全部技能", ...Array.from(new Set(skills.map((skill) => skill.category || "其他")))], [skills]);
@@ -63,7 +69,10 @@ export function useSkillsLibrary() {
     return (category === "全部技能" || (skill.category || "其他") === category)
       && (!keyword || `${skill.name} ${skill.description}`.toLowerCase().includes(keyword));
   }), [category, search, skills]);
-  const selected = detail || skills.find((skill) => skill.id === selectedId) || filtered[0];
+  const selectedFromFilter = filtered.find((skill) => skill.id === selectedId);
+  const selected = selectedFromFilter
+    ? (detail?.id === selectedFromFilter.id ? detail : selectedFromFilter)
+    : filtered[0];
   const ownedSkill = selected ? creatorSkills.find((skill) => skill.skill_id === selected.id) : undefined;
 
   function flash(message: string) {
@@ -80,18 +89,23 @@ export function useSkillsLibrary() {
         : await createCreatorSkill(session.apiKey, workspaceCode, selected);
       setCreatorSkills((current) => [created, ...current]);
       flash("技能已添加到工作空间");
-    } catch (err) { setError(err instanceof Error ? err.message : "添加技能失败"); }
+    } catch (err) { setError(getSafeResourceError(err, "添加技能失败")); }
     finally { setBusy(false); }
   }
 
   async function addToAgent() {
     const agent = (agentsQuery.data || []).find((item) => item.id === agentId);
     if (!selected || !agent || !session?.apiKey) return;
+    if (isSkillAttached(agent.config?.skills, selected.name)) {
+      setAttachOpen(false);
+      flash(`${selected.name} 已在 ${agent.name} 中，无需重复添加`);
+      return;
+    }
     setBusy(true); setError("");
     try {
       if (!demo) await attachSkillToAgent(session.apiKey, workspaceCode, agent, selected);
       setAttachOpen(false); flash(`${selected.name} 已添加到 ${agent.name}`);
-    } catch (err) { setError(err instanceof Error ? err.message : "绑定 Agent 失败"); }
+    } catch (err) { setError(getSafeResourceError(err, "绑定 Agent 失败")); }
     finally { setBusy(false); }
   }
 
@@ -102,7 +116,7 @@ export function useSkillsLibrary() {
       const updated = demo ? { ...manageSkill, ...input } : await updateCreatorSkill(session.apiKey, workspaceCode, manageSkill.id, input);
       setCreatorSkills((current) => current.map((skill) => skill.id === updated.id ? updated : skill));
       setManageSkill(null); flash("技能配置已保存");
-    } catch (err) { setError(err instanceof Error ? err.message : "保存技能失败"); }
+    } catch (err) { setError(getSafeResourceError(err, "保存技能失败")); }
     finally { setBusy(false); }
   }
 
@@ -113,7 +127,7 @@ export function useSkillsLibrary() {
       if (!demo) await deleteCreatorSkill(session.apiKey, workspaceCode, manageSkill.id);
       setCreatorSkills((current) => current.filter((skill) => skill.id !== manageSkill.id));
       setManageSkill(null); flash("技能已从工作空间删除");
-    } catch (err) { setError(err instanceof Error ? err.message : "删除技能失败"); }
+    } catch (err) { setError(getSafeResourceError(err, "删除技能失败")); }
     finally { setBusy(false); }
   }
 
@@ -121,6 +135,7 @@ export function useSkillsLibrary() {
     demo, loading, busy, error, notice, categories, filtered, selected, selectedId, creatorSkills,
     agents: agentsQuery.data || [], attachOpen, agentId, manageSkill, ownedSkill, search, category,
     setSearch, setCategory, setSelectedId, setAttachOpen, setAgentId, setManageSkill,
+    retry: () => { setError(""); setReloadKey((current) => current + 1); },
     addToWorkspace, addToAgent, saveOwnedSkill, removeOwnedSkill,
   };
 }

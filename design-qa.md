@@ -55,6 +55,62 @@
 ### Final result
 
 final result: passed
+
+---
+
+# Design QA: LYN-004-C Resources
+
+## Comparison target
+
+- Source visual truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/05-resources-skills.png` and `06-resources-knowledge.png`.
+- Source pixels: both `1536 × 1094`; normalized to `1440 × 1026` and `1280 × 912` for same-viewport comparison.
+- Implementation route: `http://127.0.0.1:3012/resources`, isolated Demo mode.
+- CSS viewports: `1440 × 1026` and `1280 × 912`, device scale factor `1`.
+- Browser screenshot pixels: `1429 × 1018` and `1269 × 904`; the in-app browser excludes its scrollbar gutter from raster capture.
+- Implementation evidence: `docs/qa/images/lyn-004-c-skills-1440.png`, `lyn-004-c-knowledge-1440.png`, `lyn-004-c-skills-1280.png`, and `lyn-004-c-knowledge-1280.png`.
+- Full-view comparisons: `docs/qa/images/lyn-004-c-skills-compare-1440.png`, `lyn-004-c-knowledge-compare-1440.png`, `lyn-004-c-skills-compare-1280.png`, and `lyn-004-c-knowledge-compare-1280.png`; source is left and implementation is right.
+- State: Skills default selection and Knowledge default base, with isolated Demo fixtures only.
+
+**Findings**
+
+- No actionable P0, P1, or P2 resource-page mismatch remains.
+- Accepted constraint: LYN-004-A owns the shell, so Logo, topbar utilities, and workspace navigation differences from the concept image were not changed by LYN-004-C.
+- Accepted constraint: implementation renders only the repository's existing Demo fixtures. It does not copy the mock's invented Skill counts, document counts, notification badge, Agent attachment totals, or extra knowledge bases.
+- Accepted constraint: the knowledge document table uses a contained horizontal scroll region at 1280px so file, text, URL, status, timestamp, reindex, and delete controls remain reachable without page overflow.
+
+**Required Fidelity Surfaces**
+
+- Fonts and typography: passed. The upstream system sans stack, 28px page title, 14–15px catalogue rows, restrained weights, and readable truncation match the V1 density without adding a font dependency.
+- Spacing and layout rhythm: passed. Skills uses category / catalogue / detail tracks at both target widths; Knowledge uses a 290px library rail and flexible document workspace. Borders, 8–12px radii, and control spacing follow the upstream tokens.
+- Colors and visual tokens: passed. Only the fixed canvas, surface, elevated, border, lime, semantic status, and text tokens are used. Selected and status states also include text/icons.
+- Image quality and asset fidelity: passed. The resource views require no raster assets; all functional icons use the existing Phosphor family. No CSS art, inline SVG, emoji, or placeholder image was introduced.
+- Copy and content: passed. The chrome says `资源`, `技能库`, and `知识库`; media, templates, and duplicate Agent assets are absent. Dynamic Skill and document content remains fixture/API-owned.
+
+**Full-view Comparison Evidence**
+
+- The four combined files place the normalized design and implementation in the same image at each required width.
+- They confirm the dark/lime hierarchy, tabs, Skills three-column composition, Knowledge two-column composition, compact catalogue rows, primary actions, and thin-divider document table.
+- Native-resolution screenshots remained legible enough to inspect all resource labels, icons, dividers, selected states, and table controls; a separate focused crop was unnecessary. DOM checks independently confirmed the exact status and accessible-name content.
+
+**Interactions and Accessibility**
+
+- Skills: search narrowed the directory to `联网搜索`, selected its details, opened the existing Agent attachment flow, selected `林月`, and produced the visible success result.
+- Knowledge: text and URL documents were created in Demo state; an obvious local QA file was uploaded; detail chunks opened; reindex changed status to icon + `索引中`; delete invoked the existing browser confirmation and was intentionally not forced past the automation safety boundary.
+- Keyboard: the Skills category combobox opened with ArrowDown and selected `知识与搜索` with Enter; upstream focus rings remained intact.
+- Responsive: at both widths document scroll width did not exceed body width; Skills category and detail rails remained visible at 1280px; knowledge creation actions stayed visible.
+- Browser console: final clean tab reported zero errors and zero warnings.
+
+**Comparison History**
+
+1. Initial implementation review found hidden Skills side regions at 1280px, table-style Skills rows, invalid resource tabs, English/color-only knowledge status, and no retry surface.
+2. Fixes introduced the two-tab resource header, responsive three-column Skills layout, visual catalogue/detail, two-column Knowledge workspace, icon + Chinese status mapping, and persistent retry feedback.
+3. Post-fix 1440px/1280px screenshots, same-viewport combined comparisons, interaction checks, overflow measurements, keyboard checks, and clean Console showed no remaining P0/P1/P2 issue.
+
+**Follow-up Polish**
+
+- P3: live environments may contain enough knowledge documents to justify pagination controls; no pagination behavior was invented because the current frontend contract returns the existing document list as-is.
+
+final result: passed
 # Design QA: 工作台标题密度优化
 
 ## 2026-07-28 工作台标题密度优化
