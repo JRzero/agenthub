@@ -5,32 +5,38 @@
 :root {
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
-  --color-canvas: #f7f8fb;
-  --color-surface: #ffffff;
-  --color-subtle: #f5f6fa;
-  --color-border: #e3e6ee;
-  --color-primary: #5b5ce2;
-  --color-primary-soft: #f0efff;
-  --color-text-strong: #171b2d;
-  --color-text-muted: #697085;
-  --color-success: #16a468;
-  --color-warning: #e4932f;
-  --color-danger: #dc4f62;
-  color-scheme: light;
+  --color-canvas: #08090a;
+  --color-surface: #0f1113;
+  --color-surface-elevated: #16181b;
+  --color-subtle: #16181b;
+  --color-border: #292c31;
+  --color-primary: #d7ff2f;
+  --color-primary-soft: #202719;
+  --color-text-strong: #f5f7f8;
+  --color-text-secondary: #a5a8ae;
+  --color-text-muted: #6f737a;
+  --color-success: #9be228;
+  --color-warning: #f5b82e;
+  --color-danger: #f05f5f;
+  --color-info: #65a7ff;
+  color-scheme: dark;
 }
 
 .dark {
-  --color-canvas: #10131d;
-  --color-surface: #171b27;
-  --color-subtle: #1e2331;
-  --color-border: #2b3142;
-  --color-primary: #7a7bf4;
-  --color-primary-soft: #26264e;
-  --color-text-strong: #f4f6fb;
-  --color-text-muted: #a5adc0;
-  --color-success: #45c98b;
-  --color-warning: #f0b35e;
-  --color-danger: #f07888;
+  --color-canvas: #08090a;
+  --color-surface: #0f1113;
+  --color-surface-elevated: #16181b;
+  --color-subtle: #16181b;
+  --color-border: #292c31;
+  --color-primary: #d7ff2f;
+  --color-primary-soft: #202719;
+  --color-text-strong: #f5f7f8;
+  --color-text-secondary: #a5a8ae;
+  --color-text-muted: #6f737a;
+  --color-success: #9be228;
+  --color-warning: #f5b82e;
+  --color-danger: #f05f5f;
+  --color-info: #65a7ff;
   color-scheme: dark;
 }
 
@@ -75,9 +81,9 @@ select:not([multiple]):not([size]) {
 }
 
 select:not([multiple]):not([size]):not(.control-compact):not(.control-large) {
-  height: 2.25rem;
-  min-height: 2.25rem;
-  border-radius: 0.375rem;
+  height: 2.5rem;
+  min-height: 2.5rem;
+  border-radius: 0.5rem;
   padding-left: 0.75rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -96,9 +102,9 @@ input[type="search"]:not(.control-compact):not(.control-large):not(.control-nati
 input[type="tel"]:not(.control-compact):not(.control-large):not(.control-native-large),
 input[type="url"]:not(.control-compact):not(.control-large):not(.control-native-large),
 input[type="number"]:not(.control-compact):not(.control-large):not(.control-native-large) {
-  height: 2.25rem;
-  min-height: 2.25rem;
-  border-radius: 0.375rem;
+  height: 2.5rem;
+  min-height: 2.5rem;
+  border-radius: 0.5rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
@@ -108,7 +114,7 @@ input[type="number"]:not(.control-compact):not(.control-large):not(.control-nati
 }
 
 :focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -118,24 +124,28 @@ input[type="number"]:not(.control-compact):not(.control-large):not(.control-nati
 
 @layer components {
   .panel {
-    @apply rounded-lg border border-border bg-surface shadow-panel;
+    @apply rounded-xl border border-border bg-surface shadow-panel;
+  }
+
+  .card {
+    @apply rounded-xl border border-border bg-surface transition-colors duration-150 hover:border-primary/40 hover:bg-surface-elevated;
   }
 
   .button-primary {
-    @apply inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-canvas transition duration-150 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .button-secondary {
-    @apply inline-flex min-h-9 items-center justify-center gap-2 rounded-md border border-border bg-surface px-4 text-sm font-medium text-text-strong transition hover:border-primary/40 hover:bg-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-surface-elevated px-4 text-sm font-medium text-text-strong transition duration-150 hover:border-primary/40 hover:bg-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .button-danger {
-    @apply inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-danger px-4 text-sm font-semibold text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-danger bg-transparent px-4 text-sm font-semibold text-danger transition duration-150 hover:bg-surface-elevated disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .control-field,
   .control-select {
-    @apply h-9 rounded-md border border-border bg-surface px-3 text-sm text-text-strong outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply h-10 rounded-lg border border-border bg-surface-elevated px-3 text-sm text-text-strong outline-none transition duration-150 placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .control-select {
@@ -147,11 +157,11 @@ input[type="number"]:not(.control-compact):not(.control-large):not(.control-nati
   }
 
   .control-large {
-    @apply h-10 min-h-10 px-4 text-sm;
+    @apply h-11 min-h-11 px-4 text-sm;
   }
 
   .icon-button {
-    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-text-muted transition hover:bg-subtle hover:text-text-strong disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-text-secondary transition duration-150 hover:bg-surface-elevated hover:text-text-strong disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .status-badge {
@@ -163,7 +173,7 @@ input[type="number"]:not(.control-compact):not(.control-large):not(.control-nati
   }
 
   .status-info {
-    @apply bg-blue-50 text-blue-700 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-1 dark:ring-inset dark:ring-blue-400/20;
+    @apply bg-surface-elevated text-info ring-1 ring-inset ring-border;
   }
 
   .status-warning {
@@ -171,7 +181,27 @@ input[type="number"]:not(.control-compact):not(.control-large):not(.control-nati
   }
 
   .status-neutral {
-    @apply bg-slate-100 text-slate-600 dark:bg-slate-700/50 dark:text-slate-300 dark:ring-1 dark:ring-inset dark:ring-slate-600;
+    @apply bg-surface-elevated text-text-secondary ring-1 ring-inset ring-border;
+  }
+
+  .status-danger {
+    @apply bg-surface-elevated text-danger ring-1 ring-inset ring-border;
+  }
+
+  .table-frame {
+    @apply overflow-x-auto rounded-xl border border-border bg-surface;
+  }
+
+  .table-row {
+    @apply min-h-12 border-t border-border transition-colors duration-150 hover:bg-surface-elevated;
+  }
+
+  .empty-state {
+    @apply flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface px-6 py-10 text-center text-text-secondary;
+  }
+
+  .error-feedback {
+    @apply rounded-lg border border-danger bg-surface px-4 py-3 text-sm text-danger;
   }
 
   .loading-spin {
@@ -197,13 +227,13 @@ input[type="number"]:not(.control-compact):not(.control-large):not(.control-nati
     }
   }
   .skeleton {
-    @apply animate-pulse rounded bg-slate-200/70 dark:bg-slate-700/60;
+    @apply animate-pulse rounded bg-surface-elevated;
   }
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #b9becb transparent;
+  scrollbar-color: var(--color-border) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -214,7 +244,7 @@ input[type="number"]:not(.control-compact):not(.control-large):not(.control-nati
 *::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
-  background: #b9becb;
+  background: var(--color-border);
   background-clip: content-box;
 }
 

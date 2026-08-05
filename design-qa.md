@@ -55,7 +55,6 @@
 ### Final result
 
 final result: passed
-
 # Design QA: 工作台标题密度优化
 
 ## 2026-07-28 工作台标题密度优化
@@ -500,5 +499,74 @@ final result: passed
 
 - No remaining P0, P1, P2 or P3 findings.
 - The design intentionally does not expose manual weekday or time editing because the current backend contract generates the schedule from Agent identity.
+
+final result: passed
+
+---
+
+# LYN-004-A Design QA
+
+- Source visual truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/01-workbench.png`
+- Implementation screenshot: `/Users/king/.codex/worktrees/14f2/agenthub/docs/qa/images/lyn-004-a-shell-1440.jpg`
+- Responsive screenshot: `/Users/king/.codex/worktrees/14f2/agenthub/docs/qa/images/lyn-004-a-shell-1280.jpg`
+- Combined comparison: `/Users/king/.codex/worktrees/14f2/agenthub/docs/qa/images/lyn-004-a-shell-comparison-1440.png`
+- State: isolated Demo workspace, `/workbench`, expanded workspace shell; business-page content intentionally preserved
+- CSS viewport and density: 1440 × 900 at device scale factor 1; 1280 × 800 responsive check at device scale factor 1
+- Source pixels: 1487 × 1058; normalized to 1440px wide and center-cropped to 1440 × 900 for comparison
+- Implementation pixels: 1440 × 900 (JPEG); responsive browser capture 1269 × 793 (JPEG) from a 1280 × 800 CSS viewport, excluding the browser scrollbar gutter
+- Combined comparison pixels: 2880 × 900 (PNG), normalized source on the left and implementation on the right
+
+**Findings**
+
+- No remaining P0, P1, or P2 shell mismatch.
+- Accepted constraint: the approved source mock uses a wider illustrative sidebar, while the written authoritative specification sets the expanded sidebar to 200px. The implementation uses exactly 200px and retains an 80px compact Agent workspace rail.
+- Accepted constraint: the source mock shows a fabricated notification dot/count and page-specific hero content. The implementation intentionally removes the notification badge/count and preserves current workbench business content, as required by the task contract.
+- Accepted constraint: the existing route map has one `/governance` destination and no global publish-center route. The shell keeps honest existing destinations rather than inventing duplicate management routes or a nonfunctional global publish action.
+
+**Required Fidelity Surfaces**
+
+- Fonts and typography: passed. System sans-serif/PingFang/Microsoft YaHei fallbacks, compact 14px navigation, high-contrast headings, and restrained weight hierarchy match the approved direction without loading a new font dependency.
+- Spacing and layout rhythm: passed. The 200px rail, 40–44px controls, 8/12/16px rhythm, thin dividers, 8–12px radii, and fixed 56px topbar remain consistent at both target widths. Browser measurements found zero horizontal overflow.
+- Colors and visual tokens: passed. Canvas `#08090A`, surface `#0F1113`, elevated `#16181B`, border `#292C31`, text tiers, lime `#D7FF2F`, and semantic status colors are centrally defined. Shared shell/base files contain no legacy purple/indigo primary utilities.
+- Image quality and asset fidelity: passed. The existing raster AgentHub mark remains the source asset and is rendered monochrome in the V1 shell so the old purple mark does not compete with lime. No CSS art, inline SVG, emoji, or placeholder icon was introduced; Phosphor supplies the line icon set.
+- Copy and content: passed for the shell. Navigation is grouped as primary / 运营 / 管理 / 底部工具; Create Agent is persistent; notification is explicitly unavailable without unread state; Living World copy is absent.
+
+**Full-view Comparison Evidence**
+
+- `lyn-004-a-shell-comparison-1440.png` puts the normalized source and browser implementation in one image. It confirms the same dark/lime hierarchy, compact grouped rail, persistent creation action, thin top divider, quiet borders, and bottom utility placement.
+- Page-body differences are not shell drift: LYN-004-A explicitly forbids changing concrete workbench content, APIs, models, or workflows.
+
+**Focused Region Comparison Evidence**
+
+- A separate crop was not needed: the 2880 × 900 original-resolution combined image keeps the full sidebar and topbar legible, and the shell is the only comparison surface in scope.
+
+**Interaction and Responsive Evidence**
+
+- Workspace switch: changed from `星海内容工作室` to `品牌共创空间`; both sidebar and topbar updated.
+- Route highlighting: `/settings` produced exactly one workspace-shell current item (`设置`); `/assets/32/overview` produced exactly one workspace-shell current item (`Agent`).
+- Shell modes: nested Agent route measured an 80px rail; Workbench measured a 200px rail.
+- Utilities: Help remained focusable; Account opened the existing sign-out menu; Settings navigated; notification was disabled with no dot/count; invitation remained reachable from the topbar.
+- Keyboard focus: Help showed a 2px solid `rgb(215, 255, 47)` focus outline.
+- 1440 × 900: sidebar 200px, Create Agent visible, bottom tools visible, horizontal overflow 0.
+- 1280 × 800: sidebar 200px, Create Agent visible, bottom tools visible, document scroll width equaled client width.
+- Browser console: zero page errors in the final 1440px and 1280px captures.
+
+**Comparison History**
+
+1. First browser pass found a P2 shell-color mismatch: the existing raster logo mark retained its purple treatment next to the new lime system.
+2. Fix: retained the real logo asset and rendered it monochrome in shell surfaces; regenerated both screenshots and the combined comparison.
+3. Post-fix evidence: final 1440px capture shows a white mark with lime wordmark accent; no actionable P0/P1/P2 shell findings remain.
+
+**Implementation Checklist**
+
+- [x] Semantic dark tokens and shared base states
+- [x] Grouped compact navigation and single route-aware shell highlight
+- [x] Workspace, Help, Settings, Account, invite, and shell-mode compatibility
+- [x] Honest notification state and Living World absence
+- [x] 1440px and 1280px browser checks, screenshots, interactions, focus, overflow, and console checks
+
+**Follow-up Polish**
+
+- P3: downstream LYN-004 B–E page slices should replace page-owned indigo/violet data colors where they represent emphasis rather than legitimate chart series.
 
 final result: passed

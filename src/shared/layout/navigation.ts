@@ -12,24 +12,69 @@ import {
 } from "@phosphor-icons/react";
 
 export interface NavigationItem {
+  id: string;
   label: string;
   href: string;
   icon: Icon;
   capability?: "live" | "future";
 }
 
-export const workspaceNavigation: NavigationItem[] = [
-  { label: "工作台", href: "/workbench", icon: House, capability: "future" },
-  { label: "Agent 资产库", href: "/assets", icon: Stack, capability: "live" },
-  { label: "资源库", href: "/resources", icon: Toolbox, capability: "future" },
-  { label: "接入管理", href: "/clients", icon: FolderOpen, capability: "live" },
-  { label: "应用运营", href: "/operations", icon: CirclesThreePlus, capability: "live" },
-  { label: "数据分析", href: "/analytics", icon: ChartLineUp, capability: "future" },
-  { label: "治理中心", href: "/governance", icon: ShieldCheck, capability: "future" },
-  { label: "收益中心", href: "/revenue", icon: Coins, capability: "future" },
+export interface NavigationGroup {
+  id: "primary" | "operations" | "management";
+  label?: string;
+  items: NavigationItem[];
+}
+
+export const workspaceNavigationGroups: NavigationGroup[] = [
+  {
+    id: "primary",
+    items: [
+      { id: "workbench", label: "工作台", href: "/workbench", icon: House, capability: "future" },
+      { id: "agents", label: "Agent", href: "/assets", icon: Stack, capability: "live" },
+      { id: "resources", label: "资源", href: "/resources", icon: Toolbox, capability: "future" },
+    ],
+  },
+  {
+    id: "operations",
+    label: "运营",
+    items: [
+      { id: "operations", label: "应用与渠道", href: "/operations", icon: CirclesThreePlus, capability: "live" },
+      { id: "clients", label: "接入管理", href: "/clients", icon: FolderOpen, capability: "live" },
+      { id: "analytics", label: "数据分析", href: "/analytics", icon: ChartLineUp, capability: "future" },
+      { id: "revenue", label: "收益中心", href: "/revenue", icon: Coins, capability: "future" },
+    ],
+  },
+  {
+    id: "management",
+    label: "管理",
+    items: [
+      { id: "governance", label: "治理中心", href: "/governance", icon: ShieldCheck, capability: "future" },
+    ],
+  },
 ];
 
+export const workspaceNavigation = workspaceNavigationGroups.flatMap(
+  (group) => group.items,
+);
+
+export function isNavigationItemActive(
+  pathname: string,
+  item: Pick<NavigationItem, "id" | "href">,
+): boolean {
+  if (item.id === "agents") {
+    return pathname === item.href || pathname.startsWith(`${item.href}/`);
+  }
+  return pathname === item.href || pathname.startsWith(`${item.href}/`);
+}
+
+export function activeWorkspaceNavigationItem(
+  pathname: string,
+): NavigationItem | undefined {
+  return workspaceNavigation.find((item) => isNavigationItemActive(pathname, item));
+}
+
 export const settingsNavigation: NavigationItem = {
+  id: "settings",
   label: "设置",
   href: "/settings",
   icon: Gear,
