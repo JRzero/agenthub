@@ -116,4 +116,4 @@ export interface DocumentChunksResponse {
   page_size: number;
 }
 
-export type ResourceTab = "skills" | "knowledge" | "media" | "templates";
+export type ResourceTab = "skills" | "knowledge";
