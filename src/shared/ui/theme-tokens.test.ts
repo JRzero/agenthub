@@ -11,7 +11,7 @@ const expectedTokens = {
   "--color-border": "#292c31",
   "--color-text-strong": "#f5f7f8",
   "--color-text-secondary": "#a5a8ae",
-  "--color-text-muted": "#6f737a",
+  "--color-text-muted": "#898d94",
   "--color-primary": "#d7ff2f",
   "--color-success": "#9be228",
   "--color-warning": "#f5b82e",
@@ -34,4 +34,28 @@ describe("AgentHub V1 semantic theme", () => {
     expect(stylesheet.match(/color-scheme: dark/g)).toHaveLength(2);
     expect(stylesheet).not.toContain("color-scheme: light");
   });
+
+  it("keeps meaningful 12–14px muted text at WCAG AA contrast on every dark surface", () => {
+    const muted = expectedTokens["--color-text-muted"];
+    const surfaces = [
+      expectedTokens["--color-canvas"],
+      expectedTokens["--color-surface"],
+      expectedTokens["--color-surface-elevated"],
+      "#202719",
+    ];
+
+    surfaces.forEach((surface) => expect(contrastRatio(muted, surface)).toBeGreaterThanOrEqual(4.5));
+  });
 });
+
+function contrastRatio(foreground: string, background: string): number {
+  const lighter = Math.max(relativeLuminance(foreground), relativeLuminance(background));
+  const darker = Math.min(relativeLuminance(foreground), relativeLuminance(background));
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+function relativeLuminance(hex: string): number {
+  const channels = [1, 3, 5].map((offset) => Number.parseInt(hex.slice(offset, offset + 2), 16) / 255);
+  const [red, green, blue] = channels.map((channel) => channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
+  return (0.2126 * red) + (0.7152 * green) + (0.0722 * blue);
+}

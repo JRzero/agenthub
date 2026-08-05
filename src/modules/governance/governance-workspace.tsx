@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 import { ClipboardText, Database, LockKey, ShieldCheck, UserCircle, UsersThree, WarningCircle } from "@phosphor-icons/react";
 import { FutureModulePage } from "@/shared/ui/future-module-page";
 
-type GovernanceArea = "roles" | "safety";
+export type GovernanceArea = "roles" | "safety";
 
 const governanceAreas = {
   roles: {
@@ -36,22 +36,20 @@ const governanceAreas = {
   },
 } as const;
 
-export function GovernanceWorkspace() {
-  const [area, setArea] = useState<GovernanceArea>("roles");
+export function GovernanceWorkspace({ area = "roles" }: { area?: GovernanceArea }) {
   const content = governanceAreas[area];
   const tabs = (
     <div className="inline-flex rounded-lg border border-border bg-surface p-1" role="tablist" aria-label="治理能力">
       {(["roles", "safety"] as const).map((key) => (
-        <button
+        <Link
           key={key}
-          type="button"
+          href={`/governance/${key}`}
           role="tab"
           aria-selected={area === key}
-          onClick={() => setArea(key)}
           className={`min-h-10 rounded-md px-4 text-sm font-medium transition-colors ${area === key ? "bg-surface-elevated text-primary" : "text-text-secondary hover:text-text-strong"}`}
         >
           {governanceAreas[key].title}
-        </button>
+        </Link>
       ))}
     </div>
   );

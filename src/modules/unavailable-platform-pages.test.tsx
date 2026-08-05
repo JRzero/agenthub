@@ -37,4 +37,13 @@ describe("unavailable platform pages", () => {
     expect(html).not.toContain("演示启用");
     expect(html).not.toContain("高风险");
   });
+
+  it("renders either governance route as the matching real tab state", () => {
+    const roles = renderToStaticMarkup(<GovernanceWorkspace area="roles" />);
+    const safety = renderToStaticMarkup(<GovernanceWorkspace area="safety" />);
+    expect(roles).toContain('href="/governance/roles"');
+    expect(roles).toContain('aria-selected="true"');
+    expect(safety).toContain("内容治理能力尚未接入");
+    expect(safety.match(/aria-selected="true"/g)).toHaveLength(1);
+  });
 });

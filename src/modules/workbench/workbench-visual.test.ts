@@ -10,6 +10,14 @@ describe("workbench V1 composition", () => {
     expect(source).toContain("最近 Agent");
     expect(source).toContain("待处理事项");
     expect(source).toContain("deriveWorkbenchTasks(agents)");
+    expect(source).toContain('data-testid="workbench-agent-hero"');
+    expect(source).toContain("<AgentArtwork agent={focusAgent}");
+  });
+
+  it("promotes an existing Agent image without adding fake visual data", () => {
+    expect(source).toContain("agent.config?.metadata?.avatar");
+    expect(source).not.toContain("DEMO_AGENTS");
+    expect(source).not.toContain("fake");
   });
 
   it("does not fabricate analytics or revenue metrics", () => {

@@ -22,6 +22,16 @@ describe("Agent Asset Library visual hierarchy", () => {
     expect(source).toContain('aria-label="Agent 资产卡片"');
     expect(source).toContain('aria-label="Agent 资产列表"');
     expect(source).toContain('href={assetHref(agent)}');
+    expect(source).toContain('data-testid="agent-image-card"');
+    expect(source).toContain("<AgentArtwork agent={agent}");
+    expect(source).toContain("aspect-[4/3]");
+  });
+
+  it("keeps list mode and all collection behaviors alongside the image-led card", () => {
+    expect(source).toContain('view === "card" ? <CardView agents={agents} /> : <ListView agents={agents} />');
+    expect(source).toContain("filterAndSortAgents(allAgents");
+    expect(source).toContain("writeAssetView(window.localStorage, next)");
+    expect(source).not.toContain("DEMO_AGENTS");
   });
 
   it("shows resumable creation progress without fabricating a version", () => {

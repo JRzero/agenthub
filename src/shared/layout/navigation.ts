@@ -6,9 +6,11 @@ import {
   FolderOpen,
   Gear,
   House,
+  PaperPlaneTilt,
   ShieldCheck,
   Stack,
   Toolbox,
+  UsersThree,
 } from "@phosphor-icons/react";
 
 export interface NavigationItem {
@@ -40,6 +42,7 @@ export const workspaceNavigationGroups: NavigationGroup[] = [
     items: [
       { id: "operations", label: "应用与渠道", href: "/operations", icon: CirclesThreePlus, capability: "live" },
       { id: "clients", label: "接入管理", href: "/clients", icon: FolderOpen, capability: "live" },
+      { id: "distribution", label: "发布中心", href: "/distribution", icon: PaperPlaneTilt, capability: "live" },
       { id: "analytics", label: "数据分析", href: "/analytics", icon: ChartLineUp, capability: "future" },
       { id: "revenue", label: "收益中心", href: "/revenue", icon: Coins, capability: "future" },
     ],
@@ -48,7 +51,8 @@ export const workspaceNavigationGroups: NavigationGroup[] = [
     id: "management",
     label: "管理",
     items: [
-      { id: "governance", label: "治理中心", href: "/governance", icon: ShieldCheck, capability: "future" },
+      { id: "governance-roles", label: "角色权限", href: "/governance/roles", icon: UsersThree, capability: "future" },
+      { id: "governance-safety", label: "内容安全", href: "/governance/safety", icon: ShieldCheck, capability: "future" },
     ],
   },
 ];
@@ -62,7 +66,16 @@ export function isNavigationItemActive(
   item: Pick<NavigationItem, "id" | "href">,
 ): boolean {
   if (item.id === "agents") {
+    if (/^\/assets\/[^/]+\/distribution(?:\/|$)/.test(pathname)) return false;
     return pathname === item.href || pathname.startsWith(`${item.href}/`);
+  }
+  if (item.id === "distribution") {
+    return pathname === item.href
+      || pathname.startsWith(`${item.href}/`)
+      || /^\/assets\/[^/]+\/distribution(?:\/|$)/.test(pathname);
+  }
+  if (item.id === "governance-roles") {
+    return pathname === "/governance" || pathname === item.href;
   }
   return pathname === item.href || pathname.startsWith(`${item.href}/`);
 }
