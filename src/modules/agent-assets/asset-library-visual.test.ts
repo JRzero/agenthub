@@ -27,6 +27,27 @@ describe("Agent Asset Library visual hierarchy", () => {
     expect(source).toContain("aspect-[4/3]");
   });
 
+  it("uses fixed card heights and stable vertical partitions at every grid breakpoint", () => {
+    expect(source).toContain("h-[608px]");
+    expect(source).toContain("md:h-[536px]");
+    expect(source).toContain("xl:h-[496px]");
+    expect(source).toContain("min-[1440px]:h-[536px]");
+    expect(source).toContain("2xl:h-[512px]");
+    expect(source).not.toContain("min-h-[430px]");
+    expect(source).toContain("aspect-[4/3] min-h-[220px] shrink-0");
+    expect(source).toContain("flex min-h-0 flex-1 flex-col p-4");
+    expect(source).toContain("mt-auto grid shrink-0 grid-cols-2");
+    expect(source).toContain("flex shrink-0 items-center justify-between");
+  });
+
+  it("contains long and missing optional card content without changing the card frame", () => {
+    expect(source).toContain('className="truncate text-lg font-semibold"');
+    expect(source).toContain("line-clamp-2 min-h-10");
+    expect(source).toContain('agent.description || agent.tagline || "暂无描述，进入工作区完善 Agent。"');
+    expect(source).toContain('agent.llm_model_name || agent.model || "尚未配置"');
+    expect(source).toContain('return "暂无更新"');
+  });
+
   it("keeps list mode and all collection behaviors alongside the image-led card", () => {
     expect(source).toContain('view === "card" ? <CardView agents={agents} /> : <ListView agents={agents} />');
     expect(source).toContain("filterAndSortAgents(allAgents");

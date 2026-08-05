@@ -100,17 +100,17 @@ function EmptyState({ hasAgents, onClear, onCreate }: { hasAgents: boolean; onCl
 function CardView({ agents }: { agents: Agent[] }) {
   return <section aria-label="Agent 资产卡片" className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{agents.map((agent) => {
     const presentation = statusPresentation(agent);
-    return <article key={agent.id} data-testid="agent-image-card" className="group relative flex min-h-[430px] flex-col overflow-hidden rounded-xl border border-border bg-surface transition hover:border-primary/55">
+    return <article key={agent.id} data-testid="agent-image-card" className="group relative flex h-[608px] flex-col overflow-hidden rounded-xl border border-border bg-surface transition hover:border-primary/55 md:h-[536px] xl:h-[496px] min-[1440px]:h-[536px] 2xl:h-[512px]">
       <Link href={assetHref(agent)} aria-label={`查看 ${agent.name}`} className="absolute inset-0 z-0 rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
-      <div className="pointer-events-none relative z-[1] aspect-[4/3] min-h-[220px] overflow-hidden border-b border-border bg-surface-elevated"><AgentArtwork agent={agent} /></div>
+      <div className="pointer-events-none relative z-[1] aspect-[4/3] min-h-[220px] shrink-0 overflow-hidden border-b border-border bg-surface-elevated"><AgentArtwork agent={agent} /></div>
       <span className={`pointer-events-none absolute left-3 top-3 z-10 status-badge ${presentation.className}`}>{presentation.label}</span>
-      <div className="pointer-events-none relative z-[1] flex flex-1 flex-col p-4">
+      <div className="pointer-events-none relative z-[1] flex min-h-0 flex-1 flex-col p-4">
         <div className="min-w-0 pr-7"><h2 className="truncate text-lg font-semibold" title={agent.name}>{agent.name}</h2><p className="mt-1 truncate text-xs text-text-muted" title={agent.code}>{agent.code || `agent-${agent.id}`}</p></div>
         <p className="mt-3 line-clamp-2 min-h-10 text-sm leading-5 text-text-secondary" title={agent.description}>{agent.description || agent.tagline || "暂无描述，进入工作区完善 Agent。"}</p>
-        <div className="mt-4 grid grid-cols-2 gap-2 border-t border-border pt-4"><AssetMeta icon={<Cpu size={15} />} label="运行模型" value={agent.llm_model_name || agent.model || "尚未配置"} /><AssetMeta icon={<CalendarBlank size={15} />} label="最近更新" value={updatedLabel(agent.updated_at)} /></div>
+        <div className="mt-auto grid shrink-0 grid-cols-2 gap-2 border-t border-border pt-4"><AssetMeta icon={<Cpu size={15} />} label="运行模型" value={agent.llm_model_name || agent.model || "尚未配置"} /><AssetMeta icon={<CalendarBlank size={15} />} label="最近更新" value={updatedLabel(agent.updated_at)} /></div>
       </div>
       <div className="pointer-events-auto absolute right-2 top-2 z-10"><AssetActions agent={agent} /></div>
-      <footer className="pointer-events-none relative z-[1] flex items-center justify-between border-t border-border px-4 py-3"><span className="text-xs text-text-muted">{versionLabel(agent)}</span><span className="inline-flex items-center gap-1 text-sm font-medium text-primary">{agent.creation_completed === false ? "继续创建" : "打开工作区"}<ArrowRight size={15} /></span></footer>
+      <footer className="pointer-events-none relative z-[1] flex shrink-0 items-center justify-between border-t border-border px-4 py-3"><span className="text-xs text-text-muted">{versionLabel(agent)}</span><span className="inline-flex items-center gap-1 text-sm font-medium text-primary">{agent.creation_completed === false ? "继续创建" : "打开工作区"}<ArrowRight size={15} /></span></footer>
     </article>;
   })}</section>;
 }

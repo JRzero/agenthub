@@ -58,6 +58,79 @@ final result: passed
 
 ---
 
+# LYN-004-R4 Agent Card Fixed Height Design QA
+
+## Comparison target
+
+- Source visual truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/17-agent-card-height-feedback.png`
+- Supporting visual baseline: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/02-agents-card.png`
+- Browser-rendered implementation: `docs/qa/images/lyn-004-r4-agent-card-height/after-live-1440x900.png`
+- Same-viewport before/after comparison: `docs/qa/images/lyn-004-r4-agent-card-height/comparison-before-after-1440x900.png`
+- Source/implementation comparison: `docs/qa/images/lyn-004-r4-agent-card-height/comparison-reference-after-1440x900.png`
+- Focused card-region comparison: `docs/qa/images/lyn-004-r4-agent-card-height/comparison-focused-cards-1440x900.png`
+- Responsive implementation evidence: `docs/qa/images/lyn-004-r4-agent-card-height/after-live-1280x800.png` and `docs/qa/images/lyn-004-r4-agent-card-height/after-live-200pct-equivalent-720x900.png`
+- State: authenticated local Live Agent library, card view, all-status filter, most-recent sort. No API mutation was triggered.
+- Viewport and density: 1440 × 900, 1280 × 800, and 720 × 900 CSS px at device scale factor 1; 720px is the required 200% equivalent-width check.
+- Source pixels: feedback 3022 × 1496; supporting baseline 1487 × 1058. The feedback source was proportionally scaled to fill 1440 × 900 and center-cropped for the combined comparison.
+- Implementation pixels: 1440 × 900, 1280 × 800, and 720 × 900. The exact same 1440 × 900 crop and Live state were used for before/after evidence.
+- Focused comparison pixels: two 1212 × 560 card-region crops joined into a 2424 × 560 image.
+
+## Findings
+
+- No actionable P0, P1, or P2 findings remain.
+- Fixed card heights are explicit and browser-computed: 608px below `md`, 536px from `md`, 496px from `xl`, 536px from 1440px, and 512px from `2xl`. The existing column breakpoints remain one / two / three / four columns.
+- At each verified breakpoint, every measured card has the same height, metadata bottom position, and footer start position. Cross-row offsets equal the fixed height plus the unchanged 16px grid gap.
+- Live coverage included 13 long-description cards, 4 short-description cards, 4 missing-artwork cards, 3 missing-description fallbacks, and 5 missing-model or missing-version states. No measured card overflowed.
+- Long descriptions are visibly limited to two lines; long titles and all metadata remain contained by existing truncation and accessible `title` text or the existing detail entry.
+- Accepted source constraint: the feedback capture contains failed artwork requests while the current Live implementation has restored artwork. Artwork, data, and API behavior are outside R4 and were intentionally not changed.
+
+## Required fidelity surfaces
+
+- Fonts and typography: passed. Existing family, sizes, weights, line heights, title truncation, and two-line description clamp are unchanged. Short and long text retain the same hierarchy.
+- Spacing and layout rhythm: passed. Image, identity, description, metadata, and footer form stable flex partitions; model and update metadata use `margin-top: auto`, and the footer is non-shrinking. Grid gaps, padding, borders, radii, and column policy are unchanged.
+- Colors and visual tokens: passed. Existing canvas, surface, border, text, lime primary, and lifecycle colors are unchanged.
+- Image quality and asset fidelity: passed for R4 scope. Existing Agent artwork and fallback rendering are preserved; no asset, placeholder, CSS art, inline SVG, or fake data was added.
+- Copy and content: passed. No product copy, API field, DTO, data, search/filter/sort label, list-view content, or fallback wording changed.
+
+## Full-view and focused comparison evidence
+
+- `comparison-before-after-1440x900.png` proves the fixed-height implementation preserves the prior same-viewport visual proportions while replacing content-derived minimum height with an explicit height contract.
+- `comparison-reference-after-1440x900.png` confirms the approved dark/lime card hierarchy, image-led composition, title/description structure, and bottom metadata alignment. Differences in artwork availability are an existing Live-data condition outside this task.
+- `comparison-focused-cards-1440x900.png` keeps title, description, metadata, footer, and image crop legible. It confirms that short and long cards share the same bottom alignment without clipping.
+
+## Responsive, state, and interaction evidence
+
+- 1440 × 900: three columns; every measured card computed to 536px; document horizontal overflow 0.
+- 1280 × 800: three columns; every measured card computed to 496px; document horizontal overflow 0.
+- 720 × 900: one column; every measured card computed to 608px; document horizontal overflow 0.
+- 1536 × 900 supplemental check: four columns; every measured card computed to 512px; document horizontal overflow 0.
+- Card/list switching and persisted view memory passed in both directions.
+- Search, lifecycle filtering, A–Z sorting, clear/reset, whole-card navigation, and the non-mutating asset menu-open state passed.
+- A fresh browser tab loaded the R4 fixed-height class and recorded zero console errors and zero warnings.
+
+## Comparison history
+
+1. The first attempted post-change capture was rejected before QA because port 3002 still served the R3 Worktree and exposed the old `min-h-[430px]` class. Those images and measurements were not treated as R4 implementation evidence.
+2. The persistent R3 preview was stopped by the coordinating task, R4 took over the authenticated `127.0.0.1:3002` origin, and the DOM was rechecked for `h-[608px] ... 2xl:h-[512px]` with no `min-h-[430px]`.
+3. Final full-view, focused, responsive, state, interaction, overflow, and fresh-console comparisons found no actionable P0/P1/P2 issues. No visual fix was needed after the valid R4 capture.
+
+## Implementation checklist
+
+- [x] Explicit, testable card heights at every existing grid breakpoint
+- [x] Stable non-shrinking image, flexible content, bottom-pinned metadata, and non-shrinking footer partitions
+- [x] Long title/description and missing artwork/optional-field containment
+- [x] 1440px, 1280px, 200% equivalent-width, and supplemental 2xl checks
+- [x] Card/list memory, search, filter, sort, whole-card navigation, and menu regression checks
+- [x] Same-viewport before/after and source/implementation comparison evidence
+
+## Follow-up polish
+
+- None required for R4. The card-height correction is intentionally limited to the Agent card view.
+
+final result: passed
+
+---
+
 # LYN-004-R3 Workbench Divider Design QA
 
 ## Comparison target
