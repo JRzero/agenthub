@@ -60,10 +60,11 @@ export function BuildEditorPanel({
   const special = section === "media";
 
   return (
-    <section className="scrollbar-hidden min-h-0 min-w-0 bg-surface lg:h-full lg:overflow-y-auto lg:overscroll-contain">
-      <div className="p-5 sm:p-6">
+    <section className="scrollbar-hidden min-h-0 min-w-0 bg-canvas lg:h-full lg:overflow-y-auto lg:overscroll-contain">
+      <div className="mx-auto max-w-[920px] p-5 sm:p-7">
         <div className="mb-5">
-          <h2 className="text-xl font-semibold">
+          <p className="text-xs font-medium uppercase tracking-[0.12em] text-primary">Agent Studio</p>
+          <h2 className="mt-1 text-2xl font-semibold">
             {BUILD_SECTION_LABELS[section]}
           </h2>
         </div>

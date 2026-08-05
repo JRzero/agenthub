@@ -113,7 +113,7 @@ export function BuildPreview({
   };
 
   return (
-    <aside className="flex min-h-0 min-w-0 max-w-full flex-col overflow-hidden border-t border-border bg-surface lg:col-span-1 lg:h-full lg:border-l lg:border-t-0">
+    <aside className="flex min-h-0 min-w-0 max-w-full flex-col overflow-hidden border-t border-border bg-surface-elevated lg:col-span-1 lg:h-full lg:border-l lg:border-t-0">
       {collapsed && (
         <div className="hidden min-h-[420px] flex-col items-center py-3 lg:flex">
           <button
