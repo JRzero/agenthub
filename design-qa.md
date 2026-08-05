@@ -55,7 +55,6 @@
 ### Final result
 
 final result: passed
-
 ---
 
 # Design QA: LYN-004-C Resources
@@ -624,5 +623,68 @@ final result: passed
 **Follow-up Polish**
 
 - P3: downstream LYN-004 B–E page slices should replace page-owned indigo/violet data colors where they represent emphasis rather than legitimate chart series.
+
+final result: passed
+
+---
+
+# LYN-004-R2 Login Design QA
+
+## Comparison target
+
+- Source visual truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/15-login-selected.png`
+- Browser-rendered implementation: `docs/qa/images/lyn-004-r2-login/implementation-1440x720-final.png`
+- Full-view comparison: `docs/qa/images/lyn-004-r2-login/comparison-1440x720-final.png`
+- Focused brand/portrait comparison: `docs/qa/images/lyn-004-r2-login/comparison-focus-brand-portrait-final.png`
+- Focused form comparison: `docs/qa/images/lyn-004-r2-login/comparison-focus-form-final.png`
+- Viewport and state: 1440 × 720 CSS px, login route, dark theme, API Service collapsed, empty fields.
+- Density normalization: source 1774 × 887 px was proportionally normalized to 1440 × 720 px; implementation was captured at 1440 × 720 CSS px with browser viewport density 1. Both comparison inputs are 1440 × 720 px.
+
+## Findings
+
+- No actionable P0, P1, or P2 differences remain.
+- P3: the portrait is an original ImageGen asset rather than the reference identity. It preserves the required black-haired subject, low-key cinematic lighting, right-biased face, dark clothing, and text-safe lower-left crop.
+- P3: the source's display lettering appears to use a bespoke ultra-thin face. The implementation uses the closest locally available `Helvetica Neue` thin stack, with equivalent hierarchy and wrapping.
+- P3: the source CTA has a faint tonal variation. The implementation intentionally uses the approved solid `#D7FF2F` V1 primary token instead of recreating that effect with CSS gradient art.
+
+## Required fidelity surfaces
+
+- Fonts and typography: system Chinese sans stack and Helvetica Neue display stack reproduce the source hierarchy, weight contrast, line length, and wrapping. Login title, labels, helper copy, CTA, and editorial overlay remain legible at all tested sizes.
+- Spacing and layout rhythm: final desktop tracks are 22.5% / 33% / 44.5%; column boundaries, form width, top alignment, input height, CTA height, and lower-form spacing match the normalized reference. 1280 px and 720 px effective-width checks have no horizontal overflow.
+- Colors and visual tokens: matte `#08090A` canvas, restrained borders, white/gray text, and solid lime primary match the selected direction and the approved V1 tokens.
+- Image quality and asset fidelity: `public/images/login-agent-portrait.png` is a standalone 1024 × 1536 PNG. The selected design screenshot is not used by the page. The project brand PNG and Phosphor icons are reused; no CSS/div/SVG substitute is used for the portrait, logo, or interface icons.
+- Copy and content: selected-login copy is preserved. Existing username/email, password, API Service, login, registration, demo, error, and loading semantics remain intact.
+
+## Responsive and interaction evidence
+
+- 1440 × 720: `implementation-1440x720-final.png`; `scrollWidth = innerWidth = 1440`, `scrollHeight = innerHeight = 720`.
+- 1280 × 720: `implementation-1280x720.png`; `scrollWidth = innerWidth = 1280`, `scrollHeight = innerHeight = 720`.
+- 200% equivalent width: `implementation-200-percent-equivalent-720x720.png`; single-column form remains fully usable with `scrollWidth = innerWidth = 720`.
+- Password visibility: browser verification changed the password input from `type=password` to `type=text`, set `aria-pressed=true`, and restored the hidden state.
+- API Service: browser verification changed `aria-expanded` from `false` to `true` and exposed the labeled service URL input and help text.
+- Loading: `interaction-loading-1440x720.png`; a controlled local delayed 401 response produced `aria-busy=true`, a disabled submit control, spinner, and `正在处理…` text. The temporary QA service was stopped and the API URL override was restored to its original local value.
+- Error: `interaction-error-api-open-720x720.png`; the caught request failure appears as a persistent `role=alert` without disclosing real credentials.
+- Keyboard and focus: all interactive controls resolve uniquely in DOM order; links and buttons use the global solid lime focus outline, while inputs use a lime border plus three-pixel focus halo. Labels are explicitly connected with `htmlFor`/`id`.
+- Registration: `/register` retains username, email, password, invitation code, API Service, registration submit, and back-to-login link. At 720 px it scrolls vertically without horizontal overflow.
+- Reduced motion: the page inherits the global reduced-motion rule and provides a local reduced-motion override for auth transitions and the spinner.
+- Console: no browser console errors were present after the final 1440 capture.
+
+## Comparison history
+
+1. Initial comparison — blocked.
+   - P1: center column was 35.8% instead of the source's approximately 33%, shifting the form right.
+   - P1: a short-height media rule pinned the form to the top instead of centering it at the source position.
+   - P2: left headline wrapped to three lines; portrait overlay sat too low.
+   - Fixes: changed tracks to 22.5% / 33% / remaining, restored vertical centering, tightened the headline, scaled/cropped the portrait, and repositioned the overlay.
+2. Second comparison — blocked.
+   - P2: editorial `WORK / FOR YOU` scale and available font weight differed materially; lower form rhythm was too compressed.
+   - Fixes: selected the local Helvetica Neue thin stack, tuned line-specific type sizes, adjusted the API group and alternate-link spacing, and preserved desktop title alignment.
+3. Final full-view and focused comparisons — passed.
+   - Post-fix evidence: `comparison-1440x720-final.png`, `comparison-focus-brand-portrait-final.png`, and `comparison-focus-form-final.png`.
+   - No actionable P0/P1/P2 findings remain.
+
+## Follow-up polish
+
+- Optional P3 only: if an approved licensed display font becomes available later, compare its uppercase proportions against the current Helvetica Neue overlay before changing the stack.
 
 final result: passed

@@ -1,0 +1,524 @@
+.authPage {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: 22.5% 33% minmax(0, 1fr);
+  overflow: hidden;
+  background: #070809;
+  color: #f5f7f8;
+}
+
+.storyPanel,
+.portraitPanel,
+.formPanel {
+  min-height: 100svh;
+}
+
+.storyPanel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #282b2e;
+  padding: 46px 38px 32px;
+  background: #08090a;
+}
+
+.brandDesktop,
+.brandMobile {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  width: fit-content;
+  color: #f7f8f8;
+  font-size: clamp(20px, 1.55vw, 25px);
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+}
+
+.brandDesktop > span > span,
+.brandMobile > span > span {
+  color: #d7ff2f;
+}
+
+.brandMark {
+  filter: grayscale(1) brightness(4.5);
+}
+
+.storyCopy {
+  margin-block: auto;
+  transform: translateY(8px);
+}
+
+.eyebrow,
+.formEyebrow {
+  margin: 0;
+  color: #d7ff2f;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+  letter-spacing: 0.22em;
+}
+
+.storyRule {
+  display: block;
+  width: 25px;
+  height: 1px;
+  margin: 27px 0 34px;
+  background: #d7ff2f;
+}
+
+.storyTitle {
+  margin: 0 0 14px;
+  font-size: clamp(24px, 1.78vw, 30px);
+  font-weight: 520;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+}
+
+.storyDescription {
+  max-width: 277px;
+  margin: 24px 0 0;
+  color: #a5a8ae;
+  font-size: 12px;
+  line-height: 2.15;
+}
+
+.editionMark {
+  display: grid;
+  place-items: center;
+  width: 37px;
+  height: 37px;
+  border: 1px solid #3b3f2b;
+  border-radius: 50%;
+  color: #e8e9e9;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.portraitPanel {
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid #17191b;
+  background: #050607;
+}
+
+.portraitImage {
+  object-fit: cover;
+  object-position: 52% center;
+  transform: scale(1.15);
+  transform-origin: 56% 35%;
+}
+
+.portraitPanel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.08);
+  pointer-events: none;
+}
+
+.portraitCopy {
+  position: absolute;
+  z-index: 1;
+  left: 45px;
+  bottom: 97px;
+  display: flex;
+  gap: 22px;
+  color: #f2f3f3;
+}
+
+.portraitRule {
+  width: 1px;
+  height: 176px;
+  margin-top: 3px;
+  background: #b8db24;
+}
+
+.makeAgents,
+.workLine,
+.forYouLine {
+  display: block;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 200;
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+}
+
+.makeAgents {
+  margin: 0 0 17px 2px;
+  color: #b9bbbd;
+  font-size: 16px;
+  font-weight: 350;
+  letter-spacing: 0.01em;
+}
+
+.workLine {
+  color: #d7ff2f;
+  font-size: clamp(64px, 5.25vw, 82px);
+}
+
+.forYouLine {
+  margin-top: 8px;
+  font-size: clamp(54px, 4.4vw, 68px);
+}
+
+.formPanel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 44px 46px;
+  overflow-y: auto;
+  background: #08090a;
+}
+
+.formWrap {
+  width: min(100%, 421px);
+  margin-block: auto;
+}
+
+.brandMobile {
+  display: none;
+}
+
+.formEyebrow {
+  margin-bottom: 14px;
+}
+
+.formTitle {
+  margin: 0;
+  font-size: clamp(32px, 2.75vw, 42px);
+  font-weight: 560;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.formDescription {
+  margin: 13px 0 0;
+  color: #a5a8ae;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.authForm {
+  display: grid;
+  gap: 17px;
+  margin-top: 30px;
+}
+
+.fieldGroup {
+  display: grid;
+  gap: 9px;
+}
+
+.fieldLabel,
+.apiLabel {
+  color: #aeb1b4;
+  font-size: 12px;
+  font-weight: 450;
+  line-height: 1.4;
+}
+
+.inputFrame {
+  position: relative;
+  display: block;
+}
+
+.fieldIcon {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 16px;
+  color: #92969b;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.fieldInput {
+  width: 100%;
+  height: 48px;
+  min-height: 48px;
+  border: 1px solid #3b3e42;
+  border-radius: 6px;
+  background: #08090a;
+  padding: 0 46px;
+  color: #f5f7f8;
+  font-size: 13px;
+  line-height: 1;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.fieldInput::placeholder {
+  color: #777b80;
+}
+
+.fieldInput:hover {
+  border-color: #55595e;
+}
+
+.fieldInput:focus-visible {
+  border-color: #d7ff2f;
+  box-shadow: 0 0 0 3px rgba(215, 255, 47, 0.14);
+}
+
+.passwordToggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #969a9f;
+  transform: translateY(-50%);
+  cursor: pointer;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.passwordToggle:hover {
+  background: #16181b;
+  color: #f5f7f8;
+}
+
+.apiSettings {
+  overflow: hidden;
+  margin-top: 12px;
+  border: 1px solid #3b3e42;
+  border-radius: 6px;
+  background: #08090a;
+}
+
+.apiSettingsTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  padding: 0 15px;
+  color: #85898e;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.apiSettingsTrigger:hover {
+  background: #101214;
+  color: #d5d7d8;
+}
+
+.apiSettingsLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.caretOpen {
+  transform: rotate(180deg);
+}
+
+.apiSettingsBody {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid #292c31;
+  padding: 14px;
+}
+
+.apiHelp {
+  margin: 0;
+  color: #898d94;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.errorMessage {
+  margin: 0;
+  border: 1px solid rgba(240, 95, 95, 0.58);
+  border-radius: 6px;
+  background: rgba(240, 95, 95, 0.08);
+  padding: 10px 12px;
+  color: #ff9696;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.submitButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #d7ff2f;
+  border-radius: 5px;
+  background: #d7ff2f;
+  color: #090a0a;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.submitButton:hover:not(:disabled) {
+  border-color: #e5ff78;
+  background: #e5ff78;
+}
+
+.submitButton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.submitButton:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.spinner {
+  animation: auth-spin 750ms linear infinite;
+}
+
+.alternateLink {
+  margin: 27px 0 0;
+  color: #979b9f;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.alternateLink a {
+  color: #d7ff2f;
+  font-weight: 650;
+  text-decoration: none;
+  text-underline-offset: 3px;
+}
+
+.alternateLink a:hover {
+  text-decoration: underline;
+}
+
+.demoPanel {
+  display: grid;
+  gap: 11px;
+  margin-top: 30px;
+  border: 1px solid #3b3e42;
+  border-radius: 7px;
+  padding: 18px;
+}
+
+.demoTitle,
+.demoDescription {
+  margin: 0;
+}
+
+.demoTitle {
+  color: #f5f7f8;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.demoDescription {
+  margin-bottom: 4px;
+  color: #a5a8ae;
+  font-size: 12px;
+}
+
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1279px) and (min-width: 1100px) {
+  .storyPanel {
+    padding-inline: 30px;
+  }
+
+  .formPanel {
+    padding-inline: 38px;
+  }
+
+  .portraitCopy {
+    left: 35px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .formWrap:not(.registerFormWrap) {
+    transform: translateY(9px);
+  }
+}
+
+@media (max-width: 1099px) {
+  .authPage {
+    display: block;
+    min-height: 100svh;
+    overflow: visible;
+  }
+
+  .storyPanel,
+  .portraitPanel {
+    display: none;
+  }
+
+  .formPanel {
+    min-height: 100svh;
+    align-items: flex-start;
+    padding: 30px 24px 48px;
+  }
+
+  .formWrap {
+    width: min(100%, 480px);
+    margin: auto;
+  }
+
+  .brandMobile {
+    display: inline-flex;
+    margin-bottom: 64px;
+  }
+}
+
+@media (max-width: 560px) {
+  .formPanel {
+    padding-inline: 20px;
+  }
+
+  .brandMobile {
+    margin-bottom: 48px;
+  }
+
+  .formTitle {
+    font-size: 31px;
+  }
+}
+
+@media (max-height: 760px) and (min-width: 1100px) {
+  .storyPanel {
+    padding-block: 34px 24px;
+  }
+
+  .storyCopy {
+    transform: none;
+  }
+
+  .storyRule {
+    margin-block: 22px 28px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fieldInput,
+  .passwordToggle,
+  .apiSettingsTrigger,
+  .submitButton {
+    transition-duration: 0.01ms;
+  }
+
+  .spinner {
+    animation-duration: 1.5s;
+  }
+}
