@@ -3,31 +3,50 @@
 import { useState } from "react";
 import { changePassword } from "./api";
 
-export function PasswordPanel({ apiKey, demo }: { apiKey: string; demo: boolean }) {
+export function PasswordPanel({ apiKey }: { apiKey: string }) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [status, setStatus] = useState("");
+  const [error, setError] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     setStatus("");
-    if (newPassword.length < 8) return setStatus("新密码至少需要 8 个字符");
-    if (newPassword !== confirmation) return setStatus("两次输入的新密码不一致");
+    setError(false);
+    if (newPassword.length < 8) { setError(true); setStatus("新密码至少需要 8 个字符"); return; }
+    if (newPassword !== confirmation) { setError(true); setStatus("两次输入的新密码不一致"); return; }
     setSaving(true);
     try {
-      if (!demo) await changePassword(apiKey, currentPassword, newPassword);
-      setCurrentPassword(""); setNewPassword(""); setConfirmation("");
-      setStatus(demo ? "演示模式未修改真实密码" : "密码已更新");
-    } catch (error) {
-      setStatus(error instanceof Error ? error.message : "修改密码失败");
+      await changePassword(apiKey, currentPassword, newPassword);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmation("");
+      setStatus("密码已更新");
+    } catch (caught) {
+      setError(true);
+      setStatus(caught instanceof Error ? caught.message : "修改密码失败");
     } finally {
       setSaving(false);
     }
   };
 
-  return <section className="panel p-6"><h2 className="text-lg font-semibold">账户安全</h2><form className="mt-5 space-y-4" onSubmit={submit}><PasswordField label="当前密码" value={currentPassword} onChange={setCurrentPassword} /><PasswordField label="新密码" value={newPassword} onChange={setNewPassword} /><PasswordField label="确认新密码" value={confirmation} onChange={setConfirmation} />{status && <p className="rounded-md bg-subtle px-3 py-2 text-sm text-text-muted">{status}</p>}<div className="flex justify-end"><button type="submit" className="button-secondary" disabled={saving}>{saving ? "修改中…" : "修改密码"}</button></div></form></section>;
+  return (
+    <section className="h-fit border-t border-border pt-6 min-[1360px]:border-l min-[1360px]:border-t-0 min-[1360px]:pl-7 min-[1360px]:pt-0" aria-labelledby="security-title">
+      <h2 id="security-title" className="text-lg font-semibold">账户安全</h2>
+      <p className="mt-2 text-xs leading-5 text-text-muted">密码修改通过现有账号安全接口完成。</p>
+      <form className="mt-5 space-y-4" onSubmit={submit}>
+        <PasswordField label="当前密码" value={currentPassword} onChange={setCurrentPassword} />
+        <PasswordField label="新密码" value={newPassword} onChange={setNewPassword} />
+        <PasswordField label="确认新密码" value={confirmation} onChange={setConfirmation} />
+        {status && <p role={error ? "alert" : "status"} className={`rounded-lg border px-3 py-2 text-sm ${error ? "border-danger text-danger" : "border-border text-success"}`}>{status}</p>}
+        <button type="submit" className="button-secondary w-full" disabled={saving}>{saving ? "修改中…" : "修改密码"}</button>
+      </form>
+    </section>
+  );
 }
 
-function PasswordField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) { return <label className="block"><span className="text-sm font-medium">{label}</span><input type="password" value={value} onChange={(event) => onChange(event.target.value)} required minLength={8} className="control-field mt-2 w-full" /></label>; }
+function PasswordField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  return <label className="block"><span className="text-sm font-medium">{label}</span><input aria-label={label} type="password" value={value} onChange={(event) => onChange(event.target.value)} required minLength={8} className="control-field mt-2 w-full" /></label>;
+}
