@@ -1,3 +1,77 @@
+# LYN-004-R7 Avatar Candidate Contain Design QA
+
+## Comparison target
+
+- Source visual truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/21-avatar-preview-crop-feedback.png`.
+- Source pixels and density: `2494 × 1472` at `@2x`, normalized to the source CSS viewport `1247 × 736`.
+- Browser-rendered implementation: `docs/qa/images/lyn-004-r7-avatar-preview-contain/after-demo-square-source-css-viewport-1247x736.png` at `1247 × 736`, device scale factor `1`.
+- Same-size full comparison: `docs/qa/images/lyn-004-r7-avatar-preview-contain/comparison-source-implementation-matched-1247x736.png`.
+- Same-region focused comparison: `docs/qa/images/lyn-004-r7-avatar-preview-contain/comparison-source-implementation-matched-focused.png`.
+- Before/after comparison: `docs/qa/images/lyn-004-r7-avatar-preview-contain/comparison-before-after-1440x900.png`.
+- State: local Demo-equivalent Agent build workspace, avatar tab, Motherland candidate pending confirmation. No real generation, credential, account storage, Cookie, request body, production data, or external API was read or used.
+
+## Findings
+
+- No actionable P0, P1, or P2 findings remain.
+- The candidate image uses a fixed responsive viewport slot and `object-fit: contain`; the source crop that removes the top, chin, shoulders, or background edges is no longer possible in this preview.
+- The neutral letterbox surface is `bg-slate-950/40`, derived from the existing slate overlay family. No gradient, pattern, new asset, or competing CTA treatment was introduced.
+- The candidate card and footer are non-shrinking. The center row owns vertical scrolling, so the full image, status row, and bottom actions remain reachable at reduced height and equivalent 200% width.
+- Confirmed/current Agent avatars remain on the existing square `object-cover` rule. Generation URL/data, prompt, API/DTO, charging path, upload/save/delete/confirm state machine, copy, buttons, and other pages are unchanged.
+
+## Required fidelity surfaces
+
+- Fonts and typography: passed. Existing family, weights, sizes, line heights, wrapping, antialiasing, heading hierarchy, labels, and button copy are unchanged.
+- Spacing and layout rhythm: passed. Drawer width, header, prompt, border, radius, gaps, status row, and footer padding are unchanged. The only new geometry is the preview height `clamp(14rem, 52dvh, 40rem)` plus non-shrinking candidate/footer behavior.
+- Colors and visual tokens: passed. Letterbox uses the existing neutral slate surface; the lime primary CTA, amber pending label, borders, and dark drawer hierarchy retain their established roles.
+- Image quality and asset fidelity: passed. Portrait `1024 × 1536`, square `1254 × 1254`, and landscape `1536 × 1024` local non-sensitive images rendered centered and unstretched with computed `object-fit: contain`. No image asset was generated, added, replaced, or altered.
+- Copy and content: passed. Product chrome and dynamic candidate copy are unchanged; no task prompt leaked into permanent UI.
+- Icons and controls: passed. Existing Phosphor icons, close control, external-image link, generation, confirmation, cancel, and completion actions are unchanged.
+
+## Full-view and focused comparison evidence
+
+- The normalized `1247 × 736` full comparison places the downsampled `@2x` source and browser implementation in one raster. The source red box shows a fixed landscape crop; the implementation keeps the subject and full square source inside the same drawer without stretching.
+- The matched focused comparison uses identical `450 × 330` CSS regions, enlarged equally. It makes the reported difference explicit: the source loses the portrait perimeter, while the implementation shows the complete subject and uses neutral side letterbox where needed.
+- `after-demo-portrait-1440x900.png` and `after-demo-landscape-1440x900.png` use existing local non-sensitive images to verify both letterbox orientations. `after-demo-square-1440x900-final-scrolled.png` is the final committed Demo fixture state.
+
+## Responsive, interaction, and accessibility evidence
+
+- `1440 × 900`: preview `523 × 468`, natural source `1254 × 1254`, computed fit `contain`, no horizontal overflow; a `27px` center-row scroll exposes the full preview and status row while the footer remains visible.
+- `1280 × 800`: preview `523 × 416`, scroll viewport/content `603/678`, no horizontal overflow; the full preview and footer are simultaneously visible after the bounded `75px` scroll.
+- `720 × 900` equivalent 200% width: preview `523 × 468`, scroll viewport/content `703/730`, no horizontal overflow, footer bounds `827–900` remain visible.
+- `1280 × 600` narrow height: preview `523 × 312`, scroll viewport/content `403/574`; after `171px` scroll the preview bounds are `145–457`, fully above the fixed footer `527–600`.
+- Loading and error geometry retain the same responsive surface. Automated coverage sets portrait, square, and landscape natural dimensions and confirms no width/height distortion contract, `object-cover`, or candidate-card shrink.
+- Browser interactions passed for generate, regenerate, confirm, complete, cancel, and close. After confirmation, computed current-avatar fit remained `cover`.
+- The fresh in-app Browser console contained zero errors and zero warnings.
+
+## Comparison history
+
+1. Source/baseline — blocked.
+   - P1: the red-boxed candidate uses a fixed landscape crop that removes important portrait boundaries and prevents users from reviewing the generated composition before confirmation.
+2. First contain implementation — blocked.
+   - Fix: added the responsive neutral preview surface and `object-contain`; loading/failure geometry became stable.
+   - P2 discovered at `1280 × 800`: the candidate card still inherited flex shrinking, so the status row could be clipped instead of increasing scroll height.
+3. Final implementation — passed.
+   - Fix: made the candidate card and footer explicitly non-shrinking; the center row now reports real overflow and scrolls to every preview/status/action state.
+   - Post-fix evidence: matched full/focused comparisons, portrait/square/landscape captures, 1440/1280/720/600-height geometry, interaction checks, official-avatar `cover`, and clean console show no remaining P0/P1/P2 issue.
+
+## Implementation checklist
+
+- [x] Portrait, square, and landscape candidates use complete centered contain
+- [x] Neutral dark letterbox with existing border/radius hierarchy
+- [x] Stable loading/error geometry and no candidate overflow
+- [x] 1440, 1280, equivalent 200%, and narrow-height scroll coverage
+- [x] Fixed footer with cancel/generate/confirm/complete reachability
+- [x] Generate/regenerate/confirm/cancel/close behavior and formal avatar crop unchanged
+- [x] Same-input full and focused visual comparisons
+
+## Follow-up polish
+
+- None. Further drawer changes would exceed the intentionally narrow candidate-preview correction.
+
+final result: passed
+
+---
+
 # LYN-004-R5 Status Label Theme Design QA
 
 ## Comparison target

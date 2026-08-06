@@ -44,6 +44,42 @@ const STATE_COPY: Record<MediaGenerationState, string> = {
   failed: "生成失败",
 };
 
+export function AvatarCandidatePreview({
+  src,
+  failed,
+  onError,
+}: {
+  src: string;
+  failed: boolean;
+  onError: () => void;
+}) {
+  return (
+    <div
+      data-testid="avatar-candidate-preview"
+      className="flex h-[clamp(14rem,52dvh,40rem)] w-full items-center justify-center overflow-hidden bg-slate-950/40"
+    >
+      {failed ? (
+        <div className="grid h-full w-full place-items-center px-5 py-8 text-center">
+          <div>
+            <MagicWand size={28} className="mx-auto text-text-muted" />
+            <p className="mt-3 text-sm font-medium text-text-primary">候选图片加载失败</p>
+            <p className="mt-1 text-xs text-text-muted">请重新生成，或检查后端返回的图片地址。</p>
+          </div>
+        </div>
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          data-testid="avatar-candidate-image"
+          src={src}
+          alt="Motherland generated candidate"
+          onError={onError}
+          className="block h-full w-full object-contain"
+        />
+      )}
+    </div>
+  );
+}
+
 export function MotherlandAssetDrawer({
   kind,
   agent,
@@ -313,8 +349,14 @@ export function MotherlandAssetDrawer({
           )}
 
           {candidate && (
-            <div className="overflow-hidden rounded-xl border border-border bg-subtle">
-              {imageFailed ? (
+            <div className="shrink-0 overflow-hidden rounded-xl border border-border bg-subtle">
+              {kind === "avatar" ? (
+                <AvatarCandidatePreview
+                  src={candidatePreviewUrl}
+                  failed={imageFailed}
+                  onError={() => setImageFailed(true)}
+                />
+              ) : imageFailed ? (
                 <div className="grid min-h-[220px] place-items-center px-5 py-8 text-center">
                   <div>
                     <MagicWand size={28} className="mx-auto text-text-muted" />
@@ -360,7 +402,7 @@ export function MotherlandAssetDrawer({
           )}
         </div>
 
-        <footer className="relative z-10 flex flex-wrap justify-end gap-3 border-t border-border bg-surface px-5 py-4 shadow-[0_-8px_20px_rgba(15,23,42,0.06)]">
+        <footer className="relative z-10 flex shrink-0 flex-wrap justify-end gap-3 border-t border-border bg-surface px-5 py-4 shadow-[0_-8px_20px_rgba(15,23,42,0.06)]">
           <button type="button" onClick={onClose} disabled={busy} className="button-secondary">取消</button>
           {!isCharacterSheet && (
             <button type="button" onClick={() => void generate()} disabled={!prompt.trim() || busy} className="button-secondary">
