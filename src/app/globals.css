@@ -142,6 +142,10 @@ input[type="number"]:not(.control-compact):not(.control-large):not(.control-nati
     @apply pr-10;
   }
 
+  .area {
+    @apply min-h-24 w-full rounded-md border border-border bg-surface p-3 text-sm text-text-strong outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20;
+  }
+
   .control-compact {
     @apply h-8 min-h-8 px-3 text-xs;
   }
@@ -226,5 +230,37 @@ input[type="number"]:not(.control-compact):not(.control-large):not(.control-nati
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  button,
+  [role="button"],
+  [role="combobox"],
+  input:not([type="checkbox"]):not([type="radio"]),
+  select {
+    min-height: 2.75rem !important;
+  }
+
+  button[aria-label],
+  .icon-button {
+    min-width: 2.75rem !important;
+  }
+
+  div:has(> nav[aria-label="创建世界步骤"]) {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  nav[aria-label="创建世界步骤"] {
+    display: flex;
+    min-width: 0;
+    gap: 0.5rem;
+    overflow-x: auto;
+  }
+
+  nav[aria-label="创建世界步骤"] > button {
+    width: auto;
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 }

@@ -8,6 +8,7 @@ export type CapabilityId =
   | "assetCompleteness"
   | "clientAdapters"
   | "agentMemoryAnalytics"
+  | "livingWorlds"
   | "versionHistory"
   | "packageExport"
   | "avatarUpload"
@@ -33,6 +34,7 @@ const liveCapabilities: Record<CapabilityId, CapabilitySource> = {
   assetCompleteness: "derived",
   clientAdapters: "live",
   agentMemoryAnalytics: "live",
+  livingWorlds: "live",
   versionHistory: "live",
   packageExport: PACKAGE_EXPORT_DOWNLOAD_ENABLED ? "live" : "unavailable",
   avatarUpload: "live",
@@ -50,6 +52,7 @@ const demoCapabilities: Record<CapabilityId, CapabilitySource> = {
   guidedAgentCreation: "demo",
   clientAdapters: "demo",
   agentMemoryAnalytics: "demo",
+  livingWorlds: "unavailable",
   versionHistory: "demo",
   avatarUpload: "demo",
   motherlandAvatarGeneration: "demo",

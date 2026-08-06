@@ -89,11 +89,15 @@ export async function apiRequest<T>(
           : undefined;
     const businessCode =
       typeof businessError?.code === "string" ? businessError.code : undefined;
+    const retryAfter = response.headers.get("Retry-After");
+    const details = retryAfter
+      ? { ...businessError, retry_after: retryAfter }
+      : businessError;
     throw new ApiError(
       envelope.error?.message || businessMessage || `请求失败（${response.status}）`,
       response.status,
       envelope.error?.code || businessCode,
-      businessError,
+      details,
     );
   }
 

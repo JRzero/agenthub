@@ -60,4 +60,19 @@ describe("AgentHub HTTP client", () => {
       status: 409,
       details: expect.objectContaining({ current_draft_revision: 9 }),
     });
-  });});
+  });
+
+  it("preserves Retry-After for understandable rate-limit recovery", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({ success: false, data: { code: "WORLD_RATE_LIMIT", error: "slow down" } }),
+        { status: 429, headers: { "Retry-After": "7" } },
+      ),
+    );
+
+    await expect(apiRequest("/worlds/accept/schedule", { method: "POST" })).rejects.toMatchObject({
+      status: 429,
+      details: expect.objectContaining({ retry_after: "7" }),
+    });
+  });
+});

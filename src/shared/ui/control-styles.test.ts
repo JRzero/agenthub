@@ -47,4 +47,13 @@ describe("shared control styles", () => {
     expect(stylesheet).toContain("height: 2.25rem");
     expect(stylesheet).toContain("font-size: 0.875rem");
   });
+
+  it("keeps mobile action and field targets at least 44px", () => {
+    expect(stylesheet).toMatch(
+      /@media \(max-width: 1023px\)[\s\S]*?\[role="combobox"\][\s\S]*?min-height: 2\.75rem !important/,
+    );
+    expect(stylesheet).toMatch(
+      /button\[aria-label\],[\s\S]*?\.icon-button[\s\S]*?min-width: 2\.75rem !important/,
+    );
+  });
 });

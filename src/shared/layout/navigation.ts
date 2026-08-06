@@ -6,6 +6,7 @@ import {
   FolderOpen,
   Gear,
   House,
+  GlobeHemisphereWest,
   ShieldCheck,
   Stack,
   Toolbox,
@@ -21,6 +22,7 @@ export interface NavigationItem {
 export const workspaceNavigation: NavigationItem[] = [
   { label: "工作台", href: "/workbench", icon: House, capability: "future" },
   { label: "Agent 资产库", href: "/assets", icon: Stack, capability: "live" },
+  { label: "生活世界", href: "/worlds", icon: GlobeHemisphereWest, capability: "live" },
   { label: "资源库", href: "/resources", icon: Toolbox, capability: "future" },
   { label: "接入管理", href: "/clients", icon: FolderOpen, capability: "live" },
   { label: "应用运营", href: "/operations", icon: CirclesThreePlus, capability: "live" },
