@@ -1323,3 +1323,20 @@ final result: passed
 - Final findings: P0 = 0, P1 = 0, P2 = 0.
 
 final result: passed
+
+---
+
+# LYN-004-R16 Version Detail Session Info Dark Semantic Color Design QA
+
+- Scope: only the session-version notice inside the selected Version detail card.
+- Initial findings: P0 = 0, P1 = 1, P2 = 0. The issue was a light-theme info surface embedded in a dark card, not text size, spacing, or business semantics.
+- Fix: reused R15's `border-info`, `--color-status-info-bg`, and `--color-status-info-text` treatment without changing copy, geometry, logic, or controls.
+- Contrast: info text reaches 9.59:1; the semantic border reaches 7.68:1 against the surrounding surface.
+- Geometry: desktop remains 647.63 × 42px; narrow remains 619 × 42px. The 720px check has no horizontal overflow or clipping.
+- Interaction: 查看/收起版本内容 and Version Hash copy remain operational; export and publish were not executed.
+- Fresh Browser console: 0 error / 0 warning.
+- Comparisons: `docs/qa/images/lyn-004-r16/07-feedback-after-comparison.png`, `docs/qa/images/lyn-004-r16/08-before-after-focus-comparison.png`.
+- Detailed reports: `docs/qa/reports/lyn-004-r16-current-audit.md`, `docs/qa/reports/lyn-004-r16-design-qa.md`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
