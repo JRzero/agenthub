@@ -1307,3 +1307,21 @@ final result: passed
 - Final findings: P0 = 0, P1 = 0, P2 = 0.
 
 final result: passed
+
+---
+
+# LYN-004-R13 Follow-up Test Chat Contrast QA
+
+- Source visual truth: `/var/folders/rk/rlxc7qzd2xz55_fls_ftnyrm0000gn/T/codex-clipboard-6970cfad-39db-4b67-a179-a78bda6ee52c.png` (1688 × 912 px).
+- Browser implementation: `docs/qa/images/lyn-004-r13-followup/02-after-test-chat.png` (1269 × 714 px output from a 1280 × 720 CSS viewport; scrollbar gutter excluded).
+- State: Agent 测试评估 → 非持久模拟 → 边界挑战 → 已发送场景起始语。
+- Initial finding: P1. Lime `#D7FF2F` with white text measured 1.15:1.
+- Fix: advanced test chat, basic test chat, and Runtime Chat user-message bubbles now use the existing `text-canvas #08090A` foreground. No layout, avatar, content, API, session, or sending behavior changed.
+- Post-fix: computed contrast is 17.30:1; viewport has no horizontal overflow; fresh Browser console is 0 error / 0 warning.
+- Full comparison: `docs/qa/images/lyn-004-r13-followup/03-before-after-full.png`.
+- Focused source/after comparison: `docs/qa/images/lyn-004-r13-followup/04-feedback-after-focus.png`.
+- Required surfaces: typography, spacing, image/avatar treatment, and copy are unchanged; only the incorrect semantic foreground token changed.
+- Detailed report: `docs/qa/reports/lyn-004-r13-followup-test-chat.md`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed

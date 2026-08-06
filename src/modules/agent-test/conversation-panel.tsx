@@ -67,7 +67,7 @@ export function ConversationPanel({
         {messages.map((message) => (
           <div key={message.id} className={`flex items-start gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
             {message.role === "assistant" && <AgentAvatar agent={agent} size={34} className="rounded-full" />}
-            <div className={`max-w-[78%] rounded-xl px-4 py-3 text-sm leading-6 ${message.role === "user" ? "bg-primary text-white" : "border border-border bg-surface text-text-strong"}`}>
+            <div className={`max-w-[78%] rounded-xl px-4 py-3 text-sm leading-6 ${message.role === "user" ? "bg-primary text-canvas" : "border border-border bg-surface text-text-strong"}`}>
               <p className="whitespace-pre-wrap">{message.content}</p>
               {message.role === "assistant" && (
                 <span className="mt-2 block text-[11px] text-text-muted">
