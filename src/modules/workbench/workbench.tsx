@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, CaretLeft, CaretRight, Clock, Cpu, Plus } from "@phosphor-icons/react";
 import { useAgents } from "@/modules/agents/queries";
@@ -11,8 +11,16 @@ import { AgentArtwork, AgentAvatar } from "@/modules/agents/agent-avatar";
 import { assetHref } from "@/modules/agent-assets/library-model";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 import { countAgentLifecycles, deriveWorkbenchTasks, orderWorkbenchAgents, readiness, selectWorkbenchStage } from "./model";
+import motionStyles from "./workbench-transition.module.css";
+import { useWorkbenchAgentTransition, type WorkbenchTransitionDirection, type WorkbenchTransitionPhase } from "./workbench-transition";
 
 const lifecycleOrder: AgentLifecycleState[] = ["published", "draft", "creating", "unpublished", "archived"];
+
+function motionClass(phase: WorkbenchTransitionPhase, direction: WorkbenchTransitionDirection): string {
+  if (phase === "exit") return direction < 0 ? motionStyles.exitPrevious : motionStyles.exitNext;
+  if (phase === "enter") return direction < 0 ? motionStyles.enterPrevious : motionStyles.enterNext;
+  return "";
+}
 
 function continueHref(agent: Agent): string {
   return agent.creation_completed === false ? assetHref(agent) : `/assets/${agent.id}/build`;
@@ -28,22 +36,14 @@ export function Workbench() {
   const router = useRouter();
   const agents = useMemo(() => query.data || [], [query.data]);
   const orderedAgents = useMemo(() => orderWorkbenchAgents(agents), [agents]);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!orderedAgents.length) {
-      setSelectedId(null);
-      return;
-    }
-    if (!orderedAgents.some((agent) => agent.id === selectedId)) setSelectedId(orderedAgents[0].id);
-  }, [orderedAgents, selectedId]);
-
-  const stage = useMemo(() => selectWorkbenchStage(orderedAgents, selectedId), [orderedAgents, selectedId]);
-  const selectedIndex = stage.index;
+  const orderedAgentIds = useMemo(() => orderedAgents.map((agent) => agent.id), [orderedAgents]);
+  const transition = useWorkbenchAgentTransition(orderedAgentIds);
+  const stage = useMemo(() => selectWorkbenchStage(orderedAgents, transition.displayedId), [orderedAgents, transition.displayedId]);
   const focusAgent = stage.focus;
   const recentAgents = useMemo(() => [...agents].sort((left, right) => (Date.parse(right.updated_at || "") || 0) - (Date.parse(left.updated_at || "") || 0)).slice(0, 3), [agents]);
   const tasks = useMemo(() => deriveWorkbenchTasks(agents), [agents]);
   const focusTask = focusAgent ? tasks.find((task) => task.agentId === focusAgent.id) : undefined;
+  const stableStageHeight = tasks.length > 0 ? 522 : 460;
   const lifecycleCounts = useMemo(() => {
     const counts = countAgentLifecycles(agents);
     return lifecycleOrder.map((state) => ({
@@ -52,12 +52,6 @@ export function Workbench() {
     count: counts[state],
   })).filter((item) => item.count > 0 || ["published", "draft", "creating"].includes(item.state));
   }, [agents]);
-
-  const selectRelative = (offset: number) => {
-    if (orderedAgents.length < 2) return;
-    const nextIndex = (selectedIndex + offset + orderedAgents.length) % orderedAgents.length;
-    setSelectedId(orderedAgents[nextIndex].id);
-  };
 
   if (query.isLoading) return <LoadingState label="正在加载工作台…" />;
   if (query.isError) return <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />;
@@ -70,20 +64,21 @@ export function Workbench() {
       </header>
 
       {focusAgent ? <>
-        <section aria-label="Agent 舞台" className="grid gap-4 min-[1180px]:grid-cols-[minmax(0,1fr)_280px]">
-          <div data-testid="workbench-agent-stage" className="panel relative min-h-[460px] overflow-hidden px-4 py-5 sm:px-6">
+        <section aria-label="Agent 舞台" className="grid gap-4 min-[1180px]:grid-cols-[minmax(0,1fr)_280px]" data-transition-phase={transition.phase} data-transition-direction={transition.direction < 0 ? "previous" : "next"}>
+          <div data-testid="workbench-agent-stage" className="panel relative overflow-hidden px-4 py-5 sm:px-6" style={{ minHeight: stableStageHeight }}>
             {orderedAgents.length > 1 && <>
-              <button type="button" aria-label="上一个 Agent" onClick={() => selectRelative(-1)} className="absolute left-3 top-1/2 z-20 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface/90 text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><CaretLeft size={20} /></button>
-              <button type="button" aria-label="下一个 Agent" onClick={() => selectRelative(1)} className="absolute right-3 top-1/2 z-20 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface/90 text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><CaretRight size={20} /></button>
+              <button type="button" aria-label="上一个 Agent" onClick={() => transition.requestRelative(-1)} className="absolute left-3 top-1/2 z-20 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface/90 text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><CaretLeft size={20} /></button>
+              <button type="button" aria-label="下一个 Agent" onClick={() => transition.requestRelative(1)} className="absolute right-3 top-1/2 z-20 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface/90 text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><CaretRight size={20} /></button>
             </>}
-            <div className={`mx-auto grid min-h-[420px] max-w-[900px] items-end justify-center gap-3 ${orderedAgents.length === 1 ? "grid-cols-[minmax(260px,360px)]" : orderedAgents.length === 2 ? "grid-cols-[minmax(180px,270px)_minmax(270px,360px)]" : "grid-cols-[minmax(150px,0.78fr)_minmax(270px,1.08fr)_minmax(150px,0.78fr)]"}`}>
-              {stage.previous && <StageSideCard agent={stage.previous} onSelect={setSelectedId} />}
+            <div className={`${motionStyles.motionLayer} ${motionClass(transition.phase, transition.direction)} mx-auto grid min-h-[420px] max-w-[900px] items-end justify-center gap-3 ${orderedAgents.length === 1 ? "grid-cols-[minmax(260px,360px)]" : orderedAgents.length === 2 ? "grid-cols-[minmax(180px,270px)_minmax(270px,360px)]" : "grid-cols-[minmax(150px,0.78fr)_minmax(270px,1.08fr)_minmax(150px,0.78fr)]"}`}>
+              {stage.previous && <StageSideCard agent={stage.previous} onSelect={(id) => transition.request(id, -1)} />}
               <StageFocusCard agent={focusAgent} />
-              {stage.next && <StageSideCard agent={stage.next} onSelect={setSelectedId} />}
+              {stage.next && <StageSideCard agent={stage.next} onSelect={(id) => transition.request(id, 1)} />}
             </div>
           </div>
 
-          <aside className="panel flex min-h-[460px] flex-col p-5" aria-label="当前 Agent 详情" data-testid="workbench-agent-detail">
+          <aside className="panel overflow-hidden p-5" aria-label="当前 Agent 详情" data-testid="workbench-agent-detail" style={{ minHeight: stableStageHeight }}>
+            <div className={`${motionStyles.motionLayer} ${motionClass(transition.phase, transition.direction)} flex h-full min-h-0 flex-col`}>
             <div className="flex items-center justify-between gap-3"><span className={`status-badge ${resolveAgentLifecycle(focusAgent).badgeClassName}`}>{resolveAgentLifecycle(focusAgent).label}</span><span className="text-xs text-text-muted">{focusAgent.current_version_id ? `v${focusAgent.version}` : "尚未发布版本"}</span></div>
             <h2 className="mt-5 truncate text-xl font-semibold" title={focusAgent.name}>{focusAgent.name}</h2>
             <p className="mt-2 line-clamp-3 min-h-[3.75rem] text-sm leading-5 text-text-secondary">{focusAgent.description || focusAgent.tagline || "暂无描述，进入工作区完善 Agent。"}</p>
@@ -95,6 +90,7 @@ export function Workbench() {
             </dl>
             {focusTask && <div className="mt-4 rounded-lg bg-subtle p-3"><p className="text-[11px] font-medium uppercase tracking-[0.12em] text-text-muted">下一步</p><p className="mt-1.5 text-sm font-medium">{focusTask.title}</p><Link href={focusTask.href} className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">{focusTask.action}<ArrowRight size={13} /></Link></div>}
             <div className="mt-auto grid grid-cols-[1fr_auto] gap-2 pt-5"><Link href={continueHref(focusAgent)} className="button-primary">打开工作区<ArrowRight size={16} /></Link><Link href={`/assets/${focusAgent.id}/test`} className="button-secondary">测试</Link></div>
+            </div>
           </aside>
         </section>
 

@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const source = readFileSync(join(process.cwd(), "src/modules/workbench/workbench.tsx"), "utf8");
+const transitionStyles = readFileSync(join(process.cwd(), "src/modules/workbench/workbench-transition.module.css"), "utf8");
 
 describe("workbench V1 composition", () => {
   it("uses an Agent stage, honest summary, and recent continuation backed by Agent data", () => {
@@ -12,7 +13,7 @@ describe("workbench V1 composition", () => {
     expect(source).toContain("最近继续");
     expect(source).toContain("deriveWorkbenchTasks(agents)");
     expect(source).toContain("countAgentLifecycles(agents)");
-    expect(source).toContain("selectWorkbenchStage(orderedAgents, selectedId)");
+    expect(source).toContain("selectWorkbenchStage(orderedAgents, transition.displayedId)");
     expect(source).toContain('data-testid="workbench-agent-hero"');
     expect(source).toContain("<StageFocusCard agent={focusAgent}");
     expect(source).toContain("<AgentArtwork agent={agent}");
@@ -26,6 +27,26 @@ describe("workbench V1 composition", () => {
     expect(source).toContain("orderedAgents.length === 2");
     expect(source).not.toContain("DEMO_AGENTS");
     expect(source).not.toContain("fake");
+  });
+
+  it("uses a two-layer directional transition without animating layout properties", () => {
+    expect(source).toContain("useWorkbenchAgentTransition(orderedAgentIds)");
+    expect(source).toContain("data-transition-phase={transition.phase}");
+    expect(source).toContain("transition.requestRelative(-1)");
+    expect(source).toContain("transition.requestRelative(1)");
+    expect(transitionStyles).toContain("70ms ease-in");
+    expect(transitionStyles).toContain("210ms ease-out");
+    expect(transitionStyles).toContain("transform: translateX");
+    expect(transitionStyles).toContain("opacity:");
+    expect(transitionStyles).not.toMatch(/animation[^;]*(width|height|top|left)/);
+  });
+
+  it("keeps stage geometry stable and removes displacement for reduced motion", () => {
+    expect(source).toContain("const stableStageHeight = tasks.length > 0 ? 522 : 460");
+    expect(source.match(/minHeight: stableStageHeight/g)).toHaveLength(2);
+    expect(transitionStyles).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(transitionStyles).toContain("animation-duration: 0.01ms");
+    expect(transitionStyles).toContain("transform: none");
   });
 
   it("does not fabricate analytics or revenue metrics", () => {

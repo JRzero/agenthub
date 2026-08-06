@@ -1,0 +1,49 @@
+.motionLayer {
+  will-change: transform, opacity;
+}
+
+.exitPrevious {
+  animation: workbench-exit-previous 70ms ease-in both;
+}
+
+.exitNext {
+  animation: workbench-exit-next 70ms ease-in both;
+}
+
+.enterPrevious {
+  animation: workbench-enter-previous 210ms ease-out both;
+}
+
+.enterNext {
+  animation: workbench-enter-next 210ms ease-out both;
+}
+
+@keyframes workbench-exit-previous {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(14px); }
+}
+
+@keyframes workbench-exit-next {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(-14px); }
+}
+
+@keyframes workbench-enter-previous {
+  from { opacity: 0; transform: translateX(-18px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes workbench-enter-next {
+  from { opacity: 0; transform: translateX(18px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exitPrevious,
+  .exitNext,
+  .enterPrevious,
+  .enterNext {
+    animation-duration: 0.01ms;
+    transform: none;
+  }
+}

@@ -53,6 +53,44 @@ final result: passed
 
 ---
 
+# LYN-004-R11 Workbench Agent Transition Design QA
+
+## Target and evidence
+
+- Route/state: isolated Demo `/workbench`, existing two-Agent fixture, one configured image and one honest missing-image fallback.
+- Pre-fix audit: `docs/qa/reports/lyn-004-r11-current-audit.md`.
+- Detailed post-fix report: `docs/qa/reports/lyn-004-r11-workbench-transition.md`.
+- Source + after: `docs/qa/images/lyn-004-r11/20-source-after-reference-comparison.png`.
+- Before + after geometry: `docs/qa/images/lyn-004-r11/21-before-after-geometry-comparison.png`.
+- Start + middle + complete: `docs/qa/images/lyn-004-r11/22-transition-start-middle-complete.png`.
+
+## Findings and correction
+
+1. Initial P1: focus card and detail replaced in one frame with no directional transition. Fixed with a two-phase `exit → enter` state machine: 70ms ease-in exit and 210ms ease-out enter, 280ms total.
+2. Initial P1: stage row changed from 462px to 520.5px across the two existing Agents. Fixed by deriving the required stable geometry from existing task data; stage and detail now remain 522px throughout switching.
+3. Initial P2: rapid input had no explicit convergence model. Fixed with a latest-target ref plus reducer; every commit uses the last valid request.
+4. Motion is limited to two primary layers (stage content and detail content) and only transform/opacity. Static Agent ordering, card structure, CTA/routes, summaries, recent items, API/DTO/data, and artwork behavior are unchanged.
+5. `prefers-reduced-motion: reduce` compresses animation to 0.01ms and removes displacement while preserving selection and focus semantics.
+
+## Post-fix verification
+
+- Browser: 1487, 1440, 1280, and 720 CSS widths; no horizontal overflow or page console errors/warnings.
+- Directional computed evidence: `workbench-enter-next`, 0.21s, ease-out, non-default opacity/transform during entry; previous uses the mirrored class.
+- Rapid three-click sequence converged to the last valid Agent; stage and detail titles matched and controls retained focus.
+- Existing configured image stayed loaded; existing missing-image fallback remained intact without flash-white content.
+- Automated coverage: 1/2/3+ Agent cycling, last-input-wins, cancellation back to displayed Agent, timing, transform/opacity-only CSS, stable geometry, reduced motion, and existing Workbench IA/data honesty.
+- Evidence boundary: no third/failing-image Agent was fabricated for Browser QA; those structural paths are covered by existing model/state tests.
+
+## Final findings
+
+- P0: 0.
+- P1: 0.
+- P2: 0.
+
+final result: passed
+
+---
+
 # LYN-004-R9 Agent Studio Selected Icon Contrast Design QA
 
 ## Comparison target
