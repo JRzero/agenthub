@@ -29,12 +29,16 @@ describe("Agent Asset Library visual hierarchy", () => {
   });
 
   it("uses fixed card heights with readable one, two, three, and four-column breakpoints", () => {
+    const obsolete1536Breakpoint = ["min-[", "1536px]:grid-cols-4"].join("");
+    const obsolete1800Breakpoint = ["min-[", "1800px]:grid-cols-4"].join("");
+
     expect(source).toContain("h-[420px]");
     expect(source).toContain("grid-cols-1");
     expect(source).toContain("md:grid-cols-2");
     expect(source).toContain("min-[1180px]:grid-cols-3");
-    expect(source).toContain("min-[1536px]:grid-cols-4");
-    expect(source).not.toContain("min-[1800px]:grid-cols-4");
+    expect(source).toContain("min-[1440px]:grid-cols-4");
+    expect(source).not.toContain(obsolete1536Breakpoint);
+    expect(source).not.toContain(obsolete1800Breakpoint);
     expect(source).toContain("relative min-h-0 flex-1 overflow-hidden");
     expect(source).toContain("grid h-[92px] shrink-0 grid-cols-2");
     expect(source).toContain("group relative flex h-[420px] flex-col overflow-hidden");

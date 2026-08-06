@@ -98,7 +98,7 @@ function EmptyState({ hasAgents, onClear, onCreate }: { hasAgents: boolean; onCl
 }
 
 function CardView({ agents }: { agents: Agent[] }) {
-  return <section aria-label="Agent 资产卡片" className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 min-[1180px]:grid-cols-3 min-[1536px]:grid-cols-4">{agents.map((agent) => {
+  return <section aria-label="Agent 资产卡片" className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 min-[1180px]:grid-cols-3 min-[1440px]:grid-cols-4">{agents.map((agent) => {
     const presentation = statusPresentation(agent);
     return <article key={agent.id} data-testid="agent-image-card" className="group relative flex h-[420px] flex-col overflow-hidden rounded-xl border border-border bg-surface transition hover:-translate-y-0.5 hover:border-primary/55 hover:shadow-xl focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/35">
       <Link href={assetHref(agent)} aria-label={`查看 ${agent.name}`} className="absolute inset-0 z-10 rounded-xl focus-visible:outline-none" />

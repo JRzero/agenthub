@@ -53,6 +53,34 @@ final result: passed
 
 ---
 
+# LYN-004-R12 Agent Grid Live Regression Design QA
+
+- Source truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/25-agent-library-four-column-feedback.png` (2254×1590 px).
+- User Live feedback: `/var/folders/rk/rlxc7qzd2xz55_fls_ftnyrm0000gn/T/codex-clipboard-ab3f65b1-028d-4eb7-9d44-f185b23db90f.png` (2048×1024 px).
+- Same-state 1440 before/after: `docs/qa/images/lyn-004-r12/compare-before-after-1440.png`.
+- Focused grid comparison: `docs/qa/images/lyn-004-r12/compare-grid-focus-1440.png`.
+- Design/after combined comparison: `docs/qa/images/lyn-004-r12/compare-design-after.png`.
+- Browser implementation: `docs/qa/images/lyn-004-r12/03-after-assets-1440.png` at 1440×1000 CSS px, DPR 1, rendered output 1440×1000 px.
+- Detailed report: `docs/qa/reports/lyn-004-r12-design-qa.md`.
+
+## Finding and fix history
+
+1. Initial P1: 1440px rendered three columns because the production rule started at 1536px. Production CSS was present; this was a breakpoint miss, not a stale-build or style-priority failure.
+2. Fix: moved only the `/assets` four-column threshold to 1440px and updated its regression test.
+3. Post-fix: 1920/1680/1536/1440 render 4 columns at 404/344/308/284px; 1280 renders 3 columns at 330.66px; 720 renders 1 column at 661px. Gap remains 16px, card height remains 420px, and no viewport has page or grid overflow.
+
+## Required fidelity surfaces and interaction gate
+
+- Typography, spacing, semantic colors, image treatment, copy, icons, fixed card structure, list view, and page shell are unchanged and remain readable at the 284px minimum four-column card width.
+- Search, clear, status filtering, sorting, card/list switching, menu disclosure, and whole-card navigation passed.
+- Browser Console: 0 error, 0 warning.
+- Final R12 Live CSS contains the 1440 four-column utility and no obsolete 1536/1800 four-column utility.
+- P0: 0; P1: 0; P2: 0.
+
+final result: passed
+
+---
+
 # LYN-004-R11 Workbench Agent Transition Design QA
 
 ## Target and evidence
