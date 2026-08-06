@@ -985,7 +985,7 @@ function PublishDialog({
           "mt-4 rounded-md border px-4 py-3 text-xs leading-5 " +
           (blocked
             ? "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200"
-            : "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-200")
+            : "border-info bg-[var(--color-status-info-bg)] text-[var(--color-status-info-text)]")
         }
       >
         {blocked ? (
@@ -993,7 +993,7 @@ function PublishDialog({
             发布尚未执行，平台当前版本保持不变。请返回构建页处理兼容问题后再试。
           </>
         ) : (
-          <ul className="list-disc space-y-0.5 pl-4">
+          <ul className="list-disc space-y-0.5 pl-4 marker:text-info">
             <li>新 Session 和无 Session 请求使用新版本</li>
             <li>已有 Session 继续使用创建时绑定的版本</li>
             <li>已导出的本地运行包不会自动更新</li>
@@ -1267,10 +1267,10 @@ function VersionPill({
 }) {
   const color =
     tone === "green"
-      ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-200"
+      ? "border-success bg-[var(--color-status-success-bg)] text-[var(--color-status-success-text)]"
       : tone === "amber"
         ? "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200"
-        : "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-200";
+        : "border-info bg-[var(--color-status-info-bg)] text-[var(--color-status-info-text)]";
   return (
     <div
       className={"min-w-32 rounded-md border px-4 py-2 text-center " + color}

@@ -1307,3 +1307,19 @@ final result: passed
 - Final findings: P0 = 0, P1 = 0, P2 = 0.
 
 final result: passed
+
+---
+
+# LYN-004-R15 Publish Dialog Dark Semantic Color Design QA
+
+- Scope: `PublishDialog` current-version info card, new-version success card, and non-blocking Session behavior notice only.
+- Initial findings: P0 = 0, P1 = 2, P2 = 0. The issue was high-luminance light-theme surface area inside the dark modal, not insufficient type contrast or incorrect layout.
+- Fix: reused existing dark status info/success backgrounds and semantic foregrounds; info text reaches 9.59:1, success text 13.09:1, info boundary 7.68:1, success boundary 11.99:1, and bullets 7.33:1.
+- Layout fidelity: version cards remain 128 × 39px; Session notice remains 542 × 90px; modal remains 590 × 748px at the 1228 × 1454 source viewport.
+- Responsive/interaction: 720 × 900 has no horizontal overflow; version-note input, close, cancel, and active CTA passed. Publishing-disabled binding remains covered automatically because Browser QA intentionally did not click the final publish action.
+- Fresh Browser console: 0 error / 0 warning. No publish request or business-data write occurred.
+- Comparisons: `docs/qa/images/lyn-004-r15/05-feedback-after-comparison.png`, `docs/qa/images/lyn-004-r15/06-before-after-focus-comparison.png`.
+- Detailed reports: `docs/qa/reports/lyn-004-r15-current-audit.md`, `docs/qa/reports/lyn-004-r15-design-qa.md`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
