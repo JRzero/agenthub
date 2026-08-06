@@ -23,5 +23,5 @@
 ## 5. Gates and handoff
 
 - [x] 5.1 Run lint, typecheck, full tests, build, OpenSpec strict validation, and git diff check
-- [ ] 5.2 Update inventory and completion report with counts, route coverage, mappings, contrast, screenshots, Live URL, risks, and rollback
-- [ ] 5.3 Keep R6 local Live available, create a local commit, and record the final commit and tree without push, PR, deployment, or publication
+- [x] 5.2 Update inventory and completion report with counts, route coverage, mappings, contrast, screenshots, Live URL, risks, and rollback
+- [x] 5.3 Keep R6 local Live available, create a local commit, and record the final commit and tree without push, PR, deployment, or publication
