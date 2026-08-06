@@ -242,7 +242,7 @@ export function BuildPreview({
                   {messages.map((message) => (
                     <div
                       key={message.id}
-                      className={`rounded-xl px-4 py-3 text-sm leading-6 ${message.role === "user" ? "ml-8 bg-primary text-white" : "mr-8 bg-subtle text-text-strong"}`}
+                      className={`rounded-xl px-4 py-3 text-sm leading-6 ${message.role === "user" ? "ml-8 bg-primary text-canvas" : "mr-8 bg-subtle text-text-strong"}`}
                     >
                       <RuntimeMessageContent
                         content={
@@ -283,7 +283,7 @@ export function BuildPreview({
                 <button
                   type="submit"
                   aria-label="发送预览消息"
-                  className="rounded-md bg-primary p-2.5 text-white disabled:cursor-not-allowed disabled:opacity-40"
+                  className="rounded-md border border-transparent bg-primary p-2.5 text-canvas transition enabled:hover:brightness-105 enabled:active:brightness-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:border-text-muted disabled:bg-surface-elevated disabled:text-text-muted"
                   disabled={!input.trim() || interactionDisabled}
                 >
                   <PaperPlaneRight size={18} />

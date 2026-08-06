@@ -380,17 +380,17 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
           )}
         </div>
       ) : (
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg border border-amber-200 bg-amber-50/70 px-4 py-3.5 dark:border-amber-400/20 dark:bg-amber-400/10">
-          <span className="inline-flex items-center gap-2 font-semibold">
-            <span className="size-2.5 rounded-full bg-amber-500" />
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg border border-warning bg-surface-elevated px-4 py-3.5 text-text-strong">
+          <span className="inline-flex items-center gap-2 font-semibold text-text-strong">
+            <span className="size-2.5 rounded-full bg-warning" />
             当前草稿
           </span>
-          <span>初始草稿</span>
-          <span className="text-text-muted">
+          <span className="text-text-strong">初始草稿</span>
+          <span className="text-text-secondary">
             有 {recordCount(agent.config)} 项配置
           </span>
-          <Divider />
-          <span className="text-text-muted">Version Hash：发布后生成</span>
+          <span aria-hidden="true" className="hidden h-5 w-px bg-warning sm:block" />
+          <span className="text-text-secondary">Version Hash：发布后生成</span>
           <Link
             href={"/assets/" + agent.id + "/build"}
             className="button-secondary ml-auto"

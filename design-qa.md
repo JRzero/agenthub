@@ -1292,3 +1292,18 @@ final result: passed
 - Optional P3 only: if an approved licensed display font becomes available later, compare its uppercase proportions against the current Helvetica Neue overlay before changing the stack.
 
 final result: passed
+
+---
+
+# LYN-004-R13 Preview and Version Contrast Design QA
+
+- Scope: draft preview lime message/send states and Versions “当前草稿” row only.
+- Initial findings: P0 = 0, P1 = 4, P2 = 1. Root cause was incorrect foreground/background pairing, not type size or layout.
+- Preview fix: `primary #D7FF2F` + `canvas #08090A` reaches 17.30:1; disabled icon and boundary use `text-muted #898D94` on `surface-elevated #16181B`, both 5.34:1. Hover, pressed, and focus-visible remain distinct.
+- Versions fix: dark `surface-elevated` row with `warning #F5B82E` boundary/status/divider; main text reaches 16.55:1, secondary text 7.46:1, warning boundary 9.98:1.
+- Interaction regression: preview send, 查看草稿, publish-dialog open/cancel, keyboard focus, and existing navigation passed. Fresh Browser console: 0 error / 0 warning.
+- Full and focused comparisons: `docs/qa/images/lyn-004-r13/05-build-before-after-full.png`, `06-versions-before-after-full.png`, `07-build-feedback-after-focus.png`, `08-versions-feedback-after-focus.png`.
+- Detailed report: `docs/qa/reports/lyn-004-r13-design-qa.md`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
