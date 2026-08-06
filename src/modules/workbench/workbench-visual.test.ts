@@ -5,19 +5,25 @@ import { describe, expect, it } from "vitest";
 const source = readFileSync(join(process.cwd(), "src/modules/workbench/workbench.tsx"), "utf8");
 
 describe("workbench V1 composition", () => {
-  it("uses creation-first sections backed by Agent data", () => {
-    expect(source).toContain("继续创作");
-    expect(source).toContain("最近 Agent");
-    expect(source).toContain("待处理事项");
+  it("uses an Agent stage, honest summary, and recent continuation backed by Agent data", () => {
+    expect(source).toContain('aria-label="Agent 舞台"');
+    expect(source).toContain('aria-label="当前 Agent 详情"');
+    expect(source).toContain('aria-label="Agent 状态汇总"');
+    expect(source).toContain("最近继续");
     expect(source).toContain("deriveWorkbenchTasks(agents)");
+    expect(source).toContain("countAgentLifecycles(agents)");
+    expect(source).toContain("selectWorkbenchStage(orderedAgents, selectedId)");
     expect(source).toContain('data-testid="workbench-agent-hero"');
-    expect(source).toContain("<AgentArtwork agent={focusAgent}");
+    expect(source).toContain("<StageFocusCard agent={focusAgent}");
+    expect(source).toContain("<AgentArtwork agent={agent}");
   });
 
-  it("promotes an existing Agent image without adding fake visual data", () => {
-    expect(source).toContain("agent.config?.metadata?.avatar");
-    expect(source).toContain("before:bg-gradient-to-b before:from-transparent before:to-canvas before:opacity-90");
-    expect(source).not.toContain('bottom-0 border-t border-border bg-canvas/90');
+  it("supports adjacent Agent selection without adding fake visual data", () => {
+    expect(source).toContain('aria-label="上一个 Agent"');
+    expect(source).toContain('aria-label="下一个 Agent"');
+    expect(source).toContain("<StageSideCard agent={stage.previous}");
+    expect(source).toContain("<StageSideCard agent={stage.next}");
+    expect(source).toContain("orderedAgents.length === 2");
     expect(source).not.toContain("DEMO_AGENTS");
     expect(source).not.toContain("fake");
   });
@@ -27,5 +33,12 @@ describe("workbench V1 composition", () => {
     expect(source).not.toContain("活跃用户");
     expect(source).not.toContain("积分收入");
     expect(source).not.toContain("今日表现");
+  });
+
+  it("keeps empty, loading, and error states honest", () => {
+    expect(source).toContain('<LoadingState label="正在加载工作台…" />');
+    expect(source).toContain('<ErrorState message={query.error.message}');
+    expect(source).toContain("从第一个 Agent 开始");
+    expect(source).toContain("query.refetch()");
   });
 });

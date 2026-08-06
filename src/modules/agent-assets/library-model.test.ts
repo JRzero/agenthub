@@ -24,4 +24,19 @@ describe("asset library model", () => {
     expect(assetHref({ ...DEMO_AGENTS[0], id: 88, creation_completed: false })).toBe("/assets/create?agentId=88");
     expect(assetHref(DEMO_AGENTS[0])).toBe(`/assets/${DEMO_AGENTS[0].id}/overview`);
   });
+
+  it("keeps a large collection with long and missing optional fields stable", () => {
+    const agents = Array.from({ length: 24 }, (_, index) => ({
+      ...DEMO_AGENTS[index % DEMO_AGENTS.length],
+      id: 1000 + index,
+      name: index === 0 ? "超长 Agent 名称".repeat(20) : `Agent ${index}`,
+      description: index % 3 === 0 ? "" : "长描述".repeat(100),
+      model: index % 4 === 0 ? "" : DEMO_AGENTS[index % DEMO_AGENTS.length].model,
+      updated_at: index % 5 === 0 ? undefined : `2026-07-${String((index % 20) + 1).padStart(2, "0")}T10:24:00+08:00`,
+    }));
+    const result = filterAndSortAgents(agents, { search: "", status: "all", sort: "updated-desc" });
+    expect(result).toHaveLength(24);
+    expect(new Set(result.map((agent) => agent.id)).size).toBe(24);
+    expect(agents[0].name).toContain("超长 Agent 名称");
+  });
 });

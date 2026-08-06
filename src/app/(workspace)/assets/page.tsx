@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CalendarBlank, Cards, Cpu, List, MagnifyingGlass, Plus, Stack, X } from "@phosphor-icons/react";
+import { Cards, Clock, Cpu, List, MagnifyingGlass, Plus, Stack, X } from "@phosphor-icons/react";
 import { AssetActions } from "@/modules/agent-assets/asset-actions";
 import { AgentArtwork, AgentAvatar } from "@/modules/agents/agent-avatar";
 import { useAgents } from "@/modules/agents/queries";
@@ -57,7 +57,7 @@ export default function AssetLibraryPage() {
 
   return (
     <div className="mx-auto w-full max-w-[1760px] pb-8" data-testid="asset-library">
-      <header className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
+      <header className="flex flex-wrap items-end justify-between gap-4 pb-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Agent</h1>
           <p className="mt-1.5 text-sm text-text-secondary">管理你的角色、能力与发布状态</p>
@@ -65,7 +65,7 @@ export default function AssetLibraryPage() {
         <button type="button" className="button-primary" onClick={() => router.push("/assets/create")}><Plus size={17} />创建 Agent</button>
       </header>
 
-      <section aria-label="Agent 资产筛选" className="mt-5 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+      <section aria-label="Agent 资产筛选" className="flex flex-col gap-3 border-b border-border pb-2 xl:flex-row xl:items-end xl:justify-between">
         <div className="flex flex-wrap gap-1 border-b border-border" role="group" aria-label="按状态筛选">
           {(["all", "active", "draft", "creating", "private", "archived"] as AssetStatus[]).map((value) => {
             const labels: Record<AssetStatus, string> = { all: "全部", active: "已发布", draft: "草稿", creating: "创建中", private: "已下架", archived: "已归档" };
@@ -98,19 +98,24 @@ function EmptyState({ hasAgents, onClear, onCreate }: { hasAgents: boolean; onCl
 }
 
 function CardView({ agents }: { agents: Agent[] }) {
-  return <section aria-label="Agent 资产卡片" className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{agents.map((agent) => {
+  return <section aria-label="Agent 资产卡片" className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 min-[1180px]:grid-cols-3 min-[1800px]:grid-cols-4">{agents.map((agent) => {
     const presentation = statusPresentation(agent);
-    return <article key={agent.id} data-testid="agent-image-card" className="group relative flex h-[608px] flex-col overflow-hidden rounded-xl border border-border bg-surface transition hover:border-primary/55 md:h-[536px] xl:h-[496px] min-[1440px]:h-[536px] 2xl:h-[512px]">
-      <Link href={assetHref(agent)} aria-label={`查看 ${agent.name}`} className="absolute inset-0 z-0 rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
-      <div className="pointer-events-none relative z-[1] aspect-[4/3] min-h-[220px] shrink-0 overflow-hidden border-b border-border bg-surface-elevated"><AgentArtwork agent={agent} /></div>
-      <span className={`pointer-events-none absolute left-3 top-3 z-10 status-badge ${presentation.className}`}>{presentation.label}</span>
-      <div className="pointer-events-none relative z-[1] flex min-h-0 flex-1 flex-col p-4">
-        <div className="min-w-0 pr-7"><h2 className="truncate text-lg font-semibold" title={agent.name}>{agent.name}</h2><p className="mt-1 truncate text-xs text-text-muted" title={agent.code}>{agent.code || `agent-${agent.id}`}</p></div>
-        <p className="mt-3 line-clamp-2 min-h-10 text-sm leading-5 text-text-secondary" title={agent.description}>{agent.description || agent.tagline || "暂无描述，进入工作区完善 Agent。"}</p>
-        <div className="mt-auto grid shrink-0 grid-cols-2 gap-2 border-t border-border pt-4"><AssetMeta icon={<Cpu size={15} />} label="运行模型" value={agent.llm_model_name || agent.model || "尚未配置"} /><AssetMeta icon={<CalendarBlank size={15} />} label="最近更新" value={updatedLabel(agent.updated_at)} /></div>
+    return <article key={agent.id} data-testid="agent-image-card" className="group relative flex h-[420px] flex-col overflow-hidden rounded-xl border border-border bg-surface transition hover:-translate-y-0.5 hover:border-primary/55 hover:shadow-xl focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/35">
+      <Link href={assetHref(agent)} aria-label={`查看 ${agent.name}`} className="absolute inset-0 z-10 rounded-xl focus-visible:outline-none" />
+      <div className="pointer-events-none relative min-h-0 flex-1 overflow-hidden border-b border-border bg-surface-elevated">
+        <AgentArtwork agent={agent} className="transition duration-300 group-hover:scale-[1.02]" />
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-canvas via-canvas/90 to-transparent px-4 pb-4 pt-20">
+          <h2 className="truncate text-xl font-semibold" title={agent.name}>{agent.name}</h2>
+          <p className="mt-1 line-clamp-2 min-h-10 text-sm leading-5 text-text-secondary" title={agent.description}>{agent.description || agent.tagline || "暂无描述，进入工作区完善 Agent。"}</p>
+        </div>
       </div>
-      <div className="pointer-events-auto absolute right-2 top-2 z-10"><AssetActions agent={agent} /></div>
-      <footer className="pointer-events-none relative z-[1] flex shrink-0 items-center justify-between border-t border-border px-4 py-3"><span className="text-xs text-text-muted">{versionLabel(agent)}</span><span className="inline-flex items-center gap-1 text-sm font-medium text-primary">{agent.creation_completed === false ? "继续创建" : "打开工作区"}<ArrowRight size={15} /></span></footer>
+      <span className={`pointer-events-none absolute left-3 top-3 z-20 status-badge ${presentation.className}`}>{presentation.label}</span>
+      <div className="pointer-events-auto absolute right-2 top-2 z-30 rounded-md bg-canvas/65 backdrop-blur-sm"><AssetActions agent={agent} /></div>
+      <footer className="pointer-events-none grid h-[92px] shrink-0 grid-cols-2 content-center gap-x-4 gap-y-2 px-4 py-3">
+        <AssetMeta icon={<Cpu size={15} />} label="运行模型" value={agent.llm_model_name || agent.model || "尚未配置"} />
+        <AssetMeta icon={<Clock size={15} />} label="最近更新" value={updatedLabel(agent.updated_at)} />
+        <span className="col-span-2 flex min-w-0 items-center justify-between border-t border-border pt-2 text-xs text-text-muted"><span className="truncate">{versionLabel(agent)}</span><span className="font-medium text-primary">{agent.creation_completed === false ? "继续创建" : "打开工作区"}</span></span>
+      </footer>
     </article>;
   })}</section>;
 }
@@ -120,5 +125,5 @@ function ListView({ agents }: { agents: Agent[] }) {
 }
 
 function AssetMeta({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return <span className="min-w-0"><span className="flex items-center gap-1.5 text-[11px] text-text-muted">{icon}{label}</span><span className="mt-1 block truncate text-xs font-medium" title={value}>{value}</span></span>;
+  return <span className="flex min-w-0 items-center gap-1.5 text-xs text-text-muted">{icon}<span className="sr-only">{label}</span><span className="truncate" title={value}>{value}</span></span>;
 }

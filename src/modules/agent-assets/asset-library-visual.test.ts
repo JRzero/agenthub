@@ -24,24 +24,22 @@ describe("Agent Asset Library visual hierarchy", () => {
     expect(source).toContain('href={assetHref(agent)}');
     expect(source).toContain('data-testid="agent-image-card"');
     expect(source).toContain("<AgentArtwork agent={agent}");
-    expect(source).toContain("aspect-[4/3]");
+    expect(source).toContain("bg-gradient-to-t from-canvas via-canvas/90 to-transparent");
+    expect(source).toContain('className="truncate text-xl font-semibold"');
   });
 
-  it("uses fixed card heights and stable vertical partitions at every grid breakpoint", () => {
-    expect(source).toContain("h-[608px]");
-    expect(source).toContain("md:h-[536px]");
-    expect(source).toContain("xl:h-[496px]");
-    expect(source).toContain("min-[1440px]:h-[536px]");
-    expect(source).toContain("2xl:h-[512px]");
-    expect(source).not.toContain("min-h-[430px]");
-    expect(source).toContain("aspect-[4/3] min-h-[220px] shrink-0");
-    expect(source).toContain("flex min-h-0 flex-1 flex-col p-4");
-    expect(source).toContain("mt-auto grid shrink-0 grid-cols-2");
-    expect(source).toContain("flex shrink-0 items-center justify-between");
+  it("uses fixed compact card heights and four-column wide-screen density", () => {
+    expect(source).toContain("h-[420px]");
+    expect(source).toContain("md:grid-cols-2");
+    expect(source).toContain("min-[1180px]:grid-cols-3");
+    expect(source).toContain("min-[1800px]:grid-cols-4");
+    expect(source).toContain("relative min-h-0 flex-1 overflow-hidden");
+    expect(source).toContain("grid h-[92px] shrink-0 grid-cols-2");
+    expect(source).not.toContain("h-[608px]");
   });
 
   it("contains long and missing optional card content without changing the card frame", () => {
-    expect(source).toContain('className="truncate text-lg font-semibold"');
+    expect(source).toContain('className="truncate text-xl font-semibold"');
     expect(source).toContain("line-clamp-2 min-h-10");
     expect(source).toContain('agent.description || agent.tagline || "暂无描述，进入工作区完善 Agent。"');
     expect(source).toContain('agent.llm_model_name || agent.model || "尚未配置"');
@@ -66,5 +64,11 @@ describe("Agent Asset Library visual hierarchy", () => {
     expect(source).toContain('"还没有 Agent 资产"');
     expect(source).toContain("onClick={clearFilters}");
     expect(source).toContain('router.push("/assets/create")');
+  });
+
+  it("preserves explicit loading and error request states", () => {
+    expect(source).toContain('<LoadingState label="正在加载 Agent 资产…" />');
+    expect(source).toContain('<ErrorState message={query.error.message}');
+    expect(source).toContain("query.refetch()");
   });
 });

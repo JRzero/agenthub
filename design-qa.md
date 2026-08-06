@@ -72,6 +72,89 @@ final result: passed
 
 ---
 
+# LYN-004-R8 Workbench and Agent Library Reference Alignment Design QA
+
+## Comparison target
+
+- Workbench source visual truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/22-workbench-reference-final.png` (`1487 × 1058`).
+- Agent library source visual truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/23-agent-library-reference-final.png` (`2254 × 1590`).
+- Browser-rendered Workbench: `docs/qa/images/lyn-004-r8/03-after-workbench-1487x1058.png` (`1487 × 1058`).
+- Browser-rendered Agent library: `docs/qa/images/lyn-004-r8/04-after-assets-2254x1590.png` (`2254 × 1590`).
+- Full-view comparisons: `docs/qa/images/lyn-004-r8/13-compare-workbench-source-after-1487x1058.png` and `docs/qa/images/lyn-004-r8/14-compare-assets-source-after-2254x1590.png`.
+- Focused comparisons: `docs/qa/images/lyn-004-r8/15-compare-workbench-stage-focus.png` and `docs/qa/images/lyn-004-r8/16-compare-assets-card-focus.png`.
+- State: local Demo mode using only the repository's existing non-sensitive `DEMO_AGENTS`; Workbench selected Agent is 林月, Agent library uses all-status / most-recent / card view. No credentials, Cookie, request body, production data, paid generation, API mutation, or new sample Agent was used.
+- CSS viewports: Workbench `1487 × 1058`; Agent library `2254 × 1590`; responsive checks `1440 × 900`, `1280 × 900`, and `720 × 900` (the 200%-equivalent width for 1440).
+- Density normalization: Workbench source and implementation are direct equal-pixel captures. The in-app Browser returned the visible Agent-library raster as `2254 × 1300` for a confirmed `2254 × 1590` CSS viewport whose remaining lower region contained only canvas; QA extended that lower canvas to `1590` without scaling, cropping, or changing rendered content. Source and normalized implementation are therefore equal at `2254 × 1590`.
+
+## Findings
+
+- No actionable P0, P1, or P2 findings remain.
+- Workbench now follows the target's information hierarchy: image-led multi-Agent stage, visibly dominant current Agent, adjacent real Agent selection, a separate current-detail panel, lifecycle count summary, and compact recent continuation rows.
+- Agent library now follows the target's image-led hierarchy: status at top left, menu at top right, name and description in the image-bottom gradient, and only existing model/version/update metadata in the fixed lower partition.
+- Intentional data-bound difference: the sources illustrate three stage Agents and eight library Agents, but the repository fixture contains two. The implementation shows exactly those two, never duplicates a card to fill a slot, and uses the real missing-image fallback for 知识向导. This is an accepted product constraint, not a fidelity defect.
+- Intentional contract-bound difference: memory capacity, channel availability, notification counts, revenue, design-only versions, and fabricated timestamps from the sources are omitted. The current-detail panel uses only lifecycle, published version, readiness derived from current configuration fields, code, model, update time, and deterministic next-step data.
+
+## Required fidelity surfaces
+
+- Fonts and typography: passed. Existing AgentHub system font, display/body weights, `30px` page titles, compact `12–14px` metadata, truncation, two-line descriptions, and readable control labels preserve the target hierarchy. Long names/descriptions are clamped or truncated without changing card height.
+- Spacing and layout rhythm: passed. Workbench uses a `460px` stage/detail frame followed by a compact count rail and recent rows. Agent cards are a fixed `420px` with a flexible image region and `92px` metadata footer. Wide collection routes alone receive the `1760px` canvas; unrelated workspace routes retain `1510px`.
+- Colors and visual tokens: passed. Canvas, surfaces, borders, lime primary, semantic lifecycle colors, gradients, shadows, and focus rings use existing AgentHub tokens. Status meaning remains textual as well as colored.
+- Image quality and asset fidelity: passed. The existing 林月 image is sharp and consistently cropped by `AgentArtwork`; the existing missing-artwork state remains explicit. No new image, generated asset, fake screenshot crop, custom SVG, emoji, or CSS illustration was added.
+- Copy and content: passed. The title/purpose copy matches the selected direction while dynamic Agent names, descriptions, status, model, version, and time remain repository/API fields. Missing version/model/update/description states use existing neutral language.
+- Icons and controls: passed. Existing Phosphor icons are reused. Stage arrows, card/list controls, search, select, menu, create, open-workspace, test, and clear actions remain recognizable and have semantic labels.
+- Accessibility and behavior: passed for the tested scope. Stage arrows and side cards are real named buttons with visible focus styles; status uses text; card focus uses `focus-within`; menu stays above the whole-card link; primary controls meet the existing minimum control sizes. Screenshot evidence alone is not a full WCAG claim.
+
+## Full-view and focused comparison evidence
+
+- Workbench full comparison shows the same title → stage/current detail → status rail → recent continuation sequence. The source's third stage card and channel/memory facts are absent only because no corresponding real record/field exists.
+- Workbench focus comparison keeps the source and implementation stage in one raster. It confirms a taller dominant center card, subdued neighbor, bottom identity overlay, accessible stage arrows, and the same primary open-workspace emphasis.
+- Agent full comparison shows the same title, lifecycle tabs, discovery controls, image-led grid, top status/menu, bottom identity gradient, and compact metadata partition. Empty tracks remain empty when only two records exist.
+- Agent focus comparison keeps the card region legible. It confirms fixed equal heights, stable image/meta partitions, real missing-artwork treatment, and no code/description/footer overflow.
+
+## Responsive, state, interaction, and console evidence
+
+- `2254 × 1590`: computed four Agent grid columns; grid width `1704px`; `scrollWidth = clientWidth = 2254`.
+- `1440 × 900`: three Agent grid columns; `scrollWidth = clientWidth = 1440`. Evidence: `10-after-assets-1440x900.png` and `07-after-workbench-1440x900.png`.
+- `1280 × 900`: three Agent grid columns; `scrollWidth = clientWidth = 1280`. Evidence: `11-after-assets-1280x900.png` and `08-after-workbench-1280x900.png`.
+- `720 × 900` / 200%-equivalent width: one Agent grid column; both routes reflow vertically; `scrollWidth = clientWidth = 709` after the Browser scrollbar. Evidence: `12-after-assets-720x900-200pct.png` and `09-after-workbench-720x900-200pct.png`.
+- Workbench stage next-arrow changed the selected heading/details from 林月 to 知识向导; no duplicate record was rendered. Evidence: `05-interaction-workbench-switched-1487x1058.png`.
+- Agent search reduced the cards to one result; clear restored both. Card/list switching survived a reload through the existing preference key. The 林月 menu opened without card navigation, and clicking the whole-card link navigated to `/assets/32/overview`. Evidence: `06-interaction-assets-menu-1440x900.png`.
+- Empty/loading/error branches remain explicit through `LoadingState`, retryable `ErrorState`, initial empty, and filtered empty components. Automated coverage also exercises zero/one/two/three stage selection, long and missing fields, and a 24-record collection without adding product fixtures.
+- The final in-app Browser console contained zero errors and zero warnings.
+
+## Comparison history
+
+1. R7 baseline audit — blocked.
+   - P1: Workbench lacked adjacent Agent selection, lifecycle summary, and compact recent continuation; its horizontal hero did not match the selected stage hierarchy.
+   - P1: Agent library used tall management cards whose names/descriptions sat outside the image and whose wide-screen collection did not express the selected compact four-column grid.
+   - P2: both pages had looser vertical rhythm; current-detail and card metadata hierarchy differed materially; menu/link focus and responsive states required re-verification.
+   - Evidence: `docs/qa/reports/lyn-004-r8-current-audit.md`, `01-current-workbench-1487x1058.png`, and `02-current-assets-2254x1590-normalized.png`.
+2. First image-led implementation — blocked.
+   - Fixes: added real-data stage selection/detail/summary/recent continuation; moved asset identity into the image gradient; fixed cards to `420px`; preserved existing discovery and navigation behavior.
+   - Remaining P2: the shared `1510px` canvas made both target collection surfaces visibly narrower than the source at the largest viewport.
+3. Route-scoped wide canvas and final comparison — passed.
+   - Fix: Workbench and `/assets` alone receive a `1760px` maximum canvas; all other workspace routes keep the prior width.
+   - Post-fix evidence: equal-viewport full comparisons, focused comparisons, 2254/1440/1280/720 metrics, core interaction regression, automated edge coverage, and a clean console found no remaining actionable P0/P1/P2 issue.
+
+## Implementation checklist
+
+- [x] Real multi-Agent stage with honest fewer-than-three behavior and current detail
+- [x] Real lifecycle counts, deterministic next step, and recent continuation
+- [x] Image-led fixed-height Agent cards with top status/menu and bottom identity gradient
+- [x] Search, lifecycle counts, sorting, card/list preference, menu, and whole-card navigation preserved
+- [x] Missing image/description/model/version/update, long content, large collection, empty/loading/error coverage
+- [x] Four / three / three / one column policy and no horizontal overflow
+- [x] Same-input full and focused comparisons plus zero-error console
+
+## Follow-up polish
+
+- P3 accepted constraint: a denser live workspace will visually occupy all four tracks and both side positions; this QA intentionally leaves unused tracks empty rather than inventing Agent records.
+- P3 out of scope: source-only global search, notification/avatar chrome, memory/channel details, and different global navigation art direction remain unchanged because R8 forbids global navigation and unsupported data changes.
+
+final result: passed
+
+---
+
 # LYN-004-R5 Status Label Theme Design QA
 
 ## Comparison target

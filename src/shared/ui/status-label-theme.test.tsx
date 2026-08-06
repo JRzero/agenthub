@@ -68,7 +68,7 @@ describe("global status label theme", () => {
   });
 
   it("covers the complete inventory and rejects light or ad hoc label fills", () => {
-    expect(labelTags).toHaveLength(49);
+    expect(labelTags).toHaveLength(50);
 
     const forbiddenFill =
       /\bbg-(?:white|slate-100|emerald-50|green-50|blue-50|amber-50|orange-50|yellow-50|red-50|rose-50|cyan-50|sky-50|lime-50|success\/10|warning\/10|danger\/10|info\/10|primary-soft|surface(?:-elevated)?)\b/;
