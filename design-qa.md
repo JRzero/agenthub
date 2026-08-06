@@ -1,3 +1,58 @@
+# LYN-004-R10 Agent Asset Grid Four-Column Design QA
+
+## Comparison target
+
+- Source visual truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/25-agent-library-four-column-feedback.png` (2254 × 1590 px), cross-checked with `23-agent-library-reference-final.png`.
+- Browser implementation: `docs/qa/images/lyn-004-r10/r10-after-assets-2254.png` (2254 × 1590 px).
+- Full-view combined input: `docs/qa/images/lyn-004-r10/compare-source-after-2254.png` (4508 × 1590 px; source left, implementation right).
+- Focused breakpoint comparison: `docs/qa/images/lyn-004-r10/compare-before-after-grid-1536.png` (2212 × 810 px; R9 left, R10 right).
+- State: `/assets` card view in the repository's isolated non-sensitive Demo mode. The fixture contains two real Demo Agents, so the four-column contract is verified from four computed grid tracks and measured card width rather than duplicated or fabricated cards.
+- Density normalization: source and 2254 implementation were compared at identical 2254 × 1590 pixel dimensions and CSS viewport width. The focused R9/R10 crops use the same 1536 × 1200 CSS viewport and identical crop coordinates.
+
+## Findings
+
+- Initial P1: the R9 grid remained three columns at 1536 and 1680 CSS px, materially missing the approved four-card desktop density.
+- Fix: moved only the card-grid four-column threshold from 1800px to 1536px. No card content, typography, fixed height, artwork crop, page shell, data, list view, or interaction changed.
+- Post-fix: 1536, 1680, 1920, and 2254 compute four tracks; 1440 and 1280 compute three tracks; 720 computes one track. P0/P1/P2 = 0.
+
+## Required fidelity surfaces
+
+- Fonts and typography: passed. Existing type sizes, weights, line heights, clamps, and metadata hierarchy are unchanged; the 308px minimum desktop card remains readable.
+- Spacing and layout rhythm: passed. Gap remains 16px and card height remains 420px. Measured card widths are 308px at 1536, 344px at 1680, 404px at 1920, and 414px at 2254.
+- Colors and visual tokens: passed. No color or token changes were made.
+- Image quality and asset fidelity: passed. Existing repository artwork, contain/fallback behavior, gradients, and Phosphor icons are unchanged; no fake asset or replacement art was introduced.
+- Copy and content: passed. All current real/demo-derived names, descriptions, statuses, model/version/update fallbacks, and controls remain unchanged.
+
+## Responsive and interaction evidence
+
+| CSS viewport | Columns | Card width | Document/grid/card overflow |
+| ---: | ---: | ---: | --- |
+| 2254 | 4 | 414px | none |
+| 1920 | 4 | 404px | none |
+| 1680 | 4 | 344px | none |
+| 1536 | 4 | 308px | none |
+| 1440 | 3 | 384px | none |
+| 1280 | 3 | 330.66px | none |
+| 720 | 1 | 672px | none |
+
+- Search reduced the two-card fixture to the matching card.
+- Published-status filtering returned the single published Agent after clearing search.
+- Name sorting, list/card switching, persisted list preference after reload, menu isolation, and whole-card navigation to `/assets/32/overview` passed.
+- Browser Console: zero errors and zero warnings.
+
+## Comparison history
+
+1. R9 initial capture — blocked by one P1: four-column density did not start until 1800px; 1536 and 1680 remained three columns. Evidence: `r9-before-assets-1536.png`, `r9-before-assets-1680.png`, and `docs/qa/reports/lyn-004-r10-current-audit.md`.
+2. R10 post-fix capture — passed. The 1536 focused comparison visibly narrows each grid track without shrinking text or metadata, while measured overflow remains false at every required viewport. The 2254 combined input confirms the approved four-column track density while preserving honest fixture content.
+
+## Follow-up polish
+
+- None in R10 scope. The reference contains eight illustrative Agents, while QA intentionally uses the repository's two existing Demo Agents and does not fabricate additional records.
+
+final result: passed
+
+---
+
 # LYN-004-R9 Agent Studio Selected Icon Contrast Design QA
 
 ## Comparison target
