@@ -57,18 +57,18 @@ const summaryToneClass: Record<
   },
   relationship: {
     accent: "bg-indigo-600 dark:bg-indigo-400",
-    icon: "bg-indigo-50 text-indigo-700 dark:bg-indigo-400/10 dark:text-indigo-300",
-    emphasis: "text-indigo-700 dark:text-indigo-300",
+    icon: "bg-indigo-400/10 text-indigo-300 ring-1 ring-inset ring-indigo-400",
+    emphasis: "text-indigo-300",
   },
   emotion: {
     accent: "bg-cyan-600 dark:bg-cyan-400",
-    icon: "bg-cyan-50 text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300",
-    emphasis: "text-cyan-700 dark:text-cyan-300",
+    icon: "bg-cyan-400/10 text-cyan-300 ring-1 ring-inset ring-cyan-400",
+    emphasis: "text-cyan-300",
   },
   activity: {
     accent: "bg-amber-500 dark:bg-amber-400",
-    icon: "bg-amber-50 text-amber-700 dark:bg-amber-400/10 dark:text-amber-300",
-    emphasis: "text-amber-700 dark:text-amber-300",
+    icon: "bg-amber-400/10 text-amber-300 ring-1 ring-inset ring-amber-400",
+    emphasis: "text-amber-300",
   },
 };
 function formatRetrievedAt(timestamp: number): string {
@@ -261,12 +261,12 @@ function CoverageLane({
       : "bg-gradient-to-r from-cyan-600 to-teal-500 dark:from-cyan-400 dark:to-teal-400";
   const iconClass =
     tone === "relationship"
-      ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-400/10 dark:text-indigo-300"
-      : "bg-cyan-50 text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300";
+      ? "bg-indigo-400/10 text-indigo-300 ring-1 ring-inset ring-indigo-400"
+      : "bg-cyan-400/10 text-cyan-300 ring-1 ring-inset ring-cyan-400";
   const availablePill =
     tone === "relationship"
-      ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-400/10 dark:text-indigo-300"
-      : "bg-cyan-50 text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300";
+      ? "bg-indigo-400/10 text-indigo-300 ring-1 ring-inset ring-indigo-400"
+      : "bg-cyan-400/10 text-cyan-300 ring-1 ring-inset ring-cyan-400";
 
   return (
     <section
@@ -291,7 +291,7 @@ function CoverageLane({
           <span className={`rounded-full px-2.5 py-1 font-medium ${availablePill}`}>
             已获取 {available}
           </span>
-          <span className="rounded-full bg-slate-100 px-2.5 py-1 font-medium text-slate-600 dark:bg-slate-700/60 dark:text-slate-300">
+          <span className="rounded-full bg-slate-400/10 px-2.5 py-1 font-medium text-slate-300 ring-1 ring-inset ring-slate-500">
             暂未获取 {unavailable}
           </span>
         </div>
@@ -489,8 +489,8 @@ function ScorePanel({
       : "bg-cyan-600 dark:bg-cyan-400";
   const iconClass =
     tone === "relationship"
-      ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-400/10 dark:text-indigo-300"
-      : "bg-cyan-50 text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300";
+      ? "bg-indigo-400/10 text-indigo-300 ring-1 ring-inset ring-indigo-400"
+      : "bg-cyan-400/10 text-cyan-300 ring-1 ring-inset ring-cyan-400";
 
   return (
     <section className="panel relative overflow-hidden p-5">
@@ -887,7 +887,7 @@ export function MemoryOperationsWorkspace({ agentId }: { agentId: number }) {
       {stale && (
         <div
           role="status"
-          className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5 text-sm text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200"
+          className="flex items-start gap-3 rounded-xl border border-warning bg-[var(--color-status-warning-bg)] px-4 py-3.5 text-sm text-[var(--color-status-warning-text)]"
         >
           <WarningCircle size={19} weight="duotone" className="mt-0.5 shrink-0" />
           <span>
@@ -899,7 +899,7 @@ export function MemoryOperationsWorkspace({ agentId }: { agentId: number }) {
       {query.data.partial && !stale && (
         <div
           role="status"
-          className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5 text-sm text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200"
+          className="flex items-start gap-3 rounded-xl border border-warning bg-[var(--color-status-warning-bg)] px-4 py-3.5 text-sm text-[var(--color-status-warning-text)]"
         >
           <Info size={19} weight="duotone" className="mt-0.5 shrink-0" />
           <span>本次部分数据暂未获取，已获取的匿名聚合仍可正常查看。</span>

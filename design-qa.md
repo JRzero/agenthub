@@ -1340,3 +1340,20 @@ final result: passed
 - Final findings: P0 = 0, P1 = 0, P2 = 0.
 
 final result: passed
+
+---
+
+# LYN-004-R17 Memory Page Dark Semantic Color Design QA
+
+- Scope: confirmed partial/stale notice, relationship/emotion/activity channel icon surfaces, availability pills, and summary emphasis on the Agent memory page only.
+- Initial findings: P0 = 0, P1 = 1, P2 = 1. The large partial-data notice and repeated light channel fills were readable in isolation but visually broke the dark operational hierarchy.
+- Fix: warning feedback reuses the R15/R16 dark warning surface; channel treatments preserve indigo/cyan/amber/slate meaning with 10% dark tints, high-contrast foregrounds, and explicit semantic rings.
+- Contrast: foregrounds range from 8.41:1 to 11.64:1; boundaries range from 3.98:1 to 11.33:1.
+- Geometry: desktop notice remains 1133 × 51px and narrow notice remains 661 × 51px. The 720px viewport has no horizontal overflow.
+- Interaction: details disclosure and Agent Overview/Memory navigation passed. No business-write control was activated. Fresh Browser console: 0 error / 0 warning.
+- Comparisons: `docs/qa/images/lyn-004-r17/07-before-after-partial-comparison.png`, `docs/qa/images/lyn-004-r17/08-before-after-focus-comparison.png`.
+- Reports: `docs/qa/reports/lyn-004-r17-current-audit.md`, `docs/qa/reports/lyn-004-r17-design-qa.md`.
+- Evidence boundary: isolated Demo was used because unchanged Live `/assets` returns HTTP 404; Live has no fixture fallback. Unreproduced error-state icon styling remains unchanged.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
