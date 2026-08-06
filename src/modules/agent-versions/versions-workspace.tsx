@@ -616,7 +616,7 @@ function VersionHistory({
                   (current
                     ? "status-success"
                     : version.availability === "revoked"
-                      ? "bg-rose-50 text-rose-700 dark:bg-rose-400/10 dark:text-rose-300"
+                      ? "status-danger"
                       : "status-neutral")
                 }
               >

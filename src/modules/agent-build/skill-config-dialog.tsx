@@ -301,7 +301,7 @@ export function SkillConfigDialog({
                     </p>
                   )}
                 </div>
-                <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${apiKeyConfigured ? "bg-success/10 text-success" : "bg-subtle text-text-muted"}`}>
+                <span className={`status-badge shrink-0 ${apiKeyConfigured ? "status-success" : "status-neutral"}`}>
                   {apiKeyConfigured ? "已配置" : "未配置"}
                 </span>
               </div>

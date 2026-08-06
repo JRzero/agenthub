@@ -17,10 +17,21 @@ const expectedTokens = {
   "--color-warning": "#f5b82e",
   "--color-danger": "#f05f5f",
   "--color-info": "#65a7ff",
-  "--color-status-positive-bg": "#141a0c",
-  "--color-status-positive-border": "#536a23",
-  "--color-status-draft-bg": "#1c160b",
-  "--color-status-draft-border": "#806222",
+  "--color-status-success-bg": "#141a0c",
+  "--color-status-success-border": "#536a23",
+  "--color-status-success-text": "#b7ef54",
+  "--color-status-warning-bg": "#1c160b",
+  "--color-status-warning-border": "#806222",
+  "--color-status-warning-text": "#f5c451",
+  "--color-status-info-bg": "#0d1722",
+  "--color-status-info-border": "#30577f",
+  "--color-status-info-text": "#8fc0ff",
+  "--color-status-danger-bg": "#211012",
+  "--color-status-danger-border": "#7d3438",
+  "--color-status-danger-text": "#ff9a9a",
+  "--color-status-neutral-bg": "#15181c",
+  "--color-status-neutral-border": "#3b4149",
+  "--color-status-neutral-text": "#c6c9ce",
 } as const;
 
 describe("AgentHub V1 semantic theme", () => {
@@ -51,19 +62,21 @@ describe("AgentHub V1 semantic theme", () => {
     surfaces.forEach((surface) => expect(contrastRatio(muted, surface)).toBeGreaterThanOrEqual(4.5));
   });
 
-  it("keeps scoped live, saved, and draft labels above WCAG AA text contrast", () => {
-    expect(
-      contrastRatio(
-        expectedTokens["--color-success"],
-        expectedTokens["--color-status-positive-bg"],
-      ),
-    ).toBeGreaterThanOrEqual(4.5);
-    expect(
-      contrastRatio(
-        expectedTokens["--color-warning"],
-        expectedTokens["--color-status-draft-bg"],
-      ),
-    ).toBeGreaterThanOrEqual(4.5);
+  it.each(["success", "warning", "info", "danger", "neutral"] as const)(
+    "keeps the %s label above WCAG AA text contrast",
+    (variant) => {
+      expect(
+        contrastRatio(
+          expectedTokens[`--color-status-${variant}-text`],
+          expectedTokens[`--color-status-${variant}-bg`],
+        ),
+      ).toBeGreaterThanOrEqual(4.5);
+    },
+  );
+
+  it("does not retain the R5 two-variant token names", () => {
+    expect(stylesheet).not.toContain("--color-status-positive-");
+    expect(stylesheet).not.toContain("--color-status-draft-");
   });
 });
 

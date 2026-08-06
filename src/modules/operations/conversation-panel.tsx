@@ -15,10 +15,10 @@ export function ConversationPanel({ row, messages, loading, sending, onVerify, o
       <header className="border-b border-border px-4 py-3">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="font-semibold">{sessionLabel(row)}{row.session.is_group && <span className="ml-2 rounded bg-primary-soft px-1.5 py-0.5 text-[11px] text-primary">群聊</span>}</h2>
+            <h2 className="font-semibold">{sessionLabel(row)}{row.session.is_group && <span className="status-badge status-neutral ml-2">群聊</span>}</h2>
             <p className="mt-1 text-xs text-text-muted">{humanLabel(row)} · {row.agent.name} · {row.session.source}</p>
           </div>
-          <button type="button" onClick={onVerify} className={`min-h-8 rounded-md px-3 text-xs font-medium ${row.session.verified ? "status-success" : "border border-border text-text-muted hover:bg-subtle"}`}>{row.session.verified ? <span className="flex items-center gap-1"><CheckCircle size={15} weight="fill" />已认证</span> : "标记已认证"}</button>
+          <button type="button" onClick={onVerify} className={`min-h-8 rounded-md px-3 text-xs font-medium ${row.session.verified ? "border border-success/25 bg-success/10 text-success" : "border border-border text-text-muted hover:bg-subtle"}`}>{row.session.verified ? <span className="flex items-center gap-1"><CheckCircle size={15} weight="fill" />已认证</span> : "标记已认证"}</button>
         </div>
         <div className="mt-3 grid grid-cols-2 gap-3 rounded-lg bg-subtle px-3 py-2 text-xs sm:grid-cols-4"><span><b className="block text-text-muted">用户</b>{humanLabel(row)}</span><span><b className="block text-text-muted">应用端</b>{row.session.source}</span><span><b className="block text-text-muted">Agent</b>{row.agent.name}</span><span><b className="block text-text-muted">开始时间</b>{new Date(row.session.created_at).toLocaleString("zh-CN", { hour12: false })}</span></div>
       </header>

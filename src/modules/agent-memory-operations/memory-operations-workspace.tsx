@@ -427,7 +427,7 @@ function DistributionPanel({
           <h3 className="text-base font-semibold">{title}</h3>
           <p className="mt-1 text-xs leading-5 text-text-muted">{subtitle}</p>
         </div>
-        <span className="shrink-0 rounded-full bg-subtle px-2.5 py-1 text-xs text-text-muted">
+        <span className="status-badge status-neutral shrink-0">
           份记忆关系
         </span>
       </div>

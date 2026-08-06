@@ -41,7 +41,7 @@ export function Topbar({
           <p className="truncate text-sm font-medium text-text-strong">{workspaceName}</p>
           {switching && <p className="text-xs text-text-muted">正在切换工作空间…</p>}
         </div>
-        {demo && <span className="ml-3 rounded-md border border-warning/20 bg-warning/10 px-2 py-1 text-xs font-semibold text-warning">演示数据</span>}
+        {demo && <span className="status-badge status-warning ml-3">演示数据</span>}
         <button type="button" onClick={() => setInviteOpen(true)} className="icon-button ml-auto" aria-label="邀请工作空间成员" title="邀请成员">
           <UserPlus size={20} />
         </button>

@@ -133,7 +133,7 @@ function ExportRow({ title, description, available = false, onDownload }: { titl
       {available ? (
         <button type="button" onClick={onDownload} className="min-h-8 rounded border border-primary/50 px-3 text-xs font-medium text-primary hover:bg-primary-soft">下载</button>
       ) : (
-        <span className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-500">待接入</span>
+        <span className="status-badge status-neutral">待接入</span>
       )}
     </div>
   );

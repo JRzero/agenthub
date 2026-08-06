@@ -70,6 +70,60 @@ final result: passed
 
 ---
 
+# LYN-004-R6 Global Label Theme Design QA
+
+## Comparison target
+
+- Source visual truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/20-all-labels-theme-feedback.png`.
+- R5 Live baselines: `docs/qa/images/lyn-004-r6-global-label-theme/before-r5-assets-1429x650.png` and `before-r5-build-1512x744.png`.
+- R6 Live implementations: `after-r6-assets-1429x650.png`, `after-r6-build-1440x900.png`, `after-r6-build-matched-1440x655.png`, and `after-r6-assets-label-focused-528x272.png`.
+- Combined comparisons: `comparison-r5-r6-assets-1429x650.png`, `comparison-r5-r6-build-1440x655.png`, and `comparison-feedback-r6-label-focused-528x272.png`.
+- State: authenticated local Live at `http://127.0.0.1:3002`; no account, storage, Cookie, request-body, or credential inspection was performed.
+- Density: comparison pairs were normalized to identical pixel dimensions before judgment. The full assets pair is 2858 × 650, the build pair is 2880 × 655, and the focused feedback pair is 1056 × 272.
+
+## Findings
+
+- No remaining P0, P1, or P2 label-theme mismatch.
+- The first inventory pass found P1 light solid fills on shared success/warning labels and P2 ad hoc mint, blue, slate, rose, and semantic translucent pills outside the shared API.
+- The final comparisons show opaque dark low-saturation surfaces, one-pixel semantic inset borders, and high-contrast semantic text. Labels remain visually subordinate to the lime primary CTA.
+- Buttons, Tabs, filters, selectors, inputs, segmented controls, notifications, Toasts, Tooltips, progress indicators, and removable attachment chips retain their existing styling.
+- Current local Live data did not naturally expose a danger label. Danger fidelity is verified through the real revoked/failed/high-risk callsites, shared CSS/token assertions, and a 9.01:1 text contrast test rather than fabricated Live data.
+
+## Required fidelity surfaces
+
+- Fonts and typography: passed. Existing 12px medium label typography is preserved, with `line-height: 16px`, `max-width: 100%`, and `overflow-wrap: anywhere` for long copy. All five label variants exceed the 4.5:1 normal-text requirement.
+- Spacing and layout rhythm: passed. Existing padding, gap, radius, icon semantics, DOM placement, and page layout are unchanged. The migration is paint-only except for defensive max-width/wrapping.
+- Colors and visual tokens: passed. Success, warning, info, danger, and neutral each use a distinct dark opaque background, semantic border, and text token; no label uses a white, cream, light green, light blue, or light orange solid fill.
+- Image quality and asset fidelity: passed. No image, icon, or layout asset was changed. The focused comparison confirms that image-overlay labels remain legible without becoming a lime CTA.
+- Copy and content: passed. Status enums, business checks, copy, icon meaning, save/publish/sync/permission flows, API/DTO/data, and backend behavior are unchanged.
+
+## Full-view and focused comparison evidence
+
+- `comparison-r5-r6-assets-1429x650.png`: matching list/card state demonstrates image-overlay and dense list labels before/after.
+- `comparison-r5-r6-build-1440x655.png`: matching build state demonstrates the detail title bar and save/draft semantics while surrounding controls remain stable.
+- `comparison-feedback-r6-label-focused-528x272.png`: the supplied light-fill feedback crop is paired with the current dark ghost implementation at the same output size.
+
+## Route, responsive, interaction, and console evidence
+
+- 20 real routes were audited: `/workbench`, `/assets`, `/assets/905/overview`, `/assets/904/build`, `/assets/905/test`, `/assets/905/versions`, `/assets/905/distribution`, `/assets/905/memory`, `/assets/create`, `/resources`, `/clients`, `/clients/new`, `/operations`, `/distribution`, `/analytics`, `/governance`, `/governance/roles`, `/governance/safety`, `/revenue`, and `/settings`.
+- Every audited route rendered main content without an error boundary. Empty/loading/error feedback blocks were confirmed as non-label exclusions.
+- The current 1440-class R6 captures cover cards, image overlays, dense lists, and the detail header. The inherited R5 responsive evidence `docs/qa/images/lyn-004-r5-status-label-theme/after-live-build-1280x800.png`, `after-live-build-200pct-equivalent-720x900.png`, and `after-live-build-long-name-200pct-equivalent-720x900.png` remains geometrically applicable because R6 does not alter label padding, font size, radius, icon, or surrounding layout; R6 adds defensive wrapping. The controlled Chrome viewport API did not produce trustworthy new 1280/720 pixel dimensions, so no mislabeled R6 responsive screenshots were retained.
+- Fresh console sessions for the route sweep, assets comparison, and build comparison reported 0 errors and 0 warnings.
+
+## Comparison history
+
+1. Baseline comparison — blocked: P1 shared success/warning labels still rendered as light solid fills; P2 inline/ad hoc tags bypassed semantic tokens.
+2. Inventory migration — fixed: added five dark ghost variants, compatibility aliases, semantic remaps, and source-level non-label protections; migrated all 49 production label callsites.
+3. Final combined comparisons — passed: the supplied feedback mismatch and R5 light fills are removed, semantics remain distinguishable by text/icon meaning as well as color, and no actionable P0/P1/P2 issue remains.
+
+## Follow-up polish
+
+- P3 evidence limitation only: if exact post-R6 1280/720 screenshot artifacts are required beyond the inherited paint-only responsive proof, recapture them in a browser session whose viewport emulation capability reports the requested CSS dimensions.
+
+final result: passed
+
+---
+
 # Design QA: 工作空间侧栏方案 1
 
 ## 2026-07-28 静默全量导航

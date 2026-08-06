@@ -246,7 +246,7 @@ export function OperationsWorkspace() {
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-3xl font-bold tracking-tight">应用与渠道</h1>
           <SourceBadge source={demo ? "demo" : "live"} />
-          <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-subtle px-2.5 py-1 text-xs font-medium">
+          <span className="status-badge status-neutral">
             <DeviceMobile size={15} className="text-primary" />
             OyiiOyii
           </span>
@@ -273,7 +273,7 @@ function AgentSessionNavigator({ agents, users, sessions, selectedAgentId, selec
   return <aside className="grid min-h-0 grid-cols-[150px_130px_minmax(0,1fr)] border-r border-border bg-surface">
     <Column title="我的 Agent">{agents.length ? agents.map((agent) => <button key={agent.id} type="button" onClick={() => onAgent(agent.id)} className={`mb-1 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm ${selectedAgentId === agent.id ? "bg-primary-soft font-medium text-primary" : "hover:bg-subtle"}`}><Avatar label={agent.name} /><span className="min-w-0 flex-1 truncate">{agent.name}</span></button>) : <Empty label="暂无 Agent" />}</Column>
     <Column title="共享用户">{loadingUsers ? <Empty label="加载中…" /> : users.length ? users.map((user) => <button key={user.user_id} type="button" onClick={() => onUser(user.user_id)} className={`mb-1 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm ${selectedUserId === user.user_id ? "bg-primary-soft font-medium text-primary" : "hover:bg-subtle"}`}><Avatar label={user.display_name || user.username} /><span className="min-w-0 flex-1"><span className="block truncate">{user.display_name || user.username}</span><span className="text-[11px] text-text-muted">{user.session_count} 个会话</span></span></button>) : <Empty label={selectedAgentId ? "暂无共享用户" : "请先选择 Agent"} />}</Column>
-    <Column title="会话列表">{loadingSessions ? <Empty label="加载中…" /> : sessions.length ? sessions.map((row) => <button key={row.session.id} type="button" onClick={() => onSession(row)} className={`mb-1 w-full rounded-lg px-2 py-2 text-left text-sm ${selectedSessionId === row.session.id ? "bg-primary-soft font-medium text-primary" : "hover:bg-subtle"}`}><span className="flex items-center gap-1 truncate">{sessionLabel(row)}{row.session.is_group && <span className="rounded bg-primary-soft px-1 text-[10px] text-primary">群</span>}{row.session.verified && <span className="text-success">✓</span>}</span><span className="mt-1 block text-xs text-text-muted">{row.session.message_count} 条 · {row.session.status}</span></button>) : <Empty label={selectedUserId ? "暂无共享会话" : "请先选择用户"} />}</Column>
+    <Column title="会话列表">{loadingSessions ? <Empty label="加载中…" /> : sessions.length ? sessions.map((row) => <button key={row.session.id} type="button" onClick={() => onSession(row)} className={`mb-1 w-full rounded-lg px-2 py-2 text-left text-sm ${selectedSessionId === row.session.id ? "bg-primary-soft font-medium text-primary" : "hover:bg-subtle"}`}><span className="flex items-center gap-1 truncate">{sessionLabel(row)}{row.session.is_group && <span className="status-badge status-neutral">群</span>}{row.session.verified && <span className="text-success">✓</span>}</span><span className="mt-1 block text-xs text-text-muted">{row.session.message_count} 条 · {row.session.status}</span></button>) : <Empty label={selectedUserId ? "暂无共享会话" : "请先选择用户"} />}</Column>
   </aside>;
 }
 

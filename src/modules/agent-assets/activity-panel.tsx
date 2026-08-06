@@ -1,7 +1,7 @@
 import type { ActivityItem } from "./model";
 
 const toneClass = {
-  update: "bg-primary-soft text-primary",
+  update: "status-info",
   publish: "status-success",
   warning: "status-warning",
 };
@@ -15,7 +15,7 @@ export function ActivityPanel({ activities }: { activities: ActivityItem[] }) {
         {activities.map((activity) => (
           <div key={activity.id} className="grid min-h-11 grid-cols-[140px_64px_minmax(0,1fr)_100px] items-center gap-3 text-sm">
             <span className="truncate font-medium">{activity.actor}</span>
-            <span className={`w-fit rounded px-2 py-0.5 text-xs font-medium ${toneClass[activity.tone]}`}>{activity.action}</span>
+            <span className={`status-badge w-fit ${toneClass[activity.tone]}`}>{activity.action}</span>
             <span className="truncate text-text-muted">{activity.detail}</span>
             <span className="text-right text-xs text-text-muted">{activity.time}</span>
           </div>

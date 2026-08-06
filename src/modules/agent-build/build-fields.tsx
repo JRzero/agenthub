@@ -245,7 +245,7 @@ export function BasicSectionFields({
           <div className="rounded-xl border border-primary/30 bg-primary-soft/30 p-4">
             <div className="flex items-start justify-between gap-4">
               <div><strong>{selectedKnowledge.name}</strong><p className="mt-1 text-sm leading-6 text-text-muted">{selectedKnowledge.description || "已用于当前 Agent 的知识检索。"}</p></div>
-              <span className="rounded-full bg-success/10 px-2.5 py-1 text-xs font-medium text-success">已绑定</span>
+              <span className="status-badge status-success">已绑定</span>
             </div>
           </div>
         ) : (

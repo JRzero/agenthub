@@ -19,10 +19,21 @@
   --color-warning: #f5b82e;
   --color-danger: #f05f5f;
   --color-info: #65a7ff;
-  --color-status-positive-bg: #141a0c;
-  --color-status-positive-border: #536a23;
-  --color-status-draft-bg: #1c160b;
-  --color-status-draft-border: #806222;
+  --color-status-success-bg: #141a0c;
+  --color-status-success-border: #536a23;
+  --color-status-success-text: #b7ef54;
+  --color-status-warning-bg: #1c160b;
+  --color-status-warning-border: #806222;
+  --color-status-warning-text: #f5c451;
+  --color-status-info-bg: #0d1722;
+  --color-status-info-border: #30577f;
+  --color-status-info-text: #8fc0ff;
+  --color-status-danger-bg: #211012;
+  --color-status-danger-border: #7d3438;
+  --color-status-danger-text: #ff9a9a;
+  --color-status-neutral-bg: #15181c;
+  --color-status-neutral-border: #3b4149;
+  --color-status-neutral-text: #c6c9ce;
   color-scheme: dark;
 }
 
@@ -41,10 +52,21 @@
   --color-warning: #f5b82e;
   --color-danger: #f05f5f;
   --color-info: #65a7ff;
-  --color-status-positive-bg: #141a0c;
-  --color-status-positive-border: #536a23;
-  --color-status-draft-bg: #1c160b;
-  --color-status-draft-border: #806222;
+  --color-status-success-bg: #141a0c;
+  --color-status-success-border: #536a23;
+  --color-status-success-text: #b7ef54;
+  --color-status-warning-bg: #1c160b;
+  --color-status-warning-border: #806222;
+  --color-status-warning-text: #f5c451;
+  --color-status-info-bg: #0d1722;
+  --color-status-info-border: #30577f;
+  --color-status-info-text: #8fc0ff;
+  --color-status-danger-bg: #211012;
+  --color-status-danger-border: #7d3438;
+  --color-status-danger-text: #ff9a9a;
+  --color-status-neutral-bg: #15181c;
+  --color-status-neutral-border: #3b4149;
+  --color-status-neutral-text: #c6c9ce;
   color-scheme: dark;
 }
 
@@ -173,40 +195,41 @@ input[type="number"]:not(.control-compact):not(.control-large):not(.control-nati
   }
 
   .status-badge {
-    @apply inline-flex items-center gap-1.5 rounded px-2 py-1 text-xs font-medium;
+    @apply inline-flex max-w-full items-center gap-1.5 rounded px-2 py-1 text-xs font-medium leading-4;
+    overflow-wrap: anywhere;
   }
 
-  .status-success {
-    @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-1 dark:ring-inset dark:ring-emerald-400/20;
+  .status-success,
+  .status-live,
+  .status-saved {
+    background: var(--color-status-success-bg);
+    color: var(--color-status-success-text);
+    box-shadow: inset 0 0 0 1px var(--color-status-success-border);
   }
 
   .status-info {
-    @apply bg-surface-elevated text-info ring-1 ring-inset ring-border;
+    background: var(--color-status-info-bg);
+    color: var(--color-status-info-text);
+    box-shadow: inset 0 0 0 1px var(--color-status-info-border);
   }
 
-  .status-warning {
-    @apply bg-amber-50 text-amber-700 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-1 dark:ring-inset dark:ring-amber-400/20;
+  .status-warning,
+  .status-draft {
+    background: var(--color-status-warning-bg);
+    color: var(--color-status-warning-text);
+    box-shadow: inset 0 0 0 1px var(--color-status-warning-border);
   }
 
   .status-neutral {
-    @apply bg-surface-elevated text-text-secondary ring-1 ring-inset ring-border;
+    background: var(--color-status-neutral-bg);
+    color: var(--color-status-neutral-text);
+    box-shadow: inset 0 0 0 1px var(--color-status-neutral-border);
   }
 
   .status-danger {
-    @apply bg-surface-elevated text-danger ring-1 ring-inset ring-border;
-  }
-
-  .status-live,
-  .status-saved {
-    background: var(--color-status-positive-bg);
-    color: var(--color-success);
-    box-shadow: inset 0 0 0 1px var(--color-status-positive-border);
-  }
-
-  .status-draft {
-    background: var(--color-status-draft-bg);
-    color: var(--color-warning);
-    box-shadow: inset 0 0 0 1px var(--color-status-draft-border);
+    background: var(--color-status-danger-bg);
+    color: var(--color-status-danger-text);
+    box-shadow: inset 0 0 0 1px var(--color-status-danger-border);
   }
 
   .table-frame {
