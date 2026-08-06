@@ -110,9 +110,12 @@ export function BuildSectionRail({
                       className={`group flex min-h-10 min-w-max items-center gap-1.5 rounded-md px-2 py-1 text-left text-[13px] leading-5 transition lg:w-full ${selected ? "bg-primary-soft font-semibold text-primary" : "text-text-muted hover:bg-subtle hover:text-text-strong"}`}
                     >
                       <span
-                        className={`grid size-[22px] shrink-0 place-items-center rounded-full border ${selected ? "border-primary bg-primary text-white" : "border-border bg-surface"}`}
+                        className={`grid size-[22px] shrink-0 place-items-center rounded-full border ${selected ? "border-primary bg-primary text-canvas" : "border-border bg-surface"}`}
                       >
-                        <Icon size={13} />
+                        <Icon
+                          size={selected ? 16 : 13}
+                          weight={selected ? "bold" : "regular"}
+                        />
                       </span>
                       <span className="flex-1">{item.label}</span>
                       {item.kind === "route" && (

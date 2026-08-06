@@ -1,3 +1,71 @@
+# LYN-004-R9 Agent Studio Selected Icon Contrast Design QA
+
+## Comparison target
+
+- Source visual truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/24-agent-studio-selected-icon-contrast-feedback.png` (`386 × 952`, feedback crop).
+- Preserved source: `docs/qa/images/lyn-004-r9/00-feedback-selected-icon-386x952.png`; density-normalized source: `00-feedback-normalized-193x476.png` (`@2x` feedback downsampled to `193 × 476` CSS-equivalent pixels).
+- Browser-rendered baseline: `docs/qa/images/lyn-004-r9/01-before-studio-1440x952.png` at a `1440 × 952` CSS viewport.
+- Browser-rendered implementation: `docs/qa/images/lyn-004-r9/03-after-studio-1440x952.png` at the same viewport and selected Identity state.
+- Responsive implementation: `04-after-studio-1280x900.png` and `05-after-studio-720x900-200pct.png`.
+- Same-state focused comparisons: `07-compare-feedback-after-focus.png` and `08-compare-before-after-focus.png`.
+- State: repository Demo mode, Agent `林月`, `/assets/32/build`, Identity Information selected. No credentials, Cookie, production data, external API mutation, generated asset, or changed fixture was used.
+
+## Findings
+
+- Baseline P1 — selected icon detail was not reliably distinguishable. The measured selected well was `22 × 22px`, but the Identification Card glyph was only `13 × 13px`, regular weight, and white (`#ffffff`) on the primary lime background (`#d7ff2f`). Its computed contrast was `1.15:1`; the thin internal identity marks visibly merged into the bright well.
+- Fix — preserve the same Phosphor `IdentificationCard` semantic icon and the same `22px` circular well, but render only the selected glyph at `16px`, library-provided `bold` weight, and the existing `canvas` token (`#08090a`). The primary background remains `#d7ff2f`; computed contrast is now `17.30:1`.
+- Post-fix — the card frame, portrait circle, and horizontal identity lines are distinct in both focused comparisons. The visual remains subordinate to the solid primary CTAs because only the small existing icon well uses lime.
+- No actionable P0, P1, or P2 findings remain.
+
+## Required fidelity surfaces
+
+- Fonts and typography: passed. Group labels, item labels, family, `13px` item text, line height, selected weight, wrapping, and antialiasing are unchanged.
+- Spacing and layout rhythm: passed. The row remains `40px` high and `179px` wide at desktop; icon well remains `22 × 22px`; gaps, padding, radii, grouping, order, rail width, editor, and preview geometry are unchanged.
+- Colors and visual tokens: passed. Selected well remains primary lime `#d7ff2f`; foreground changes from white to existing canvas `#08090a`. Selected row remains primary-soft `#202719`, selected text remains primary lime, and no global token changed.
+- Image quality and asset fidelity: passed. The existing Phosphor icon library and `IdentificationCard` semantic asset are preserved. Bold uses the library's supplied path; no handwritten SVG, CSS drawing, emoji, new raster, or generated asset was added.
+- Copy and content: passed. All headings, menu labels, helper copy, Agent fields, route labels, save state, and preview content are unchanged.
+- Icons and controls: passed. Selected icon changes from `13px regular` to `16px bold`; unselected icons remain measured at `13px regular` with the existing muted foreground (`rgb(137, 141, 148)`). Route icons and every other page remain untouched.
+
+## Full-view and focused comparison evidence
+
+- The full `1440 × 952` before/after captures keep the same route, content, selected state, viewport, layout, and Demo record. Visual inspection confirms the change is isolated to the glyph inside the selected circular well.
+- `07-compare-feedback-after-focus.png` puts the normalized feedback crop and final selected state in one raster. It confirms the approved lime well/soft row treatment is retained while internal glyph detail gains the requested dark contrast.
+- `08-compare-before-after-focus.png` directly shows the former white detail loss versus the final dark, larger, bolder library glyph.
+
+## Responsive, interaction, and accessibility evidence
+
+- `1440 × 952`: selected row `179 × 40px`, well `22 × 22px`, glyph `16 × 16px`; document `scrollWidth = clientWidth = 1440`.
+- `1280 × 900`: selected row `179 × 40px`, glyph `16 × 16px`; document `scrollWidth = clientWidth = 1280`.
+- `720 × 900` / 200%-equivalent width: selected row `96 × 40px`, glyph `16 × 16px`; the intentional horizontal professional-navigation strip has `clientWidth 720 / scrollWidth 1033`, while the document remains `scrollWidth = clientWidth = 720`. The selected icon is fully inside the visible row without clipping.
+- Browser section switching from Identity to Persona and back preserved the active editor and `aria-pressed` state. Keyboard focus reached the Persona button and rendered the existing `2px #d7ff2f` outline with `2px` offset. Source-contract coverage confirms native buttons, `aria-pressed`, editor `onChange`, route pushes, unselected classes, and hover classes are unchanged.
+- The final in-app Browser console contained zero errors and zero warnings.
+
+## Comparison history
+
+1. Feedback and same-state baseline — blocked.
+   - P1: white `13px` regular glyph on lime measured only `1.15:1`, and the identity card's internal details were visibly swallowed.
+   - Evidence: source feedback, `01-before-studio-1440x952.png`, measured computed styles, and the left side of `08-compare-before-after-focus.png`.
+2. Token, size, and library-weight correction — passed.
+   - Fix: selected-only `text-canvas`, `16px`, Phosphor `bold`; preserve the `22px` well, row, label, selection surface, semantics, and all non-selected behavior.
+   - Post-fix evidence: `03`–`08` screenshots/comparisons, `17.30:1` computed contrast, 1440/1280/720 geometry, focus and switching checks, automated source contracts, and clean console.
+
+## Implementation checklist
+
+- [x] Same semantic Phosphor icon and existing primary/canvas tokens
+- [x] Selected-only dark foreground, 16px size, and library bold weight
+- [x] Unselected 13px regular icons, hover classes, labels, row and well geometry unchanged
+- [x] Native button, aria-pressed, editor switching, route behavior, and focus-visible preserved
+- [x] 1440, 1280, and 720/200%-equivalent checks with no document overflow or icon clipping
+- [x] Feedback/after and before/after focused combined comparisons
+
+## Follow-up polish
+
+- None. A larger well, 20–22px glyph, global icon change, or theme-token adjustment is unnecessary and would exceed this selected-state-only correction.
+
+final result: passed
+
+---
+
 # LYN-004-R7 Avatar Candidate Contain Design QA
 
 ## Comparison target
