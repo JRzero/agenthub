@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowRight,
@@ -44,6 +45,7 @@ import {
   versionErrorMessage,
 } from "./model";
 import { useAgentClients, useAgentVersion, useAgentVersions } from "./queries";
+import { hasMatchingPublishIntent, removePublishIntent } from "./publish-intent";
 import type { AgentClient, AgentVersion } from "./types";
 import { publishTestSummaryKey } from "@/modules/agent-test/publish-test-summary";
 
@@ -69,6 +71,9 @@ const SKILL_STAGES: SkillStage[] = ["pre", "mid", "post"];
 
 export function VersionsWorkspace({ agent }: { agent: Agent }) {
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const publishIntentConsumedRef = useRef(false);
   const { demo, session } = useAuth();
   const { workspaceCode } = useWorkspace();
   const profileQuery = useQuery({
@@ -171,13 +176,29 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
     }
   }
 
-  function openPublish() {
+  const openPublish = useCallback(() => {
     setReleaseNote("");
     setPublishError("");
     setPublishErrorCode("");
     setRequestKey(createRequestKey());
     setPublishOpen(true);
-  }
+  }, []);
+
+  useEffect(() => {
+    if (
+      publishIntentConsumedRef.current ||
+      !hasMatchingPublishIntent(searchParams, agent.id)
+    ) {
+      return;
+    }
+    publishIntentConsumedRef.current = true;
+    const nextQuery = removePublishIntent(searchParams);
+    router.replace(
+      `/assets/${agent.id}/versions${nextQuery ? `?${nextQuery}` : ""}`,
+      { scroll: false },
+    );
+    openPublish();
+  }, [agent.id, openPublish, router, searchParams]);
 
   async function submitPublish() {
     setPublishing(true);

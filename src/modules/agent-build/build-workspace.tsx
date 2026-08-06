@@ -29,6 +29,7 @@ import { DATA_MODE } from "@/config/capabilities";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 import { BUILD_HEADER_ACTIONS_ID } from "@/modules/agent-assets/asset-workspace-header";
 import { useAgentClients } from "@/modules/agent-versions/queries";
+import { buildPublishIntentPath } from "@/modules/agent-versions/publish-intent";
 import {
   readPublishTestSummary,
   type PublishTestSummary,
@@ -164,7 +165,7 @@ export function BuildWorkspace() {
       return;
     }
     if (publishCheck.canContinue) {
-      router.push(`/assets/${agentId}/versions`);
+      router.push(buildPublishIntentPath(agentId));
     }
   };
 
