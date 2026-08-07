@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import type { WorkbenchTransitionPhase } from "./workbench-transition";
 
-export const WORKBENCH_AUTOPLAY_MS = 6_000;
+export const WORKBENCH_AUTOPLAY_MS = 3_000;
 
 export type WorkbenchAutoplayConditions = {
   agentCount: number;
   phase: WorkbenchTransitionPhase;
-  pausedByUser: boolean;
   hovered: boolean;
   focusWithin: boolean;
   documentHidden: boolean;
@@ -16,7 +15,6 @@ export type WorkbenchAutoplayConditions = {
 export function shouldRunWorkbenchAutoplay({
   agentCount,
   phase,
-  pausedByUser,
   hovered,
   focusWithin,
   documentHidden,
@@ -24,7 +22,6 @@ export function shouldRunWorkbenchAutoplay({
 }: WorkbenchAutoplayConditions): boolean {
   return agentCount > 1
     && phase === "idle"
-    && !pausedByUser
     && !hovered
     && !focusWithin
     && !documentHidden
@@ -78,7 +75,6 @@ export function useWorkbenchAutoplay(
   const {
     agentCount,
     phase,
-    pausedByUser,
     hovered,
     focusWithin,
     documentHidden,
@@ -88,7 +84,6 @@ export function useWorkbenchAutoplay(
   useEffect(() => scheduleWorkbenchAutoplay({
     agentCount,
     phase,
-    pausedByUser,
     hovered,
     focusWithin,
     documentHidden,
@@ -99,7 +94,6 @@ export function useWorkbenchAutoplay(
     focusWithin,
     hovered,
     onAdvance,
-    pausedByUser,
     phase,
     reducedMotion,
     resetGeneration,

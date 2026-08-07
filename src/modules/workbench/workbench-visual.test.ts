@@ -67,15 +67,17 @@ describe("workbench V1 composition", () => {
     expect(farExposure).toBeLessThanOrEqual(0.4);
   });
 
-  it("provides controllable autoplay without changing carousel identity", () => {
-    expect(source).toContain('data-testid="workbench-autoplay-toggle"');
-    expect(source).toContain('aria-label={autoplayPaused ? "继续自动轮播" : "暂停自动轮播"}');
+  it("provides silent autoplay without changing carousel identity", () => {
     expect(source).toContain("useWorkbenchAutoplay({");
     expect(source).toContain("onMouseEnter={() => setStageHovered(true)}");
-    expect(source).toContain("setStageFocusWithin(!onAutoplayControl)");
+    expect(source).toContain("onFocusCapture={() => setStageFocusWithin(true)}");
     expect(source).toContain("requestManualRelative(-1)");
     expect(source).toContain("requestManualRelative(1)");
     expect(source).toContain("key={agent.id}");
+    expect(source).not.toContain("workbench-autoplay-toggle");
+    expect(source).not.toContain("暂停自动轮播");
+    expect(source).not.toContain("继续自动轮播");
+    expect(source).not.toContain("autoplayPaused");
   });
 
   it("keeps stage geometry stable and makes reduced motion effectively instant", () => {

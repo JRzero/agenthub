@@ -9,7 +9,6 @@ import {
 const eligible: WorkbenchAutoplayConditions = {
   agentCount: 3,
   phase: "idle",
-  pausedByUser: false,
   hovered: false,
   focusWithin: false,
   documentHidden: false,
@@ -21,9 +20,10 @@ afterEach(() => {
 });
 
 describe("workbench autoplay", () => {
-  it("advances exactly once after a full six-second eligible interval", () => {
+  it("advances exactly once at 3000ms and not at 2999ms", () => {
     vi.useFakeTimers();
     const onAdvance = vi.fn();
+    expect(WORKBENCH_AUTOPLAY_MS).toBe(3_000);
     scheduleWorkbenchAutoplay(eligible, onAdvance);
 
     vi.advanceTimersByTime(WORKBENCH_AUTOPLAY_MS - 1);
@@ -37,7 +37,6 @@ describe("workbench autoplay", () => {
   it.each([
     ["single Agent", { agentCount: 1 }],
     ["active transition", { phase: "sliding" as const }],
-    ["user pause", { pausedByUser: true }],
     ["hover", { hovered: true }],
     ["focus within", { focusWithin: true }],
     ["hidden document", { documentHidden: true }],
@@ -55,7 +54,7 @@ describe("workbench autoplay", () => {
     vi.useFakeTimers();
     const onAdvance = vi.fn();
     const cancel = scheduleWorkbenchAutoplay(eligible, onAdvance);
-    vi.advanceTimersByTime(3_000);
+    vi.advanceTimersByTime(1_500);
     cancel();
 
     const cancelRestarted = scheduleWorkbenchAutoplay(eligible, onAdvance);

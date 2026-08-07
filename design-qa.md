@@ -1445,3 +1445,23 @@ final result: passed
 - Final findings: P0 = 0, P1 = 0, P2 = 0.
 
 final result: passed
+
+---
+
+# LYN-004-R23 Three-second Silent Autoplay Design QA
+
+- Scope: Workbench autoplay cadence and removal of the R22 pause/resume control only; geometry, motion, Agent content/order, CTA, navigation, API, backend, and other pages remain unchanged.
+- Source visual truth: `docs/qa/images/lyn-004-r23/01-r22-before-1536x1000.png` plus the R23 contract requiring the top-right control to be absent.
+- Implementation: `docs/qa/images/lyn-004-r23/02-r23-after-1536x1000.png`, 1536 × 1000 CSS/output pixels, DPR 1, matching Demo state.
+- Initial findings: P0 = 0, P1 = 2, P2 = 0. R22 still showed the Pause/Play pill and used a 6000ms cadence.
+- Fix: autoplay is a silent 3000ms one-shot timeout; the button, Pause/Play imports, labels, user-pause state, policy field, control styles, and dedicated tests are removed with no placeholder.
+- Safeguards: hover, focus-within, hidden document, active transition, reduced motion, and one Agent still suppress scheduling. Manual or recovered input starts a fresh full 3000ms interval.
+- Stability: R22 326px center, ±210/±324px slots and responsive geometry are unchanged; R21 720ms transform/z-index motion and one-last-target queue remain unchanged; card opacity stays 1.
+- Controlled-clock coverage: 2999ms no advance, 3000ms exactly one advance, cancellation/restart, all silent pause conditions, reduced motion, and no repeated interval tick passed.
+- Responsive/Browser: 1536 and 720 have no page overflow; the visible control count is zero. Fresh isolated Demo Console: 0 error / 0 warning.
+- Live handoff: `com.linkyun.agenthub.r23-live` (PID 49087) serves `/login`, `/workbench`, and `/assets` as HTTP 200 at 127.0.0.1:3002 in Live mode with the unchanged public local API base. Fresh Live Browser console is 0/0 with no Demo marker; the unchanged Agent request remains HTTP 404 and no fixture fallback is introduced.
+- Comparisons: `docs/qa/images/lyn-004-r23/04-r22-r23-same-viewport-comparison.png`, `05-r22-r23-stage-focus-comparison.png`, `06-r22-r23-control-focus-comparison.png`.
+- Reports: `docs/qa/reports/lyn-004-r23-current-audit.md`, `docs/qa/reports/lyn-004-r23-design-qa.md`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed

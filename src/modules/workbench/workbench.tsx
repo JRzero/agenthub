@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useMemo, useReducer, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CaretLeft, CaretRight, Clock, Cpu, Pause, Play, Plus } from "@phosphor-icons/react";
+import { ArrowRight, CaretLeft, CaretRight, Clock, Cpu, Plus } from "@phosphor-icons/react";
 import { useAgents } from "@/modules/agents/queries";
 import type { Agent } from "@/modules/agents/types";
 import { resolveAgentLifecycle, type AgentLifecycleState } from "@/modules/agents/lifecycle";
@@ -34,7 +34,6 @@ export function Workbench() {
   const orderedAgentIds = useMemo(() => orderedAgents.map((agent) => agent.id), [orderedAgents]);
   const transition = useWorkbenchAgentTransition(orderedAgentIds);
   const { request, requestRelative } = transition;
-  const [autoplayPaused, setAutoplayPaused] = useState(false);
   const [stageHovered, setStageHovered] = useState(false);
   const [stageFocusWithin, setStageFocusWithin] = useState(false);
   const [autoplayResetGeneration, resetAutoplay] = useReducer((generation: number) => generation + 1, 0);
@@ -52,7 +51,6 @@ export function Workbench() {
   useWorkbenchAutoplay({
     agentCount: orderedAgents.length,
     phase: transition.phase,
-    pausedByUser: autoplayPaused,
     hovered: stageHovered,
     focusWithin: stageFocusWithin,
     documentHidden,
@@ -91,25 +89,11 @@ export function Workbench() {
             style={{ minHeight: stableStageHeight }}
             onMouseEnter={() => setStageHovered(true)}
             onMouseLeave={() => setStageHovered(false)}
-            onFocusCapture={(event) => {
-              const onAutoplayControl = (event.target as Element).closest('[data-testid="workbench-autoplay-toggle"]');
-              setStageFocusWithin(!onAutoplayControl);
-            }}
+            onFocusCapture={() => setStageFocusWithin(true)}
             onBlurCapture={(event) => {
               if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setStageFocusWithin(false);
             }}
           >
-            {orderedAgents.length > 1 && <button
-              type="button"
-              aria-label={autoplayPaused ? "继续自动轮播" : "暂停自动轮播"}
-              aria-pressed={autoplayPaused}
-              data-testid="workbench-autoplay-toggle"
-              onClick={() => setAutoplayPaused((paused) => !paused)}
-              className="absolute right-4 top-4 z-[70] inline-flex h-9 items-center gap-1.5 rounded-full border border-border bg-surface/95 px-3 text-xs font-medium text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
-            >
-              {autoplayPaused ? <Play size={15} weight="fill" /> : <Pause size={15} weight="fill" />}
-              {autoplayPaused ? "继续轮播" : "暂停轮播"}
-            </button>}
             {orderedAgents.length > 1 && <>
               <button type="button" aria-label="上一个 Agent" onClick={() => requestManualRelative(-1)} className="absolute left-3 top-1/2 z-[60] grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface/95 text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><CaretLeft size={20} /></button>
               <button type="button" aria-label="下一个 Agent" onClick={() => requestManualRelative(1)} className="absolute right-3 top-1/2 z-[60] grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface/95 text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><CaretRight size={20} /></button>
