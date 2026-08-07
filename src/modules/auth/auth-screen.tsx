@@ -186,7 +186,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           <BrandLink className={styles.brandMobile} />
           <p className={styles.formEyebrow}>{registerMode ? "WORKSPACE ACCESS" : "WORKSPACE LOGIN"}</p>
           <h1 className={styles.formTitle}>{registerMode ? "创建 AgentHub 账号" : "登录 AgentHub"}</h1>
-          <p className={styles.formDescription}>{registerMode ? "使用手机号、验证码和邀请码加入工作空间。" : "验证手机号后进入工作空间，继续管理 Agent 资产、测试评估和多端发行。"}</p>
+          {registerMode && <p className={styles.formDescription}>使用手机号、验证码和邀请码加入工作空间。</p>}
 
           {demo ? (
             <div className={styles.demoPanel}><p className={styles.demoTitle}>当前运行在演示数据模式</p><p className={styles.demoDescription}>不会向登录或注册接口发送请求。</p><button type="button" className={styles.submitButton} onClick={() => void enterDemo()}>进入演示工作区 <ArrowRight size={19} weight="bold" /></button></div>

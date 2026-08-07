@@ -19,6 +19,8 @@ describe("AgentHub mobile authentication screen", () => {
     expect(source).toContain('searchParams.get("invitation_code")?.trim()');
     expect(source).toContain('searchParams.get("invitation_source")');
     expect(source).not.toContain("new-password");
+    expect(source).toContain("使用手机号、验证码和邀请码加入工作空间。");
+    expect(source).not.toContain("验证手机号后进入工作空间，继续管理 Agent 资产、测试评估和多端发行。");
   });
 
   it("clears transient SMS state while retaining account and phone inputs", () => {
