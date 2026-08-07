@@ -1,0 +1,47 @@
+{
+  "frames": [
+    {
+      "label": "rapid-first",
+      "clientWidth": 1429,
+      "phase": "sliding",
+      "progress": 0.938360338573156,
+      "scrollWidth": 1429,
+      "stageHeight": 522,
+      "stageOpacity": "1",
+      "trackOpacity": "1",
+      "transform": "matrix(1, 0, 0, 1, -776.024, 0)",
+      "viewportWidth": 827,
+      "x": -776.024,
+      "elapsedMs": 194
+    },
+    {
+      "label": "rapid-queued",
+      "clientWidth": 1429,
+      "phase": "sliding",
+      "progress": 0.6174691656590084,
+      "scrollWidth": 1429,
+      "stageHeight": 522,
+      "stageOpacity": "1",
+      "trackOpacity": "1",
+      "transform": "matrix(1, 0, 0, 1, -510.647, 0)",
+      "viewportWidth": 827,
+      "x": -510.647,
+      "elapsedMs": 516
+    },
+    {
+      "label": "rapid-complete",
+      "clientWidth": 1429,
+      "phase": "idle",
+      "progress": 0,
+      "scrollWidth": 1429,
+      "stageHeight": 522,
+      "stageOpacity": "1",
+      "trackOpacity": null,
+      "transform": "none",
+      "viewportWidth": 827,
+      "x": 0,
+      "elapsedMs": 914
+    }
+  ],
+  "finalHero": "已发布\nv4\n林月\n\n星海内容工作室的陪伴型 Agent\n\n打开工作区"
+}

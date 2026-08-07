@@ -50,8 +50,8 @@ describe("resolveWorkspaceShellLayout", () => {
     expect(resolveWorkspaceShellLayout(pathname)).toEqual({
       agentAssetMode: true,
       sidebarCollapsed: true,
-      mainDesktopPaddingClass: "lg:pl-[88px]",
-      mainTopPaddingClass: "pt-[50px]",
+      mainDesktopPaddingClass: "lg:pl-[80px]",
+      mainTopPaddingClass: "pt-[56px]",
     });
   });
 
@@ -59,8 +59,8 @@ describe("resolveWorkspaceShellLayout", () => {
     expect(resolveWorkspaceShellLayout("/operations")).toEqual({
       agentAssetMode: false,
       sidebarCollapsed: true,
-      mainDesktopPaddingClass: "lg:pl-[88px]",
-      mainTopPaddingClass: "pt-[50px]",
+      mainDesktopPaddingClass: "lg:pl-[80px]",
+      mainTopPaddingClass: "pt-[56px]",
     });
   });
 
@@ -68,8 +68,8 @@ describe("resolveWorkspaceShellLayout", () => {
     expect(resolveWorkspaceShellLayout("/assets")).toEqual({
       agentAssetMode: false,
       sidebarCollapsed: false,
-      mainDesktopPaddingClass: "lg:pl-[196px]",
-      mainTopPaddingClass: "pt-[50px]",
+      mainDesktopPaddingClass: "lg:pl-[200px]",
+      mainTopPaddingClass: "pt-[56px]",
     });
   });
 
@@ -77,8 +77,8 @@ describe("resolveWorkspaceShellLayout", () => {
     expect(resolveWorkspaceShellLayout("/assets/create")).toEqual({
       agentAssetMode: false,
       sidebarCollapsed: true,
-      mainDesktopPaddingClass: "lg:pl-[88px]",
-      mainTopPaddingClass: "pt-[50px]",
+      mainDesktopPaddingClass: "lg:pl-[80px]",
+      mainTopPaddingClass: "pt-[56px]",
     });
   });
 });

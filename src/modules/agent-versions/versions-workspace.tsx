@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowRight,
@@ -44,6 +45,7 @@ import {
   versionErrorMessage,
 } from "./model";
 import { useAgentClients, useAgentVersion, useAgentVersions } from "./queries";
+import { hasMatchingPublishIntent, removePublishIntent } from "./publish-intent";
 import type { AgentClient, AgentVersion } from "./types";
 import { publishTestSummaryKey } from "@/modules/agent-test/publish-test-summary";
 
@@ -69,6 +71,9 @@ const SKILL_STAGES: SkillStage[] = ["pre", "mid", "post"];
 
 export function VersionsWorkspace({ agent }: { agent: Agent }) {
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const publishIntentConsumedRef = useRef(false);
   const { demo, session } = useAuth();
   const { workspaceCode } = useWorkspace();
   const profileQuery = useQuery({
@@ -171,13 +176,29 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
     }
   }
 
-  function openPublish() {
+  const openPublish = useCallback(() => {
     setReleaseNote("");
     setPublishError("");
     setPublishErrorCode("");
     setRequestKey(createRequestKey());
     setPublishOpen(true);
-  }
+  }, []);
+
+  useEffect(() => {
+    if (
+      publishIntentConsumedRef.current ||
+      !hasMatchingPublishIntent(searchParams, agent.id)
+    ) {
+      return;
+    }
+    publishIntentConsumedRef.current = true;
+    const nextQuery = removePublishIntent(searchParams);
+    router.replace(
+      `/assets/${agent.id}/versions${nextQuery ? `?${nextQuery}` : ""}`,
+      { scroll: false },
+    );
+    openPublish();
+  }, [agent.id, openPublish, router, searchParams]);
 
   async function submitPublish() {
     setPublishing(true);
@@ -380,17 +401,17 @@ export function VersionsWorkspace({ agent }: { agent: Agent }) {
           )}
         </div>
       ) : (
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg border border-amber-200 bg-amber-50/70 px-4 py-3.5 dark:border-amber-400/20 dark:bg-amber-400/10">
-          <span className="inline-flex items-center gap-2 font-semibold">
-            <span className="size-2.5 rounded-full bg-amber-500" />
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg border border-warning bg-surface-elevated px-4 py-3.5 text-text-strong">
+          <span className="inline-flex items-center gap-2 font-semibold text-text-strong">
+            <span className="size-2.5 rounded-full bg-warning" />
             当前草稿
           </span>
-          <span>初始草稿</span>
-          <span className="text-text-muted">
+          <span className="text-text-strong">初始草稿</span>
+          <span className="text-text-secondary">
             有 {recordCount(agent.config)} 项配置
           </span>
-          <Divider />
-          <span className="text-text-muted">Version Hash：发布后生成</span>
+          <span aria-hidden="true" className="hidden h-5 w-px bg-warning sm:block" />
+          <span className="text-text-secondary">Version Hash：发布后生成</span>
           <Link
             href={"/assets/" + agent.id + "/build"}
             className="button-secondary ml-auto"
@@ -616,7 +637,7 @@ function VersionHistory({
                   (current
                     ? "status-success"
                     : version.availability === "revoked"
-                      ? "bg-rose-50 text-rose-700 dark:bg-rose-400/10 dark:text-rose-300"
+                      ? "status-danger"
                       : "status-neutral")
                 }
               >
@@ -752,7 +773,7 @@ function VersionDetail({
           </div>
         )}
 
-        <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-blue-700 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-200">
+        <div className="rounded-md border border-info bg-[var(--color-status-info-bg)] px-4 py-2.5 text-sm text-[var(--color-status-info-text)]">
           {isCurrent
             ? "新会话使用 v" +
               version.version_no +
@@ -964,7 +985,7 @@ function PublishDialog({
           "mt-4 rounded-md border px-4 py-3 text-xs leading-5 " +
           (blocked
             ? "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200"
-            : "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-200")
+            : "border-info bg-[var(--color-status-info-bg)] text-[var(--color-status-info-text)]")
         }
       >
         {blocked ? (
@@ -972,7 +993,7 @@ function PublishDialog({
             发布尚未执行，平台当前版本保持不变。请返回构建页处理兼容问题后再试。
           </>
         ) : (
-          <ul className="list-disc space-y-0.5 pl-4">
+          <ul className="list-disc space-y-0.5 pl-4 marker:text-info">
             <li>新 Session 和无 Session 请求使用新版本</li>
             <li>已有 Session 继续使用创建时绑定的版本</li>
             <li>已导出的本地运行包不会自动更新</li>
@@ -1246,10 +1267,10 @@ function VersionPill({
 }) {
   const color =
     tone === "green"
-      ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-200"
+      ? "border-success bg-[var(--color-status-success-bg)] text-[var(--color-status-success-text)]"
       : tone === "amber"
         ? "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200"
-        : "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-200";
+        : "border-info bg-[var(--color-status-info-bg)] text-[var(--color-status-info-text)]";
   return (
     <div
       className={"min-w-32 rounded-md border px-4 py-2 text-center " + color}

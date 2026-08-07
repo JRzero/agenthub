@@ -224,7 +224,7 @@ export function StagedSkillsPanel({ agentId }: { agentId: number }) {
               <strong className="block truncate">{skill.name}</strong>
               <span className="mt-1 block truncate text-xs text-text-muted">{skill.skill_name}</span>
             </div>
-            <span className="rounded-full bg-success/10 px-2.5 py-1 text-xs font-medium text-success">已启用</span>
+            <span className="status-badge status-success">已启用</span>
             <button type="button" onClick={() => openConfig(skill)} className="rounded-md p-2 text-text-muted hover:bg-subtle" aria-label={`配置 ${skill.name}`}><Gear size={18} /></button>
             <button type="button" onClick={() => void persist(bound.filter((item) => item.id !== skill.id), `已移除 ${skill.name}`)} disabled={saving} className="rounded-md p-2 text-text-muted hover:bg-subtle hover:text-danger" aria-label={`移除 ${skill.name}`}><X size={18} /></button>
           </div>

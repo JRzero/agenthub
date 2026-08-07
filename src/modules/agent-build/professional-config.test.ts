@@ -86,13 +86,13 @@ describe("professional Build contracts", () => {
   it("uses deterministic desktop widths for the collapsible preview", () => {
     expect(resolveBuildPreviewLayout(false)).toMatchObject({
       collapsed: false,
-      desktopWidth: 400,
-      gridClass: "lg:grid-cols-[184px_minmax(0,1fr)_400px]",
+      desktopWidth: 420,
+      gridClass: "lg:grid-cols-[196px_minmax(0,1fr)_420px]",
     });
     expect(resolveBuildPreviewLayout(true)).toMatchObject({
       collapsed: true,
       desktopWidth: 56,
-      gridClass: "lg:grid-cols-[184px_minmax(0,1fr)_56px]",
+      gridClass: "lg:grid-cols-[196px_minmax(0,1fr)_56px]",
     });
   });
 

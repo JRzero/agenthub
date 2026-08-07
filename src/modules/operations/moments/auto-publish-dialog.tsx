@@ -385,7 +385,7 @@ export function AutoPublishDialog({
                           <span
                             className={`status-badge ${
                               item.status === "failed"
-                                ? "bg-rose-50 text-rose-700 dark:bg-rose-400/10 dark:text-rose-300"
+                                ? "status-danger"
                                 : item.status === "published"
                                   ? "status-success"
                                   : "status-neutral"

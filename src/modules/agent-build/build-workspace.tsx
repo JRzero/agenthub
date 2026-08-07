@@ -6,9 +6,11 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowCounterClockwise,
   ChatCircle,
+  CheckCircle,
   FloppyDisk,
   PaperPlaneTilt,
   Play,
+  WarningCircle,
 } from "@phosphor-icons/react";
 import { BuildEditorPanel } from "./build-editor-panel";
 import { resolveBuildPreviewLayout } from "./build-layout";
@@ -22,10 +24,12 @@ import { resolveRequestedBuildSection } from "./professional-navigation";
 import { useBuildEditor } from "./use-build-editor";
 import type { BuildSectionId } from "./types";
 import type { PublishCheckAction } from "./publish-check-model";
+import { resolveBuildSaveStatus } from "./save-status";
 import { DATA_MODE } from "@/config/capabilities";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 import { BUILD_HEADER_ACTIONS_ID } from "@/modules/agent-assets/asset-workspace-header";
 import { useAgentClients } from "@/modules/agent-versions/queries";
+import { buildPublishIntentPath } from "@/modules/agent-versions/publish-intent";
 import {
   readPublishTestSummary,
   type PublishTestSummary,
@@ -53,6 +57,7 @@ export function BuildWorkspace() {
     publishCheckEnabled,
   );
   const previewLayout = resolveBuildPreviewLayout(previewCollapsed);
+  const saveStatus = resolveBuildSaveStatus({ dirty: editor.dirty, saving: editor.saving, error: editor.saveError });
 
   useEffect(() => {
     const requested = resolveRequestedBuildSection(searchParams.get("section"));
@@ -160,7 +165,7 @@ export function BuildWorkspace() {
       return;
     }
     if (publishCheck.canContinue) {
-      router.push(`/assets/${agentId}/versions`);
+      router.push(buildPublishIntentPath(agentId));
     }
   };
 
@@ -177,8 +182,9 @@ export function BuildWorkspace() {
       {actionsTarget &&
         createPortal(
           <div className="flex items-center gap-2">
-            <span className="sr-only" aria-live="polite">
-              {editor.dirty ? "有未保存更改" : "已同步最新版本"}
+            <span className={`status-badge ${saveStatus.className}`} aria-live="polite" data-save-status={saveStatus.status}>
+              {saveStatus.status === "failed" ? <WarningCircle size={14} /> : <CheckCircle size={14} />}
+              {saveStatus.label}
             </span>
             {editor.saveError && (
               <p className="hidden max-w-48 text-xs text-danger xl:block">
@@ -242,7 +248,7 @@ export function BuildWorkspace() {
           </div>
         )}
         <div
-          className={`grid min-h-0 min-w-0 flex-1 grid-cols-1 border-b border-border transition-[grid-template-columns] duration-200 lg:grid-cols-[184px_minmax(0,1fr)] lg:overflow-hidden ${previewLayout.gridClass}`}
+          className={`grid min-h-0 min-w-0 flex-1 grid-cols-1 border-b border-border bg-canvas transition-[grid-template-columns] duration-200 lg:grid-cols-[196px_minmax(0,1fr)] lg:overflow-hidden ${previewLayout.gridClass}`}
         >
           <BuildSectionRail
             agentId={agentId}

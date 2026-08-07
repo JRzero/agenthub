@@ -17,6 +17,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
   const compactShell = shellLayout.sidebarCollapsed;
   const fixedBuildWorkspace = /^\/assets\/[^/]+\/build$/.test(pathname);
   const fixedCreateWorkspace = pathname === "/assets/create";
+  const wideCollectionWorkspace = pathname === "/assets" || pathname === "/workbench";
   const fixedWorkspace = fixedBuildWorkspace || fixedCreateWorkspace;
 
   useEffect(() => {
@@ -56,7 +57,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
             className={
               shellLayout.agentAssetMode
                 ? `w-full px-4 py-6 sm:px-6 lg:px-7 ${fixedBuildWorkspace ? "h-full" : ""}`
-                : `mx-auto w-full max-w-[1510px] px-4 py-6 sm:px-6 lg:px-7 ${fixedCreateWorkspace ? "h-full" : ""}`
+                : `mx-auto w-full ${wideCollectionWorkspace ? "max-w-[1760px]" : "max-w-[1510px]"} px-4 py-6 sm:px-6 lg:px-7 ${fixedCreateWorkspace ? "h-full" : ""}`
             }
           >
             {children}

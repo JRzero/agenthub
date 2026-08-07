@@ -16,7 +16,8 @@ import {
   WarningCircle,
   X,
 } from "@phosphor-icons/react";
-import { capabilitySource } from "@/config/capabilities";
+import { capabilitySource, DATA_MODE } from "@/config/capabilities";
+import { AgentAvatar } from "@/modules/agents/agent-avatar";
 import { useAgent } from "@/modules/agents/queries";
 import { useAuth } from "@/modules/auth/auth-provider";
 import {
@@ -32,6 +33,7 @@ import type { AgentClient } from "@/modules/agent-versions/types";
 import { useWorkspace } from "@/modules/workspace/workspace-provider";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 import { createShareLink, getShareLink, setShareLinkEnabled } from "./api";
+import { canExportCurrentVersion, DEMO_SHARE_LINK, distributionPublishState } from "./model";
 import type { ShareLink } from "./types";
 
 function shortHash(value?: string | null) {
@@ -74,6 +76,7 @@ export function DistributionWorkspace() {
   const clientsQuery = useAgentClients(agentId);
   const { session } = useAuth();
   const { workspaceCode } = useWorkspace();
+  const demo = DATA_MODE === "demo";
   const [selectedClientId, setSelectedClientId] = useState<number | null>(null);
   const runtimeQuery = useAgentClientRuntimeVersion(selectedClientId);
   const [shareLink, setShareLink] = useState<ShareLink | null>(null);
@@ -81,6 +84,8 @@ export function DistributionWorkspace() {
   const [exportOpen, setExportOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [message, setMessage] = useState("");
+  const [messageTone, setMessageTone] = useState<"success" | "error">("success");
+  const [shareLoadError, setShareLoadError] = useState("");
 
   useEffect(() => {
     const first = clientsQuery.data?.clients?.[0];
@@ -88,11 +93,20 @@ export function DistributionWorkspace() {
   }, [clientsQuery.data?.clients, selectedClientId]);
 
   useEffect(() => {
+    if (demo) {
+      setShareLink(DEMO_SHARE_LINK);
+      setShareLoadError("");
+      return;
+    }
     if (!session?.apiKey || !Number.isFinite(agentId)) return;
+    setShareLoadError("");
     void getShareLink(session.apiKey, agentId, workspaceCode)
       .then(setShareLink)
-      .catch(() => setShareLink(null));
-  }, [agentId, session?.apiKey, workspaceCode]);
+      .catch((error: Error) => {
+        setShareLink(null);
+        setShareLoadError(error.message || "无法读取公开分享状态");
+      });
+  }, [agentId, demo, session?.apiKey, workspaceCode]);
 
   if (
     agentQuery.isLoading ||
@@ -101,11 +115,11 @@ export function DistributionWorkspace() {
   ) {
     return <LoadingState label="正在加载 Client 运行状态…" />;
   }
-  if (agentQuery.isError || !agentQuery.data) {
+  if (agentQuery.isError || versionsQuery.isError || clientsQuery.isError || !agentQuery.data) {
     return (
       <ErrorState
-        message={agentQuery.error?.message || "无法加载 Agent"}
-        onRetry={() => void agentQuery.refetch()}
+        message={agentQuery.error?.message || versionsQuery.error?.message || clientsQuery.error?.message || "无法加载发布状态"}
+        onRetry={() => void Promise.all([agentQuery.refetch(), versionsQuery.refetch(), clientsQuery.refetch()])}
       />
     );
   }
@@ -120,9 +134,12 @@ export function DistributionWorkspace() {
     username: session?.username,
     workspaceCode,
   };
-  const packageExportReady = capabilitySource("packageExport") === "live";
+  const packageExportSource = capabilitySource("packageExport");
+  const packageExportReady = canExportCurrentVersion(agent.current_version_id, packageExportSource);
+  const publishState = distributionPublishState(agent.current_version_id);
+  const enabled = clients.filter((item) => item.status === "enabled").length;
   const synced = clients.filter(
-    (item) => item.last_ack_version_id === agent.current_version_id,
+    (item) => item.status === "enabled" && item.last_ack_version_id === agent.current_version_id,
   ).length;
   const pending = clients.filter(
     (item) =>
@@ -136,12 +153,30 @@ export function DistributionWorkspace() {
     setExportOpen(true);
   }
 
+  async function retryShareLink() {
+    if (demo) {
+      setShareLink(DEMO_SHARE_LINK);
+      setShareLoadError("");
+      return;
+    }
+    if (!session?.apiKey) return;
+    setShareLoadError("");
+    try {
+      setShareLink(await getShareLink(session.apiKey, agentId, workspaceCode));
+    } catch (error) {
+      setShareLoadError(error instanceof Error ? error.message : "无法读取公开分享状态");
+    }
+  }
+
   async function toggleShare() {
     if (!session?.apiKey) return;
     setShareBusy(true);
     setMessage("");
+    setMessageTone("success");
     try {
-      const next = shareLink
+      const next = demo
+        ? { ...(shareLink || DEMO_SHARE_LINK), enabled: !shareLink?.enabled }
+        : shareLink
         ? await setShareLinkEnabled(
             session.apiKey,
             agentId,
@@ -152,6 +187,7 @@ export function DistributionWorkspace() {
       setShareLink(next);
       setMessage(next.enabled ? "公开分享已启用。" : "公开分享已暂停。");
     } catch (error) {
+      setMessageTone("error");
       setMessage(error instanceof Error ? error.message : "分享设置失败");
     } finally {
       setShareBusy(false);
@@ -162,6 +198,7 @@ export function DistributionWorkspace() {
     if (!current || !packageExportReady) return;
     setExporting(true);
     setMessage("");
+    setMessageTone("success");
     try {
       const result = await createAgentExport(auth, agentId);
       const download = await downloadAgentExport(auth, result.id);
@@ -171,6 +208,7 @@ export function DistributionWorkspace() {
         `ZIP 版本包已导出（${formatFileSize(download.blob.size)}，Hash ${shortHash(download.packageHash || result.package_hash)}）。`,
       );
     } catch (error) {
+      setMessageTone("error");
       setMessage(error instanceof Error ? error.message : "导出失败");
     } finally {
       setExporting(false);
@@ -178,12 +216,12 @@ export function DistributionWorkspace() {
   }
 
   return (
-    <section className="space-y-4 pb-5">
+    <section className="space-y-5 pb-8">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold tracking-tight">Client 运行</h1>
+          <h1 className="text-3xl font-bold tracking-tight">发布中心</h1>
           <p className="mt-1 text-sm text-text-muted">
-            管理 Client 关联、同步状态与本地运行包
+            查看已发布版本、Client 同步状态与公开分享
           </p>
         </div>
         <Link
@@ -197,10 +235,19 @@ export function DistributionWorkspace() {
       </header>
 
       {message && (
-        <div className="rounded-md border border-border bg-subtle px-4 py-3 text-sm">
+        <div className={messageTone === "error" ? "error-feedback" : "rounded-lg border border-success/30 bg-primary-soft px-4 py-3 text-sm text-success"} role={messageTone === "error" ? "alert" : "status"}>
           {message}
         </div>
       )}
+
+      <div className="panel flex flex-wrap items-center gap-4 px-5 py-4">
+        <AgentAvatar agent={agent} size={48} />
+        <div className="min-w-0">
+          <strong className="block truncate text-lg">{agent.name}</strong>
+          <span className={`status-badge mt-1 ${publishState.tone === "success" ? "status-success" : "status-warning"}`}>{publishState.label}</span>
+        </div>
+        <Link href={`/assets/${agentId}/build`} className="button-secondary ml-auto">进入工作室<ArrowRight size={16} /></Link>
+      </div>
 
       <div className="panel flex flex-wrap items-center gap-x-7 gap-y-3 px-4 py-3.5">
         <strong>平台当前版本</strong>
@@ -213,7 +260,7 @@ export function DistributionWorkspace() {
         </span>
         <span className="hidden h-5 w-px bg-border sm:block" />
         <span>
-          已启用 {clients.length} 个 Client
+          已启用 {enabled} 个 Client
         </span>
         <span className="inline-flex items-center gap-2 text-success">
           <span className="size-2 rounded-full bg-success" />
@@ -231,10 +278,10 @@ export function DistributionWorkspace() {
           <button
             type="button"
             className="button-secondary"
-            disabled={!current || !packageExportReady}
+            disabled={!packageExportReady}
             onClick={openExport}
             title={
-              !packageExportReady
+              packageExportSource !== "live"
                 ? "后端 ZIP 下载接口尚未就绪"
                 : undefined
             }
@@ -242,7 +289,7 @@ export function DistributionWorkspace() {
             <DownloadSimple size={16} />
             导出当前版本
           </button>
-          {current && !packageExportReady && (
+          {current && packageExportSource !== "live" && (
             <p className="mt-1 text-xs text-text-muted">
               ZIP 下载接口尚未就绪
             </p>
@@ -250,7 +297,7 @@ export function DistributionWorkspace() {
         </div>
       </div>
 
-      <div className="grid min-h-[480px] gap-4 xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.38fr)]">
+      <div className="grid min-h-[480px] gap-4 lg:grid-cols-[minmax(360px,0.92fr)_minmax(0,1.38fr)]">
         <div className="panel overflow-hidden">
           <div className="border-b border-border px-5 py-3.5">
             <h2 className="font-semibold">Client</h2>
@@ -277,6 +324,8 @@ export function DistributionWorkspace() {
         <div className="panel min-w-0 overflow-hidden">
           {runtimeQuery.isLoading ? (
             <LoadingState label="正在读取跟随状态…" />
+          ) : runtimeQuery.isError ? (
+            <ErrorState message={runtimeQuery.error.message || "无法读取 Client 跟随状态"} onRetry={() => void runtimeQuery.refetch()} />
           ) : runtimeQuery.data && selectedClient ? (
             <ClientDetail
               client={selectedClient}
@@ -299,7 +348,9 @@ export function DistributionWorkspace() {
             公开页面始终使用平台当前版本
           </p>
         </div>
-        {shareLink?.share_url && (
+        {shareLoadError ? (
+          <div className="error-feedback ml-auto flex items-center gap-3"><span>{shareLoadError}</span><button type="button" className="button-secondary control-compact" onClick={() => void retryShareLink()}>重试</button></div>
+        ) : shareLink?.share_url && (
           <button
             type="button"
             className="ml-auto flex max-w-sm items-center gap-2 truncate rounded-md bg-subtle px-3 py-2 text-xs"
@@ -314,7 +365,7 @@ export function DistributionWorkspace() {
         <button
           type="button"
           className="button-secondary"
-          disabled={shareBusy || !current}
+          disabled={shareBusy || !current || Boolean(shareLoadError)}
           onClick={() => void toggleShare()}
         >
           {shareBusy
@@ -366,7 +417,7 @@ function ClientRow({
         <span
           className={
             "grid size-10 shrink-0 place-items-center rounded-lg " +
-            (disabled ? "bg-slate-500 text-white" : "bg-primary text-white")
+            (disabled ? "bg-slate-500 text-white" : "bg-primary text-canvas")
           }
         >
           <ClientIcon client={client} />
@@ -429,7 +480,7 @@ function ClientDetail({
   return (
     <div className="flex min-h-[480px] flex-col">
       <div className="flex items-center gap-3 border-b border-border px-5 py-4">
-        <span className="grid size-10 place-items-center rounded-lg bg-primary text-white">
+        <span className="grid size-10 place-items-center rounded-lg bg-primary text-canvas">
           <ClientIcon client={client} />
         </span>
         <div>
@@ -494,7 +545,7 @@ function ClientDetail({
           <InfoGrid label="可用技能" value={capabilities.length + " 项"} />
           <InfoGrid
             label="能力 Hash"
-            value={shortHash(client.capability_hash)}
+            value={maskCapabilityHash(client.capability_hash)}
           />
         </DetailCard>
 
@@ -666,4 +717,10 @@ function isLocalClient(client: AgentClient) {
     client.client_type.includes("desktop") ||
     client.client_type.includes("edge")
   );
+}
+
+function maskCapabilityHash(value?: string | null) {
+  const hash = shortHash(value);
+  if (hash === "—") return hash;
+  return hash.length > 7 ? `${hash.slice(0, 4)}***${hash.slice(-3)}` : `${hash.slice(0, 2)}***`;
 }

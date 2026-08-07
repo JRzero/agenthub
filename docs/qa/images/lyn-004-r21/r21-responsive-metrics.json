@@ -1,0 +1,11 @@
+{
+  "viewports": [
+    { "width": 1536, "innerWidth": 1536, "documentWidth": 1536, "stageWidth": 984, "carouselWidth": 900, "centerCardWidth": 360, "nearCardWidth": 302.4, "overflow": 0 },
+    { "width": 1440, "innerWidth": 1440, "documentWidth": 1440, "stageWidth": 888, "carouselWidth": 838, "centerCardWidth": 360, "nearCardWidth": 302.4, "overflow": 0 },
+    { "width": 1280, "innerWidth": 1280, "documentWidth": 1269, "stageWidth": 717, "carouselWidth": 667, "centerCardWidth": 360, "nearCardWidth": 302.4, "overflow": 0 },
+    { "width": 720, "innerWidth": 720, "documentWidth": 709, "stageWidth": 639.828, "carouselWidth": 589.828, "centerCardWidth": 280, "nearCardWidth": 233.835, "overflow": 0 }
+  ],
+  "stageHeight": 522,
+  "carouselHeight": 420,
+  "cardOpacity": 1
+}

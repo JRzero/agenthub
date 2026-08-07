@@ -56,7 +56,7 @@ export function AssetWorkspaceHeader({
       : "初始草稿";
   const navigation = (
     <nav
-      className="flex gap-5 overflow-x-auto"
+      className="flex gap-1 overflow-x-auto"
       aria-label="Agent Asset 工作区导航"
     >
       {assetNavigation.map((item) => {
@@ -67,7 +67,7 @@ export function AssetWorkspaceHeader({
             key={item.segment}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={`relative whitespace-nowrap px-1 pb-2 text-sm font-medium transition ${active ? "text-primary" : "text-text-muted hover:text-text-strong"}`}
+            className={`relative min-h-10 whitespace-nowrap rounded-t-lg px-3 py-2 text-sm font-medium transition ${active ? "bg-surface-elevated text-primary" : "text-text-muted hover:bg-surface-elevated hover:text-text-strong"}`}
           >
             {item.label}
             {active && (
@@ -80,16 +80,16 @@ export function AssetWorkspaceHeader({
   );
 
   return (
-    <header className="-mx-4 -mt-6 border-b border-border bg-surface px-4 pt-2 sm:-mx-6 sm:px-6 lg:-mx-7 lg:px-7">
+    <header className="-mx-4 -mt-6 border-b border-border bg-canvas px-4 pt-2 sm:-mx-6 sm:px-6 lg:-mx-7 lg:px-7">
       <div className="flex min-h-[64px] flex-wrap items-center gap-2 pb-1">
         <AgentAvatar agent={agent} size={52} className="rounded-lg" />
         <div className="min-w-[200px] flex-1">
-          <p className="sr-only">
+          <p className="mb-1 flex items-center gap-2 text-xs text-text-muted">
             <Link href="/assets" className="hover:text-primary">
-              Agent 资产库
+              Agent
             </Link>
-            <span className="px-2">/</span>
-            {agent.name}
+            <span>/</span>
+            <span className="max-w-56 truncate">{agent.name}</span>
           </p>
           <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-text-muted">
             <h1 className="mr-0.5 truncate text-lg font-bold tracking-tight text-text-strong">
@@ -107,7 +107,7 @@ export function AssetWorkspaceHeader({
             </span>
             {buildRoute ? (
               <>
-                <span className="status-badge status-warning">
+                <span className="status-badge status-draft">
                   当前草稿 · {draftBaseLabel}
                 </span>
               </>

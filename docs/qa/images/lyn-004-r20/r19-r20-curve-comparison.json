@@ -1,0 +1,20 @@
+{
+  "method": "CSS cubic-bezier x-to-y inversion at identical elapsed-time samples; Browser computed duration/easing and observed transforms verify the active CSS",
+  "samplesMs": [0, 50, 100, 130, 210, 260, 330, 420, 470, 520],
+  "r19": {
+    "durationMs": 420,
+    "easing": [0.16, 1, 0.3, 1],
+    "progressPercent": [0, 55.877, 81.044, 88.512, 97.178, 98.993, 99.861, 100, 100, 100]
+  },
+  "r20EvaluatedCandidate": {
+    "durationMs": 520,
+    "easing": [0.4, 0, 0.2, 1],
+    "progressPercent": [0, 2.369, 12.133, 23.659, 62.136, 77.556, 90.102, 97.73, 99.48, 100],
+    "decision": "Rejected because the exact midpoint reaches 77.556%, above the requested 50-75% range."
+  },
+  "r20Final": {
+    "durationMs": 520,
+    "easing": [0.42, 0, 0.58, 1],
+    "progressPercent": [0, 1.821, 7.533, 12.916, 33.804, 50, 72.18, 92.467, 98.179, 100]
+  }
+}

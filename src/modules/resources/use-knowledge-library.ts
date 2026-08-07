@@ -11,6 +11,7 @@ import {
 import { createDemoChunks, createDemoKnowledgeBase } from "./knowledge-demo-data";
 import { DEMO_DOCUMENTS, DEMO_KNOWLEDGE_BASES } from "./fixtures";
 import { createDemoDocument, type KnowledgeDialogKind } from "./knowledge-utils";
+import { getSafeResourceError } from "./resource-feedback";
 import type { DocumentChunk, KnowledgeBase, KnowledgeDocument } from "./types";
 import { uploadKnowledgeDocument } from "./upload-api";
 
@@ -33,6 +34,8 @@ export function useKnowledgeLibrary() {
   const [chunks, setChunks] = useState<DocumentChunk[]>([]);
   const [chunkTotal, setChunkTotal] = useState(0);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [busyDocumentId, setBusyDocumentId] = useState<number | null>(null);
   const selected = bases.find((item) => item.id === selectedId);
 
   useEffect(() => {
@@ -40,9 +43,9 @@ export function useKnowledgeLibrary() {
     setLoading(true);
     listKnowledgeBases(session.apiKey, workspaceCode)
       .then((items) => { setBases(items); setSelectedId(items[0]?.id || 0); })
-      .catch((err: Error) => setError(err.message || "无法加载知识库"))
+      .catch((err: unknown) => setError(getSafeResourceError(err, "无法加载知识库")))
       .finally(() => setLoading(false));
-  }, [demo, session?.apiKey, workspaceCode]);
+  }, [demo, reloadKey, session?.apiKey, workspaceCode]);
 
   useEffect(() => {
     setDetail(null); setChunks([]);
@@ -51,8 +54,8 @@ export function useKnowledgeLibrary() {
     if (!session?.apiKey) return;
     listDocuments(session.apiKey, workspaceCode, selectedId)
       .then(setDocuments)
-      .catch((err: Error) => setError(err.message || "无法加载文档"));
-  }, [demo, selectedId, session?.apiKey, workspaceCode]);
+      .catch((err: unknown) => setError(getSafeResourceError(err, "无法加载文档")));
+  }, [demo, reloadKey, selectedId, session?.apiKey, workspaceCode]);
 
   function closeDialog() {
     setDialog(null); setName(""); setDescription(""); setTitle(""); setContent(""); setError("");
@@ -83,7 +86,7 @@ export function useKnowledgeLibrary() {
         setDocuments((current) => [created, ...current]);
       }
       closeDialog();
-    } catch (err) { setError(err instanceof Error ? err.message : "保存失败"); }
+    } catch (err) { setError(getSafeResourceError(err, "保存失败")); }
     finally { setBusy(false); }
   }
 
@@ -94,7 +97,7 @@ export function useKnowledgeLibrary() {
     try {
       const created = demo ? createDemoDocument(selected.id, "file", file.name, file.name) : await uploadKnowledgeDocument(session.apiKey, workspaceCode, selected.id, file);
       setDocuments((current) => [created, ...current]);
-    } catch (err) { setError(err instanceof Error ? err.message : "上传文档失败"); }
+    } catch (err) { setError(getSafeResourceError(err, "上传文档失败")); }
     finally { setBusy(false); }
   }
 
@@ -104,7 +107,7 @@ export function useKnowledgeLibrary() {
     try {
       if (!demo) await deleteKnowledgeBase(session.apiKey, workspaceCode, base.id);
       const next = bases.filter((item) => item.id !== base.id); setBases(next); setSelectedId(next[0]?.id || 0);
-    } catch (err) { setError(err instanceof Error ? err.message : "删除知识库失败"); }
+    } catch (err) { setError(getSafeResourceError(err, "删除知识库失败")); }
     finally { setBusy(false); }
   }
 
@@ -114,19 +117,21 @@ export function useKnowledgeLibrary() {
       if (demo || !session?.apiKey) { setChunks(createDemoChunks(document)); setChunkTotal(document.chunk_count); return; }
       const [current, page] = await Promise.all([getDocument(session.apiKey, workspaceCode, document.id), listDocumentChunks(session.apiKey, workspaceCode, document.id, 1, 20)]);
       setDetail(current); setChunks(page.chunks || []); setChunkTotal(page.total || 0);
-    } catch (err) { setError(err instanceof Error ? err.message : "无法加载文档详情"); }
+    } catch (err) { setError(getSafeResourceError(err, "无法加载文档详情")); }
     finally { setDetailLoading(false); }
   }
 
-  async function reindexCurrent() {
-    if (!detail || !session?.apiKey) return;
-    setBusy(true); setError("");
+  async function reindexItem(document: KnowledgeDocument) {
+    if (!session?.apiKey) return;
+    setBusy(true); setBusyDocumentId(document.id); setError("");
     try {
-      const current = demo ? { ...detail, status: "processing" as const, progress: 0 } : (await reindexDocument(session.apiKey, workspaceCode, detail.id), await getDocument(session.apiKey, workspaceCode, detail.id));
+      const current = demo ? { ...document, status: "processing" as const, progress: 0 } : (await reindexDocument(session.apiKey, workspaceCode, document.id), await getDocument(session.apiKey, workspaceCode, document.id));
       setDetail(current); setDocuments((items) => items.map((doc) => doc.id === current.id ? current : doc));
-    } catch (err) { setError(err instanceof Error ? err.message : "重建索引失败"); }
-    finally { setBusy(false); }
+    } catch (err) { setError(getSafeResourceError(err, "重建索引失败，请重试")); }
+    finally { setBusy(false); setBusyDocumentId(null); }
   }
+
+  async function reindexCurrent() { if (detail) await reindexItem(detail); }
 
   async function removeDocument(document: KnowledgeDocument) {
     if (!session?.apiKey || !window.confirm(`删除文档「${document.title}」？`)) return;
@@ -135,9 +140,9 @@ export function useKnowledgeLibrary() {
       if (!demo) await deleteDocument(session.apiKey, workspaceCode, document.id);
       setDocuments((current) => current.filter((item) => item.id !== document.id));
       if (detail?.id === document.id) setDetail(null);
-    } catch (err) { setError(err instanceof Error ? err.message : "删除文档失败"); }
+    } catch (err) { setError(getSafeResourceError(err, "删除文档失败")); }
     finally { setBusy(false); }
   }
 
-  return { bases, selectedId, selected, documents, loading, busy, error, dialog, name, description, title, content, detail, chunks, chunkTotal, detailLoading, demo, setSelectedId, setName, setDescription, setTitle, setContent, setDetail, openCreateBase, openEditBase, openDocumentDialog, closeDialog, saveDialog, uploadFile, removeBase, openDocument, reindexCurrent, removeDocument };
+  return { bases, selectedId, selected, documents, loading, busy, busyDocumentId, error, dialog, name, description, title, content, detail, chunks, chunkTotal, detailLoading, demo, setSelectedId, setName, setDescription, setTitle, setContent, setDetail, openCreateBase, openEditBase, openDocumentDialog, closeDialog, saveDialog, uploadFile, removeBase, openDocument, reindexItem, reindexCurrent, removeDocument, retry: () => { setError(""); setReloadKey((current) => current + 1); } };
 }

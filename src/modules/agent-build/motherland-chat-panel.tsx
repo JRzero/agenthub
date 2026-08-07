@@ -167,7 +167,7 @@ export function MotherlandChatPanel({ agentId, draft, onPatch }: { agentId: numb
           <div className="flex min-w-0 items-start gap-3">
             <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><Robot size={21} /></span>
             <div className="min-w-0">
-              <div className="flex items-center gap-2"><span className="status-badge bg-primary-soft text-primary">第 1 步</span><h3 className="font-semibold">与 Motherland 共创</h3></div>
+              <div className="flex items-center gap-2"><span className="status-badge status-info">第 1 步</span><h3 className="font-semibold">与 Motherland 共创</h3></div>
               <p className="mt-1 text-sm leading-6 text-text-muted">讨论角色设定、表达方式和安全边界，结果会保留在当前 Agent 的共创记录中。</p>
             </div>
           </div>

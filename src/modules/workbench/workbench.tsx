@@ -1,223 +1,228 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useCallback, useMemo, useReducer, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Clock, Plus, Warning } from "@phosphor-icons/react";
-import { DATA_MODE } from "@/config/capabilities";
+import { ArrowRight, CaretLeft, CaretRight, Clock, Cpu, Plus } from "@phosphor-icons/react";
 import { useAgents } from "@/modules/agents/queries";
-import { resolveAgentLifecycle } from "@/modules/agents/lifecycle";
-import { AgentAvatar } from "@/modules/agents/agent-avatar";
+import type { Agent } from "@/modules/agents/types";
+import { resolveAgentLifecycle, type AgentLifecycleState } from "@/modules/agents/lifecycle";
+import { AgentArtwork, AgentAvatar } from "@/modules/agents/agent-avatar";
+import { assetHref } from "@/modules/agent-assets/library-model";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
-import { SourceBadge } from "@/shared/ui/source-badge";
-import { deriveWorkbenchTasks, readiness } from "./model";
+import { countAgentLifecycles, deriveWorkbenchTasks, orderWorkbenchAgents, readiness, selectWorkbenchStage } from "./model";
+import motionStyles from "./workbench-transition.module.css";
+import { boundedCarouselSlot, circularAgentSlot, useWorkbenchAgentTransition } from "./workbench-transition";
+import { useDocumentHidden, usePrefersReducedMotion, useWorkbenchAutoplay } from "./workbench-autoplay";
 
-const demoMetrics = [
-  { label: "活跃用户", value: "637", change: "+8.6%" },
-  { label: "对话", value: "1,284", change: "+8.6%" },
-  { label: "积分收入", value: "12,460", change: "+8.6%" },
-];
+const lifecycleOrder: AgentLifecycleState[] = ["published", "draft", "creating", "unpublished", "archived"];
+
+function continueHref(agent: Agent): string {
+  return agent.creation_completed === false ? assetHref(agent) : `/assets/${agent.id}/build`;
+}
+
+function updatedLabel(value?: string): string {
+  if (!value || Number.isNaN(Date.parse(value))) return "暂无更新时间";
+  return new Intl.DateTimeFormat("zh-CN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(value));
+}
 
 export function Workbench() {
   const query = useAgents();
   const router = useRouter();
-  const demo = DATA_MODE === "demo";
   const agents = useMemo(() => query.data || [], [query.data]);
-  const focusAgent =
-    agents.find(
-      (agent) => resolveAgentLifecycle(agent).state !== "published",
-    ) || agents[0];
+  const orderedAgents = useMemo(() => orderWorkbenchAgents(agents), [agents]);
+  const orderedAgentIds = useMemo(() => orderedAgents.map((agent) => agent.id), [orderedAgents]);
+  const transition = useWorkbenchAgentTransition(orderedAgentIds);
+  const { request, requestRelative } = transition;
+  const [stageHovered, setStageHovered] = useState(false);
+  const [stageFocusWithin, setStageFocusWithin] = useState(false);
+  const [autoplayResetGeneration, resetAutoplay] = useReducer((generation: number) => generation + 1, 0);
+  const reducedMotion = usePrefersReducedMotion();
+  const documentHidden = useDocumentHidden();
+  const requestAutomaticNext = useCallback(() => requestRelative(1), [requestRelative]);
+  const requestManualRelative = useCallback((offset: number) => {
+    resetAutoplay();
+    requestRelative(offset);
+  }, [requestRelative]);
+  const requestManualAgent = useCallback((id: number, direction: -1 | 1) => {
+    resetAutoplay();
+    request(id, direction);
+  }, [request]);
+  useWorkbenchAutoplay({
+    agentCount: orderedAgents.length,
+    phase: transition.phase,
+    hovered: stageHovered,
+    focusWithin: stageFocusWithin,
+    documentHidden,
+    reducedMotion,
+  }, autoplayResetGeneration, requestAutomaticNext);
+  const stage = useMemo(() => selectWorkbenchStage(orderedAgents, transition.displayedId), [orderedAgents, transition.displayedId]);
+  const focusAgent = stage.focus;
+  const recentAgents = useMemo(() => [...agents].sort((left, right) => (Date.parse(right.updated_at || "") || 0) - (Date.parse(left.updated_at || "") || 0)).slice(0, 3), [agents]);
   const tasks = useMemo(() => deriveWorkbenchTasks(agents), [agents]);
-  const focusReadiness = focusAgent ? readiness(focusAgent) : 0;
+  const focusTask = focusAgent ? tasks.find((task) => task.agentId === focusAgent.id) : undefined;
+  const stableStageHeight = tasks.length > 0 ? 522 : 460;
+  const lifecycleCounts = useMemo(() => {
+    const counts = countAgentLifecycles(agents);
+    return lifecycleOrder.map((state) => ({
+    state,
+    label: state === "published" ? "已发布" : state === "draft" ? "草稿" : state === "creating" ? "创建中" : state === "unpublished" ? "已下架" : "已归档",
+    count: counts[state],
+  })).filter((item) => item.count > 0 || ["published", "draft", "creating"].includes(item.state));
+  }, [agents]);
 
   if (query.isLoading) return <LoadingState label="正在加载工作台…" />;
   if (query.isError) return <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />;
 
   return (
-    <div className="space-y-6 pb-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">工作台</h1>
-            <span className="text-xs text-text-muted">
-              {new Date().toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" })}
-            </span>
-          </div>
-          <p className="mt-1 text-xs text-text-muted">欢迎回来，继续完成你的 Agent</p>
-        </div>
-        <button type="button" onClick={() => router.push("/assets/create")} className="button-primary">
-          <Plus size={16} weight="bold" />
-          新建 Agent
-        </button>
-      </div>
+    <div className="mx-auto w-full max-w-[1760px] pb-8" data-testid="workbench-stage-page">
+      <header className="flex flex-wrap items-end justify-between gap-4 pb-4">
+        <div><h1 className="text-3xl font-bold tracking-tight">你的 Agent，正在生长</h1><p className="mt-1.5 text-sm text-text-secondary">在角色舞台浏览当前资产，回到创作的下一步。</p></div>
+        <button type="button" onClick={() => router.push("/assets/create")} className="button-primary"><Plus size={17} weight="bold" />创建 Agent</button>
+      </header>
 
-      {focusAgent ? (
-        <section>
-          <div className="panel grid overflow-hidden rounded-xl shadow-sm xl:grid-cols-[minmax(0,1fr)_auto]">
-            <div className="flex min-w-0 items-center gap-4 px-5 py-4">
-              <AgentAvatar agent={focusAgent} size={68} className="shrink-0 rounded-lg" />
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-                  <strong className="text-lg">{focusAgent.name}</strong>
-                  <span className="text-xs text-text-muted">v{focusAgent.version || 1}.0</span>
-                  <span className={`status-badge ${resolveAgentLifecycle(focusAgent).badgeClassName}`}>
-                    {resolveAgentLifecycle(focusAgent).label}
-                  </span>
-                </div>
-                <p className="mt-2 max-h-10 max-w-3xl overflow-hidden text-xs leading-5 text-text-muted">
-                  {focusAgent.description || "继续完善身份、人设与运行配置"}
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-3 border-t border-border px-5 py-4 xl:min-w-[440px] xl:border-l xl:border-t-0">
-              <div className="min-w-[170px] flex-1">
-                <div className="flex justify-between text-xs">
-                  <span className="font-medium">发布准备度</span>
-                  <strong className="text-success">{focusReadiness}%</strong>
-                </div>
-                <span className="mt-2 block h-1.5 overflow-hidden rounded-full bg-subtle">
-                  <span className="block h-full rounded-full bg-success" style={{ width: `${focusReadiness}%` }} />
-                </span>
-              </div>
-              <Link href={`/assets/${focusAgent.id}/build`} className="button-primary">
-                继续构建
-              </Link>
-              <Link href={`/assets/${focusAgent.id}/test`} className="button-secondary">
-                进入测试
-              </Link>
+      {focusAgent ? <>
+        <section aria-label="Agent 舞台" className="grid gap-4 min-[1180px]:grid-cols-[minmax(0,1fr)_280px]" data-transition-phase={transition.phase} data-transition-direction={transition.direction < 0 ? "previous" : "next"}>
+          <div
+            data-testid="workbench-agent-stage"
+            className="panel relative overflow-hidden px-4 py-5 sm:px-6"
+            style={{ minHeight: stableStageHeight }}
+            onMouseEnter={() => setStageHovered(true)}
+            onMouseLeave={() => setStageHovered(false)}
+            onFocusCapture={() => setStageFocusWithin(true)}
+            onBlurCapture={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setStageFocusWithin(false);
+            }}
+          >
+            {orderedAgents.length > 1 && <>
+              <button type="button" aria-label="上一个 Agent" onClick={() => requestManualRelative(-1)} className="absolute left-3 top-1/2 z-[60] grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface/95 text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><CaretLeft size={20} /></button>
+              <button type="button" aria-label="下一个 Agent" onClick={() => requestManualRelative(1)} className="absolute right-3 top-1/2 z-[60] grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface/95 text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><CaretRight size={20} /></button>
+            </>}
+            <div className={`${motionStyles.viewport} mx-auto min-h-[420px] w-full max-w-[900px]`} data-testid="workbench-carousel-viewport">
+              <LayeredStage
+                agents={orderedAgents}
+                agentIds={orderedAgentIds}
+                displayedId={transition.displayedId}
+                visualFocusId={transition.phase === "sliding" ? transition.targetId : transition.displayedId}
+                sliding={transition.phase === "sliding"}
+                onSelect={requestManualAgent}
+              />
             </div>
           </div>
-        </section>
-      ) : (
-        <section className="panel rounded-xl px-5 py-8 text-center">
-          <h2 className="text-sm font-semibold">从第一个 Agent Asset 开始</h2>
-          <p className="mt-1.5 text-xs text-text-muted">通过四步向导完成基础设定、头像、角色设定稿和技能。</p>
-          <button type="button" onClick={() => router.push("/assets/create")} className="button-primary mt-3">
-            <Plus size={16} />
-            新建 Agent
-          </button>
-        </section>
-      )}
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(340px,0.8fr)]">
-        <section className="panel overflow-hidden rounded-xl">
-          <div className="flex items-center justify-between border-b border-border px-5 py-3">
-            <h2 className="text-lg font-semibold">待处理事项</h2>
-            <span className="rounded-md border border-border px-2 py-0.5 text-xs text-text-muted">{tasks.length} 项</span>
-          </div>
-          <div className="divide-y divide-border">
-            {tasks.length ? (
-              tasks.map((task) => (
-                <div key={task.id} className="flex items-center gap-3 px-5 py-3 transition hover:bg-subtle">
-                  <span
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                      task.tone === "warning" ? "bg-orange-50 text-warning dark:bg-orange-400/10" : "bg-primary-soft text-primary"
-                    }`}
-                  >
-                    {task.tone === "warning" ? <Warning size={16} weight="fill" /> : <Clock size={16} weight="fill" />}
-                  </span>
-                  <p className="min-w-0 flex-1 truncate text-xs">
-                    <strong>{task.agentName}</strong>
-                    <span className="text-text-muted"> · {task.title}</span>
-                  </p>
-                  <Link
-                    href={task.href}
-                    className="group inline-flex min-h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-primary transition hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-                  >
-                    {task.action}
-                    <ArrowRight className="transition-transform group-hover:translate-x-0.5" size={13} />
-                  </Link>
-                </div>
-              ))
-            ) : (
-              <p className="px-5 py-8 text-center text-xs text-text-muted">当前没有待处理事项</p>
-            )}
-          </div>
-        </section>
-
-        <section className="panel overflow-hidden rounded-xl">
-          <div className="flex items-center justify-between border-b border-border px-5 py-3">
-            <h2 className="text-lg font-semibold">今日表现</h2>
-            <SourceBadge source={demo ? "demo" : "unavailable"} />
-          </div>
-          {demo ? (
-            <div className="p-5">
-              <div className="grid grid-cols-3 divide-x divide-border">
-                {demoMetrics.map((metric) => (
-                  <div key={metric.label} className="px-3 first:pl-0">
-                    <p className="text-xs text-text-muted">{metric.label}</p>
-                    <strong className="mt-1.5 block text-xl font-medium">{metric.value}</strong>
-                    <span className="mt-1 block text-xs text-success">较昨日 {metric.change}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-5 space-y-3">
-                {[
-                  ["OyiiOyii App", 86, "bg-indigo-500"],
-                  ["网页聊天", 64, "bg-emerald-500"],
-                  ["API 接入", 38, "bg-orange-500"],
-                ].map(([label, value, color]) => (
-                  <div key={String(label)}>
-                    <div className="flex justify-between text-xs text-text-muted">
-                      <span>{label}</span>
-                      <span>{value}%</span>
-                    </div>
-                    <span className="mt-2 block h-2 rounded-full bg-subtle">
-                      <span className={`block h-full rounded-full ${color}`} style={{ width: `${value}%` }} />
-                    </span>
-                  </div>
-                ))}
-              </div>
+          <aside className="panel overflow-hidden p-5" aria-label="当前 Agent 详情" data-testid="workbench-agent-detail" style={{ minHeight: stableStageHeight }}>
+            <div className="flex h-full min-h-0 flex-col">
+            <div className="flex items-center justify-between gap-3"><span className={`status-badge ${resolveAgentLifecycle(focusAgent).badgeClassName}`}>{resolveAgentLifecycle(focusAgent).label}</span><span className="text-xs text-text-muted">{focusAgent.current_version_id ? `v${focusAgent.version}` : "尚未发布版本"}</span></div>
+            <h2 className="mt-5 truncate text-xl font-semibold" title={focusAgent.name}>{focusAgent.name}</h2>
+            <p className="mt-2 line-clamp-3 min-h-[3.75rem] text-sm leading-5 text-text-secondary">{focusAgent.description || focusAgent.tagline || "暂无描述，进入工作区完善 Agent。"}</p>
+            <dl className="mt-5 space-y-3 border-y border-border py-4 text-sm">
+              <DetailRow label="配置完成度" value={`${readiness(focusAgent)}%`} />
+              <DetailRow label="Agent 编码" value={focusAgent.code || `agent-${focusAgent.id}`} />
+              <DetailRow label="运行模型" value={focusAgent.llm_model_name || focusAgent.model || "尚未配置"} />
+              <DetailRow label="最近更新" value={updatedLabel(focusAgent.updated_at)} />
+            </dl>
+            {focusTask && <div className="mt-4 rounded-lg bg-subtle p-3"><p className="text-[11px] font-medium uppercase tracking-[0.12em] text-text-muted">下一步</p><p className="mt-1.5 text-sm font-medium">{focusTask.title}</p><Link href={focusTask.href} className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">{focusTask.action}<ArrowRight size={13} /></Link></div>}
+            <div className="mt-auto grid grid-cols-[1fr_auto] gap-2 pt-5"><Link href={continueHref(focusAgent)} className="button-primary">打开工作区<ArrowRight size={16} /></Link><Link href={`/assets/${focusAgent.id}/test`} className="button-secondary">测试</Link></div>
             </div>
-          ) : (
-            <div className="flex min-h-48 items-center justify-center p-5">
-              <div className="max-w-sm text-center">
-                <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-subtle text-text-muted">
-                  <Warning size={20} />
-                </span>
-                <p className="mt-3 text-sm font-semibold">分析接口尚未接入</p>
-                <p className="mt-1.5 text-xs leading-5 text-text-muted">接入后将在这里展示真实 Agent 的会话、留存和使用表现。</p>
-              </div>
-            </div>
-          )}
+          </aside>
         </section>
-      </div>
 
-      <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">最近资产</h2>
-          <Link href="/assets" className="group flex items-center gap-1.5 text-xs font-medium text-primary">
-            查看全部资产
-            <ArrowRight className="transition-transform group-hover:translate-x-0.5" size={13} />
-          </Link>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {agents.slice(0, 6).map((agent) => (
-            <Link
-              key={agent.id}
-              href={`/assets/${agent.id}/overview`}
-              className="panel group flex h-40 flex-col overflow-hidden rounded-lg p-4 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
-            >
-              <div className="flex min-h-0 min-w-0 flex-1 items-start gap-3 overflow-hidden">
-                <AgentAvatar agent={agent} size={48} className="shrink-0 rounded-md" />
-                <span className="min-w-0 flex-1">
-                  <strong className="block truncate text-sm">{agent.name}</strong>
-                  <span className="mt-1 block truncate text-xs text-text-muted">{agent.code}</span>
-                  <span className="mt-1.5 block max-h-9 overflow-hidden text-xs leading-[18px] text-text-muted">
-                    {agent.description || "继续完善 Agent 的身份、人设与能力配置"}
-                  </span>
-                </span>
-              </div>
-              <div className="mt-3 flex shrink-0 items-center justify-between border-t border-border pt-2.5">
-                <span className={`status-badge ${resolveAgentLifecycle(agent).badgeClassName}`}>
-                  {resolveAgentLifecycle(agent).label}
-                </span>
-                <span className="text-xs text-text-muted">v{agent.version || 1}.0</span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+        <section aria-label="Agent 状态汇总" className="mt-4 grid divide-y divide-border border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          {lifecycleCounts.slice(0, 3).map((item) => <button key={item.state} type="button" onClick={() => router.push(`/assets`)} className="flex min-h-12 items-center justify-center gap-2 px-4 text-sm text-text-secondary hover:bg-subtle hover:text-text-strong"><span className={`size-2 rounded-full ${item.state === "published" ? "bg-success" : item.state === "creating" ? "bg-info" : "bg-warning"}`} aria-hidden="true" /><span>{item.label}</span><strong>{item.count}</strong><CaretRight size={14} className="text-text-muted" /></button>)}
+        </section>
+
+        <section aria-labelledby="recent-heading" className="mt-4">
+          <div className="mb-2 flex items-center justify-between"><h2 id="recent-heading" className="text-lg font-semibold">最近继续</h2><Link href="/assets" className="inline-flex items-center gap-1 text-sm font-medium text-primary">查看全部<ArrowRight size={14} /></Link></div>
+          <div className="space-y-2">{recentAgents.map((agent) => <Link key={agent.id} href={continueHref(agent)} className="panel group grid min-h-12 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-3 py-2 transition hover:border-primary/45 sm:grid-cols-[auto_minmax(160px,1fr)_minmax(140px,0.8fr)_auto]"><AgentAvatar agent={agent} size={38} className="rounded-lg" /><strong className="truncate text-sm" title={agent.name}>{agent.name}</strong><span className="hidden truncate text-xs text-text-muted sm:block">{updatedLabel(agent.updated_at)}</span><span className="flex items-center gap-2"><span className={`status-badge ${resolveAgentLifecycle(agent).badgeClassName}`}>{resolveAgentLifecycle(agent).label}</span><CaretRight size={15} className="text-text-muted group-hover:text-primary" /></span></Link>)}</div>
+        </section>
+      </> : <div className="panel grid min-h-72 place-items-center px-6 text-center"><div><h2 className="font-semibold">从第一个 Agent 开始</h2><p className="mt-2 text-sm text-text-muted">沿用现有四步创建流程，完成后仍是未发布草稿。</p><button type="button" onClick={() => router.push("/assets/create")} className="button-primary mt-5"><Plus size={16} />创建 Agent</button></div></div>}
     </div>
   );
+}
+
+function LayeredStage({
+  agents,
+  agentIds,
+  displayedId,
+  visualFocusId,
+  sliding,
+  onSelect,
+}: {
+  agents: Agent[];
+  agentIds: number[];
+  displayedId: number | null;
+  visualFocusId: number | null;
+  sliding: boolean;
+  onSelect: (id: number, direction: -1 | 1) => void;
+}) {
+  return (
+    <div className={motionStyles.layer} data-testid="workbench-carousel-layer">
+      {agents.map((agent) => {
+        const committedSlot = boundedCarouselSlot(circularAgentSlot(agentIds, displayedId, agent.id));
+        const visualSlot = boundedCarouselSlot(circularAgentSlot(agentIds, visualFocusId, agent.id));
+        const visible = Math.abs(committedSlot) <= 2 || Math.abs(visualSlot) <= 2;
+        const primary = !sliding && agent.id === displayedId;
+        const selectable = !sliding && visible && visualSlot !== 0;
+        return (
+          <LayeredStageCard
+            key={agent.id}
+            agent={agent}
+            slot={visualSlot}
+            visible={visible}
+            primary={primary}
+            selectable={selectable}
+            onSelect={() => onSelect(agent.id, visualSlot < 0 ? -1 : 1)}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function LayeredStageCard({
+  agent,
+  slot,
+  visible,
+  primary,
+  selectable,
+  onSelect,
+}: {
+  agent: Agent;
+  slot: -3 | -2 | -1 | 0 | 1 | 2 | 3;
+  visible: boolean;
+  primary: boolean;
+  selectable: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <article
+      className={motionStyles.card}
+      data-agent-id={agent.id}
+      data-primary={primary}
+      data-slot={slot}
+      data-visible={visible}
+      data-testid={`workbench-carousel-card-${agent.id}`}
+      aria-hidden={visible ? undefined : true}
+      inert={visible ? undefined : true}
+    >
+      <AgentArtwork agent={agent} />
+      {selectable && <button type="button" onClick={onSelect} aria-label={`切换到 ${agent.name}`} className={motionStyles.sideSelect} />}
+      <div className={motionStyles.cardCopy}>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className={`status-badge ${resolveAgentLifecycle(agent).badgeClassName}`}>{resolveAgentLifecycle(agent).label}</span>
+          {agent.current_version_id && <span className="text-xs text-text-secondary">v{agent.version}</span>}
+        </div>
+        <h2 className={motionStyles.cardTitle} title={agent.name}>{agent.name}</h2>
+        <div className={motionStyles.centerOnly}>
+          <p className="mt-1.5 line-clamp-2 text-sm leading-5 text-text-secondary">{agent.description || agent.tagline || "暂无描述，进入工作区完善 Agent。"}</p>
+          <Link href={continueHref(agent)} tabIndex={primary ? undefined : -1} aria-hidden={primary ? undefined : true} className="button-primary mt-4 w-full">打开工作区<ArrowRight size={16} /></Link>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function DetailRow({ label, value }: { label: string; value: string }) {
+  const Icon = label === "运行模型" ? Cpu : label === "最近更新" ? Clock : null;
+  return <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] items-center gap-3"><dt className="flex items-center gap-1.5 text-xs text-text-muted">{Icon && <Icon size={14} />}{label}</dt><dd className="truncate text-right font-medium" title={value}>{value}</dd></div>;
 }

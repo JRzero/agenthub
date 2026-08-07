@@ -5,9 +5,9 @@ import type { ClientAdapter } from "./model";
 import { SourceBadge } from "@/shared/ui/source-badge";
 
 const statusCopy = {
-  running: { label: "运行中", className: "status-success" },
+  running: { label: "运行中", className: "status-info" },
   outdated: { label: "待更新", className: "status-warning" },
-  draft: { label: "草稿", className: "status-neutral" },
+  draft: { label: "草稿", className: "status-warning" },
 };
 
 function AdapterIcon({ id, core }: { id: string; core?: boolean }) {

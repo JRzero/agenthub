@@ -1,0 +1,23 @@
+{
+  "source": "R19 fixed-start CSS reverified in the current run; early-frame observations retained from the committed R19 evidence because the in-app Browser action pacing returns after about 273ms",
+  "durationMs": 420,
+  "easing": "cubic-bezier(0.16, 1, 0.3, 1)",
+  "currentRun": {
+    "actionCaptureElapsedMs": 293,
+    "progress": 0.9895356711003628,
+    "stageOpacity": "1",
+    "trackOpacity": "1",
+    "overflowPx": 0
+  },
+  "committedR19ObservedSamples": [
+    { "elapsedMs": 43, "progress": 0.11964619105199517 },
+    { "elapsedMs": 71, "progress": 0.41374002418379685 },
+    { "elapsedMs": 101, "progress": 0.6643131801692865 },
+    { "elapsedMs": 130, "progress": 0.7787206771463119 },
+    { "elapsedMs": 170, "progress": 0.8731910519951632 },
+    { "elapsedMs": 221, "progress": 0.9599359129383312 },
+    { "elapsedMs": 293, "progress": 0.9895356711003628 },
+    { "elapsedMs": 363, "progress": 0.9987714631197099 },
+    { "elapsedMs": 433, "progress": 0.999987908101572 }
+  ]
+}

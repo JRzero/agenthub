@@ -6,11 +6,21 @@ import {
   buildAgentVersionConfigFilename,
   buildDistributionChannels,
   buildPublicAgentCard,
+  canExportCurrentVersion,
+  distributionPublishState,
   resolveShareUrl,
 } from "./model";
 
 describe("distribution model", () => {
   const agent = DEMO_AGENTS[0];
+
+  it("derives honest publish and package-export availability", () => {
+    expect(distributionPublishState(104)).toEqual({ label: "已发布", tone: "success" });
+    expect(distributionPublishState(null)).toEqual({ label: "尚未发布", tone: "warning" });
+    expect(canExportCurrentVersion(104, "live")).toBe(true);
+    expect(canExportCurrentVersion(104, "unavailable")).toBe(false);
+    expect(canExportCurrentVersion(null, "live")).toBe(false);
+  });
 
   it("maps the live public share link without inventing other live channels", () => {
     const channels = buildDistributionChannels(agent, {

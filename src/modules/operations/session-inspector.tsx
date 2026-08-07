@@ -28,7 +28,7 @@ export function SessionInspector({
     <aside className="flex min-h-0 flex-col border-l border-border bg-surface">
       <header className="border-b border-border px-4 py-3">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-text-muted">PROMPT 编辑</h2>
+          <h2 className="text-sm font-semibold">会话检查器</h2>
           <SourceBadge source={demo ? "demo" : "live"} />
         </div>
       </header>
@@ -68,7 +68,7 @@ function PromptBlock({ title, description, value, placeholder, saving, onChange,
       rows={5}
       className="mt-3 min-h-36 w-full resize-y rounded-lg border border-border bg-surface px-3 py-3 text-sm leading-6 text-text-strong outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
     />
-    <button type="button" onClick={onSave} disabled={saving} className="mt-3 w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50">
+    <button type="button" onClick={onSave} disabled={saving} className="button-primary mt-3 w-full">
       {saving ? "保存中…" : "保存"}
     </button>
   </section>;
