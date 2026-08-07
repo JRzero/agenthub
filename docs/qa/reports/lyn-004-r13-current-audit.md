@@ -1,7 +1,7 @@
 # LYN-004-R13 修前视觉审计
 
-日期：2026-08-06  
-审计分支：`task/lyn-004-r13-preview-version-contrast_2026-08-06`  
+日期：2026-08-06
+审计分支：`task/lyn-004-r13-preview-version-contrast_2026-08-06`
 起点：`e0da2c36c9fbe02ef4966e89b7d1ca7504299cb3`
 
 ## 审计边界

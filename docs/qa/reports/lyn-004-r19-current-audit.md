@@ -23,4 +23,3 @@
 - P0: 0
 - P1: 0
 - P2: 1 — the correct R18 ease-out trajectory is too compressed into the first 100–130ms, producing an abrupt perceived cadence.
-

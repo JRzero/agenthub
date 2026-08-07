@@ -1,8 +1,8 @@
 # LYN-004-R14 Continue Publish Intent QA
 
-Date: 2026-08-06  
-Environment: isolated Demo frontend at `http://127.0.0.1:3013`  
-Agent used: existing Demo Agent `19` (`知识向导`)  
+Date: 2026-08-06
+Environment: isolated Demo frontend at `http://127.0.0.1:3013`
+Agent used: existing Demo Agent `19` (`知识向导`)
 Safety boundary: the publish confirmation was opened and cancelled only; no publish submission or business-data write was performed.
 
 ## Browser checks

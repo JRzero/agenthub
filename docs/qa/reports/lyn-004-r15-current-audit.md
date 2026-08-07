@@ -30,7 +30,7 @@
   - P1-2：Session 说明框面积大且接近白底，视觉权重高于发布检查与主 CTA 的辅助层级预期。
 - P2：0
 
-修前完整截图：`docs/qa/images/lyn-004-r15/01-before-full-1228x1454.png`  
+修前完整截图：`docs/qa/images/lyn-004-r15/01-before-full-1228x1454.png`
 修前弹窗聚焦截图：`docs/qa/images/lyn-004-r15/02-before-dialog-focus-final.png`
 
 ## 审计边界
