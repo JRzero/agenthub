@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   WORKBENCH_SLIDE_MS,
+  boundedCarouselSlot,
+  circularAgentSlot,
   createWorkbenchTransitionState,
   relativeAgentId,
   workbenchSlideDelay,
@@ -8,10 +10,25 @@ import {
 } from "./workbench-transition";
 
 describe("workbench Agent transition", () => {
-  it("uses one balanced 500-560ms horizontal slide", () => {
-    expect(WORKBENCH_SLIDE_MS).toBe(520);
-    expect(workbenchSlideDelay(false)).toBe(520);
+  it("uses one trackable 650-800ms layered transition", () => {
+    expect(WORKBENCH_SLIDE_MS).toBe(720);
+    expect(workbenchSlideDelay(false)).toBe(720);
     expect(workbenchSlideDelay(true)).toBe(0);
+  });
+
+  it("assigns deterministic circular slots for one, two, three, and five Agents", () => {
+    expect(circularAgentSlot([1], 1, 1)).toBe(0);
+    expect(circularAgentSlot([1, 2], 1, 2)).toBe(1);
+    expect(circularAgentSlot([1, 2], 2, 1)).toBe(-1);
+    expect([1, 2, 3].map((id) => circularAgentSlot([1, 2, 3], 1, id))).toEqual([0, 1, -1]);
+    expect([1, 2, 3, 4, 5].map((id) => circularAgentSlot([1, 2, 3, 4, 5], 3, id))).toEqual([-2, -1, 0, 1, 2]);
+  });
+
+  it("keeps only five visible layers and places other Agents in offstage buffers", () => {
+    const ids = [1, 2, 3, 4, 5, 6, 7];
+    expect(ids.map((id) => boundedCarouselSlot(circularAgentSlot(ids, 4, id)))).toEqual([-3, -2, -1, 0, 1, 2, 3]);
+    expect(circularAgentSlot(ids, 7, 1)).toBe(1);
+    expect(circularAgentSlot(ids, 1, 7)).toBe(-1);
   });
 
   it("commits the latest valid request during rapid input", () => {

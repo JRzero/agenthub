@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
 
-export const WORKBENCH_SLIDE_MS = 520;
+export const WORKBENCH_SLIDE_MS = 720;
 
 export type WorkbenchTransitionDirection = -1 | 1;
 export type WorkbenchTransitionPhase = "idle" | "sliding";
@@ -82,6 +82,30 @@ export function relativeAgentId(ids: number[], fromId: number | null, offset: nu
   if (!ids.length) return null;
   const currentIndex = Math.max(0, ids.indexOf(fromId ?? ids[0]));
   return ids[(currentIndex + offset + ids.length) % ids.length];
+}
+
+export function circularAgentSlot(
+  ids: number[],
+  focusId: number | null,
+  agentId: number,
+): number | null {
+  if (!ids.length || focusId === null) return null;
+  const focusIndex = ids.indexOf(focusId);
+  const agentIndex = ids.indexOf(agentId);
+  if (focusIndex < 0 || agentIndex < 0) return null;
+
+  let offset = agentIndex - focusIndex;
+  const half = ids.length / 2;
+  if (offset > half) offset -= ids.length;
+  if (offset < -half) offset += ids.length;
+  return offset;
+}
+
+export function boundedCarouselSlot(offset: number | null): -3 | -2 | -1 | 0 | 1 | 2 | 3 {
+  if (offset === null) return 3;
+  if (offset < -2) return -3;
+  if (offset > 2) return 3;
+  return offset as -2 | -1 | 0 | 1 | 2;
 }
 
 function prefersReducedMotion(): boolean {

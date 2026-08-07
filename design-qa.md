@@ -1408,3 +1408,21 @@ final result: passed
 - Final findings: P0 = 0, P1 = 0, P2 = 0.
 
 final result: passed
+
+---
+
+# LYN-004-R21 Talkie-style Layered Carousel Design QA
+
+- Scope: Workbench Agent stage presentation only; Agent data, card copy, artwork, order, CTA, detail panel, navigation, summary, recent continuation, API, and backend remain unchanged.
+- Initial findings: P0 = 0, P1 = 1, P2 = 1. R20 moved one keyed complete two-group strip and lacked the user-approved persistent far/near/focus five-slot hierarchy.
+- Fix: stable per-Agent nodes keyed only by Agent id, with signed circular slots and continuous translateX/scale plus a synchronized 720ms linear z-index handoff (`50/40 → 45/45 → 40/50`). Desktop slots are focus `0px/1`, near `±188px/0.84`, far `±318px/0.68`; mobile slots safely contract without changing the 420px card height.
+- Motion: 720ms `cubic-bezier(0.42, 0, 0.58, 1)`; Browser observed 23.39% at 293ms, 57.37% at 435ms, 92.60% at 622ms, and completion by 761ms. All card opacities remain 1.
+- Queue/reduced motion: the existing one-last-target queue is preserved; rapid double input ends on the last valid target with no empty stage. Reduced motion remains 0ms runtime / 0.01ms CSS.
+- Responsive: 1536/1440/1280/720 checks have zero page overflow; the center card is 360px desktop and 280px at 720. Fresh Demo console: 0 error / 0 warning.
+- Live handoff: 127.0.0.1:3002 `/login`, `/workbench`, and `/assets` return HTTP 200 under `com.linkyun.agenthub.r21-live` (final PID 45795); no Demo marker and fresh console 0/0. The unchanged Agent request still returns HTTP 404, so Live remains fixture-free and visual motion QA uses isolated Demo evidence.
+- Honest evidence: the existing Demo has two Agents, so Browser captures do not invent three more. Five-plus slot behavior is covered with synthetic id-only tests. Talkie public capture timed out and was not retried per user instruction; the supplied screenshot is visual truth and its private easing is explicitly unconfirmed.
+- Comparisons: `docs/qa/images/lyn-004-r21/20-talkie-reference-r21-comparison.png`, `21-r20-r21-1440-comparison.png`, `22-r21-start-mid-end-sequence.png`; Live boundary: `31-r21-live-3002-settled.png`.
+- Reports: `docs/qa/reports/lyn-004-r21-current-audit.md`, `docs/qa/reports/lyn-004-r21-design-qa.md`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed

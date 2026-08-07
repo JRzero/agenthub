@@ -10,9 +10,9 @@ import { resolveAgentLifecycle, type AgentLifecycleState } from "@/modules/agent
 import { AgentArtwork, AgentAvatar } from "@/modules/agents/agent-avatar";
 import { assetHref } from "@/modules/agent-assets/library-model";
 import { ErrorState, LoadingState } from "@/shared/ui/request-state";
-import { countAgentLifecycles, deriveWorkbenchTasks, orderWorkbenchAgents, readiness, selectWorkbenchStage, type WorkbenchStageSelection } from "./model";
+import { countAgentLifecycles, deriveWorkbenchTasks, orderWorkbenchAgents, readiness, selectWorkbenchStage } from "./model";
 import motionStyles from "./workbench-transition.module.css";
-import { useWorkbenchAgentTransition } from "./workbench-transition";
+import { boundedCarouselSlot, circularAgentSlot, useWorkbenchAgentTransition } from "./workbench-transition";
 
 const lifecycleOrder: AgentLifecycleState[] = ["published", "draft", "creating", "unpublished", "archived"];
 
@@ -33,10 +33,6 @@ export function Workbench() {
   const orderedAgentIds = useMemo(() => orderedAgents.map((agent) => agent.id), [orderedAgents]);
   const transition = useWorkbenchAgentTransition(orderedAgentIds);
   const stage = useMemo(() => selectWorkbenchStage(orderedAgents, transition.displayedId), [orderedAgents, transition.displayedId]);
-  const incomingStage = useMemo(
-    () => transition.phase === "sliding" ? selectWorkbenchStage(orderedAgents, transition.targetId) : null,
-    [orderedAgents, transition.phase, transition.targetId],
-  );
   const focusAgent = stage.focus;
   const recentAgents = useMemo(() => [...agents].sort((left, right) => (Date.parse(right.updated_at || "") || 0) - (Date.parse(left.updated_at || "") || 0)).slice(0, 3), [agents]);
   const tasks = useMemo(() => deriveWorkbenchTasks(agents), [agents]);
@@ -69,15 +65,14 @@ export function Workbench() {
               <button type="button" aria-label="下一个 Agent" onClick={() => transition.requestRelative(1)} className="absolute right-3 top-1/2 z-20 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface/90 text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><CaretRight size={20} /></button>
             </>}
             <div className={`${motionStyles.viewport} mx-auto min-h-[420px] w-full max-w-[900px]`} data-testid="workbench-carousel-viewport">
-              {incomingStage ? (
-                <div key={`${transition.displayedId}-${transition.targetId}-${transition.direction}`} className={`${motionStyles.track} ${transition.direction < 0 ? motionStyles.slidePrevious : motionStyles.slideNext}`} data-testid="workbench-carousel-track">
-                  {transition.direction < 0 && <StageGroup stage={incomingStage} agentCount={orderedAgents.length} interactive={false} onSelect={transition.request} />}
-                  <StageGroup stage={stage} agentCount={orderedAgents.length} interactive onSelect={transition.request} />
-                  {transition.direction > 0 && <StageGroup stage={incomingStage} agentCount={orderedAgents.length} interactive={false} onSelect={transition.request} />}
-                </div>
-              ) : (
-                <StageGroup stage={stage} agentCount={orderedAgents.length} interactive onSelect={transition.request} staticGroup />
-              )}
+              <LayeredStage
+                agents={orderedAgents}
+                agentIds={orderedAgentIds}
+                displayedId={transition.displayedId}
+                visualFocusId={transition.phase === "sliding" ? transition.targetId : transition.displayedId}
+                sliding={transition.phase === "sliding"}
+                onSelect={transition.request}
+              />
             </div>
           </div>
 
@@ -111,46 +106,86 @@ export function Workbench() {
   );
 }
 
-function StageGroup({
-  stage,
-  agentCount,
-  interactive,
+function LayeredStage({
+  agents,
+  agentIds,
+  displayedId,
+  visualFocusId,
+  sliding,
   onSelect,
-  staticGroup = false,
 }: {
-  stage: WorkbenchStageSelection;
-  agentCount: number;
-  interactive: boolean;
+  agents: Agent[];
+  agentIds: number[];
+  displayedId: number | null;
+  visualFocusId: number | null;
+  sliding: boolean;
   onSelect: (id: number, direction: -1 | 1) => void;
-  staticGroup?: boolean;
 }) {
-  if (!stage.focus) return null;
-  const columns = agentCount === 1
-    ? "grid-cols-[minmax(240px,360px)]"
-    : agentCount === 2
-      ? "grid-cols-[minmax(240px,280px)] md:grid-cols-[minmax(180px,270px)_minmax(270px,360px)]"
-      : "grid-cols-[minmax(240px,280px)] md:grid-cols-[minmax(150px,0.78fr)_minmax(270px,1.08fr)_minmax(150px,0.78fr)]";
-
   return (
-    <div
-      className={`${staticGroup ? motionStyles.staticGroup : motionStyles.group} grid min-h-[420px] items-end justify-center gap-3 ${columns}`}
-      aria-hidden={interactive ? undefined : true}
-      inert={interactive ? undefined : true}
-      data-carousel-group={interactive ? "current" : "incoming"}
-    >
-      {stage.previous && <StageSideCard agent={stage.previous} onSelect={(id) => onSelect(id, -1)} />}
-      <StageFocusCard agent={stage.focus} primary={interactive} />
-      {stage.next && <StageSideCard agent={stage.next} onSelect={(id) => onSelect(id, 1)} />}
+    <div className={motionStyles.layer} data-testid="workbench-carousel-layer">
+      {agents.map((agent) => {
+        const committedSlot = boundedCarouselSlot(circularAgentSlot(agentIds, displayedId, agent.id));
+        const visualSlot = boundedCarouselSlot(circularAgentSlot(agentIds, visualFocusId, agent.id));
+        const visible = Math.abs(committedSlot) <= 2 || Math.abs(visualSlot) <= 2;
+        const primary = !sliding && agent.id === displayedId;
+        const selectable = !sliding && visible && visualSlot !== 0;
+        return (
+          <LayeredStageCard
+            key={agent.id}
+            agent={agent}
+            slot={visualSlot}
+            visible={visible}
+            primary={primary}
+            selectable={selectable}
+            onSelect={() => onSelect(agent.id, visualSlot < 0 ? -1 : 1)}
+          />
+        );
+      })}
     </div>
   );
 }
 
-function StageSideCard({ agent, onSelect }: { agent: Agent; onSelect: (id: number) => void }) {
-  return <button type="button" onClick={() => onSelect(agent.id)} aria-label={`切换到 ${agent.name}`} className="group relative mb-5 hidden h-[350px] min-w-0 overflow-hidden rounded-xl border border-border bg-surface text-left transition hover:-translate-y-1 hover:border-primary/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary md:block"><AgentArtwork agent={agent} /><span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-canvas via-canvas/90 to-transparent p-4 pt-16"><strong className="block truncate text-lg">{agent.name}</strong><span className="mt-1 block text-xs text-text-secondary">{resolveAgentLifecycle(agent).label}{agent.current_version_id ? ` · v${agent.version}` : ""}</span></span></button>;
-}
-
-function StageFocusCard({ agent, primary }: { agent: Agent; primary: boolean }) {
-  return <article className="relative z-10 h-[420px] min-w-0 overflow-hidden rounded-xl border border-primary/45 bg-surface shadow-2xl" data-testid={primary ? "workbench-agent-hero" : undefined}><AgentArtwork agent={agent} /><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-canvas via-canvas/95 to-transparent px-5 pb-5 pt-24"><div className="flex flex-wrap items-center gap-2"><span className={`status-badge ${resolveAgentLifecycle(agent).badgeClassName}`}>{resolveAgentLifecycle(agent).label}</span>{agent.current_version_id && <span className="text-xs text-text-secondary">v{agent.version}</span>}</div><h2 className="mt-3 truncate text-2xl font-semibold" title={agent.name}>{agent.name}</h2><p className="mt-1.5 line-clamp-2 text-sm leading-5 text-text-secondary">{agent.description || agent.tagline || "暂无描述，进入工作区完善 Agent。"}</p><Link href={continueHref(agent)} className="button-primary pointer-events-auto mt-4 w-full">打开工作区<ArrowRight size={16} /></Link></div></article>;
+function LayeredStageCard({
+  agent,
+  slot,
+  visible,
+  primary,
+  selectable,
+  onSelect,
+}: {
+  agent: Agent;
+  slot: -3 | -2 | -1 | 0 | 1 | 2 | 3;
+  visible: boolean;
+  primary: boolean;
+  selectable: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <article
+      className={motionStyles.card}
+      data-agent-id={agent.id}
+      data-primary={primary}
+      data-slot={slot}
+      data-visible={visible}
+      data-testid={`workbench-carousel-card-${agent.id}`}
+      aria-hidden={visible ? undefined : true}
+      inert={visible ? undefined : true}
+    >
+      <AgentArtwork agent={agent} />
+      {selectable && <button type="button" onClick={onSelect} aria-label={`切换到 ${agent.name}`} className={motionStyles.sideSelect} />}
+      <div className={motionStyles.cardCopy}>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className={`status-badge ${resolveAgentLifecycle(agent).badgeClassName}`}>{resolveAgentLifecycle(agent).label}</span>
+          {agent.current_version_id && <span className="text-xs text-text-secondary">v{agent.version}</span>}
+        </div>
+        <h2 className={motionStyles.cardTitle} title={agent.name}>{agent.name}</h2>
+        <div className={motionStyles.centerOnly}>
+          <p className="mt-1.5 line-clamp-2 text-sm leading-5 text-text-secondary">{agent.description || agent.tagline || "暂无描述，进入工作区完善 Agent。"}</p>
+          <Link href={continueHref(agent)} tabIndex={primary ? undefined : -1} aria-hidden={primary ? undefined : true} className="button-primary mt-4 w-full">打开工作区<ArrowRight size={16} /></Link>
+        </div>
+      </div>
+    </article>
+  );
 }
 
 function DetailRow({ label, value }: { label: string; value: string }) {

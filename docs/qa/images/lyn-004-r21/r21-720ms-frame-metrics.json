@@ -1,0 +1,17 @@
+{
+  "viewport": { "width": 1536, "height": 1058 },
+  "durationMs": 720,
+  "easing": "cubic-bezier(0.42, 0, 0.58, 1)",
+  "browserComputedEasing": "ease-in-out",
+  "outgoingStartTranslateX": -180,
+  "outgoingEndTranslateX": -368,
+  "samples": [
+    { "elapsedMs": 293, "translateX": -223.967, "progress": 0.2339, "scale": 0.962581, "opacity": 1 },
+    { "elapsedMs": 310, "translateX": -230.178, "progress": 0.2669, "scale": 0.957295, "opacity": 1 },
+    { "elapsedMs": 324, "translateX": -236.761, "progress": 0.3019, "scale": 0.951693, "opacity": 1 },
+    { "elapsedMs": 435, "translateX": -287.851, "progress": 0.5737, "scale": 0.908212, "opacity": 1 },
+    { "elapsedMs": 622, "translateX": -354.09, "progress": 0.9260, "scale": 0.851838, "opacity": 1 },
+    { "elapsedMs": 761, "translateX": -367.993, "progress": 1, "scale": 0.840006, "opacity": 1 }
+  ],
+  "evidenceLimit": "The in-app Browser action round trip made 293ms the first reliable numeric sample; screenshots are labeled by sequence position rather than claimed wall-clock time."
+}
