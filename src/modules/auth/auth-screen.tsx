@@ -186,7 +186,6 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           <BrandLink className={styles.brandMobile} />
           <p className={styles.formEyebrow}>{registerMode ? "WORKSPACE ACCESS" : "WORKSPACE LOGIN"}</p>
           <h1 className={styles.formTitle}>{registerMode ? "创建 AgentHub 账号" : "登录 AgentHub"}</h1>
-          {registerMode && <p className={styles.formDescription}>使用手机号、验证码和邀请码加入工作空间。</p>}
 
           {demo ? (
             <div className={styles.demoPanel}><p className={styles.demoTitle}>当前运行在演示数据模式</p><p className={styles.demoDescription}>不会向登录或注册接口发送请求。</p><button type="button" className={styles.submitButton} onClick={() => void enterDemo()}>进入演示工作区 <ArrowRight size={19} weight="bold" /></button></div>
@@ -212,21 +211,22 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
                     <button type="button" className={styles.smsButton} disabled={smsSending || smsCooldown > 0 || !phone.trim()} onClick={() => void handleSendSmsCode()}>{smsSending ? "发送中…" : smsCooldown > 0 ? `${smsCooldown}s 后重发` : "获取验证码"}</button>
                   </div>
                 ) : (
-                  <AuthField label="密码" htmlFor={passwordId} icon={<LockKey size={19} />}><input id={passwordId} type="password" value={password} onChange={(event) => setPassword(event.target.value)} className={styles.fieldInput} autoComplete="current-password" placeholder="输入密码" required /></AuthField>
+                  <div className={styles.passwordField}>
+                    <AuthField label="密码" htmlFor={passwordId} icon={<LockKey size={19} />}><input id={passwordId} type="password" value={password} onChange={(event) => setPassword(event.target.value)} className={styles.fieldInput} autoComplete="current-password" placeholder="输入密码" required /></AuthField>
+                  </div>
                 )}
               </div>
 
               {registerMode && <AuthField label="邀请码" htmlFor={invitationId} icon={<Key size={19} />}><input id={invitationId} value={invitationCode} onChange={(event) => setInvitationCode(event.target.value)} className={styles.fieldInput} autoComplete="off" placeholder="输入邀请码" required /></AuthField>}
 
               {smsError && <p role="alert" className={styles.errorMessage}>{smsError}</p>}
-
-              <ApiServiceSettings id={apiSettingsId} inputId={apiServiceId} open={apiSettingsOpen} value={apiServiceUrl} onToggle={() => setApiSettingsOpen((current) => !current)} onChange={setApiServiceUrl} />
-
               {error && <p role="alert" className={styles.errorMessage}>{error}</p>}
 
               <button type="submit" className={styles.submitButton} disabled={submitDisabled}>
                 {loading ? <><CircleNotch className={styles.spinner} size={19} /> 正在处理…</> : <>{registerMode ? "注册并进入 AgentHub" : "登录"} <ArrowRight size={20} weight="bold" /></>}
               </button>
+
+              <ApiServiceSettings id={apiSettingsId} inputId={apiServiceId} open={apiSettingsOpen} value={apiServiceUrl} onToggle={() => setApiSettingsOpen((current) => !current)} onChange={setApiServiceUrl} />
             </form>
           )}
 
