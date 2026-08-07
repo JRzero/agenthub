@@ -11,6 +11,7 @@ const { sendSmsCodeMock, signInSmsMock, signInWithPasswordMock, signUpMock } = v
 }));
 
 let search = new URLSearchParams();
+let pathname = "/login";
 const replace = vi.fn();
 
 vi.mock("next/image", () => ({
@@ -20,7 +21,7 @@ vi.mock("next/link", () => ({
   default: ({ children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => <a {...props}>{children}</a>,
 }));
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/register",
+  usePathname: () => pathname,
   useRouter: () => ({ replace }),
   useSearchParams: () => search,
 }));
@@ -54,6 +55,7 @@ function setValue(input: HTMLInputElement, value: string) {
 }
 
 async function render(mode: "login" | "register") {
+  pathname = `/${mode}`;
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
@@ -76,6 +78,34 @@ describe("mobile auth interaction state", () => {
     signInSmsMock.mockReset().mockResolvedValue(undefined);
     signInWithPasswordMock.mockReset().mockResolvedValue(undefined);
     signUpMock.mockReset().mockResolvedValue(undefined);
+  });
+
+  it("uses the workbench default without adding a redundant next query to the register link", async () => {
+    const { container, root } = await render("login");
+    await act(async () => {
+      setValue(container.querySelector<HTMLInputElement>('input[autocomplete="tel"]')!, "13800000000");
+      setValue(container.querySelector<HTMLInputElement>('input[autocomplete="one-time-code"]')!, "000000");
+      container.querySelector("form")?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    });
+
+    expect(signInSmsMock).toHaveBeenCalledWith({ phone: "13800000000", smsCode: "000000" });
+    expect(replace).toHaveBeenCalledWith("/workbench");
+    expect(container.querySelector<HTMLAnchorElement>('a[href="/register"]')).not.toBeNull();
+    await act(async () => root.unmount());
+  });
+
+  it("sends unsafe next values to the workbench without propagating them to the register link", async () => {
+    search = new URLSearchParams({ next: "//evil.example/path" });
+    const { container, root } = await render("login");
+    await act(async () => {
+      setValue(container.querySelector<HTMLInputElement>('input[autocomplete="tel"]')!, "13800000000");
+      setValue(container.querySelector<HTMLInputElement>('input[autocomplete="one-time-code"]')!, "000000");
+      container.querySelector("form")?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    });
+
+    expect(replace).toHaveBeenCalledWith("/workbench");
+    expect(container.querySelector<HTMLAnchorElement>('a[href="/register"]')).not.toBeNull();
+    await act(async () => root.unmount());
   });
 
   afterEach(() => {
@@ -138,6 +168,21 @@ describe("mobile auth interaction state", () => {
       landingPath: "/register?invitation_code=INVITE&invitation_source=share&next=%2Fassets%3Fview%3Dall",
     });
     expect(replace).toHaveBeenCalledWith("/assets?view=all");
+    expect(container.querySelector<HTMLAnchorElement>('a[href="/login?next=%2Fassets%3Fview%3Dall"]')).not.toBeNull();
+    await act(async () => root.unmount());
+  });
+
+  it("uses the workbench default after registration and keeps the login link free of redundant next", async () => {
+    search = new URLSearchParams("invitation_code=INVITE");
+    const { container, root } = await render("register");
+    await act(async () => {
+      setValue(container.querySelector<HTMLInputElement>('input[autocomplete="tel"]')!, "13800000000");
+      setValue(container.querySelector<HTMLInputElement>('input[autocomplete="one-time-code"]')!, "000000");
+      container.querySelector("form")?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    });
+
+    expect(replace).toHaveBeenCalledWith("/workbench");
+    expect(container.querySelector<HTMLAnchorElement>('a[href="/login"]')).not.toBeNull();
     await act(async () => root.unmount());
   });
 });

@@ -19,7 +19,7 @@ import { getApiBaseUrl } from "@/shared/api/http-client";
 import { setApiBaseUrlOverride } from "@/shared/api/api-base";
 import { authErrorMessage, sendSmsCode, type SmsPurpose } from "./api";
 import { useAuth } from "./auth-provider";
-import { resolveAuthRedirect } from "./redirect";
+import { DEFAULT_AUTH_REDIRECT, resolveAuthRedirect } from "./redirect";
 import styles from "./auth-screen.module.css";
 
 type AuthMode = "login" | "register";
@@ -40,7 +40,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   );
   const alternateHref = useMemo(() => {
     const base = registerMode ? "/login" : "/register";
-    return next === "/assets" ? base : `${base}?next=${encodeURIComponent(next)}`;
+    return next === DEFAULT_AUTH_REDIRECT ? base : `${base}?next=${encodeURIComponent(next)}`;
   }, [next, registerMode]);
 
   const [loginMethod, setLoginMethod] = useState<LoginMethod>("sms");
