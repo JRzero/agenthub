@@ -18,7 +18,7 @@
   bottom: 0;
   left: 50%;
   z-index: var(--slot-z);
-  width: min(360px, calc(100% - 72px));
+  width: min(326px, calc(100% - 72px));
   height: 420px;
   overflow: hidden;
   border: 1px solid var(--color-border);
@@ -39,25 +39,25 @@
 }
 
 .card[data-slot="-1"] {
-  --slot-x: -188px;
-  --slot-scale: 0.84;
+  --slot-x: -210px;
+  --slot-scale: 0.86;
   --slot-z: 40;
 }
 
 .card[data-slot="1"] {
-  --slot-x: 188px;
-  --slot-scale: 0.84;
+  --slot-x: 210px;
+  --slot-scale: 0.86;
   --slot-z: 40;
 }
 
 .card[data-slot="-2"] {
-  --slot-x: -318px;
+  --slot-x: -324px;
   --slot-scale: 0.68;
   --slot-z: 30;
 }
 
 .card[data-slot="2"] {
-  --slot-x: 318px;
+  --slot-x: 324px;
   --slot-scale: 0.68;
   --slot-z: 30;
 }

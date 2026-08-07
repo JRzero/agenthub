@@ -1426,3 +1426,22 @@ final result: passed
 - Final findings: P0 = 0, P1 = 0, P2 = 0.
 
 final result: passed
+
+---
+
+# LYN-004-R22 Carousel Exposure and Autoplay Design QA
+
+- Scope: Workbench layered carousel geometry and autoplay control only; Agent data, order, card content, CTA, details, navigation, API, backend, and R21 motion state remain unchanged.
+- Initial findings: P0 = 0, P1 = 2, P2 = 1. The 360px center card exceeded the 320–332px target, near exposure was only 52.6%, and no controlled autoplay existed.
+- Geometry fix: center 326px (9.4% reduction), near ±210px / 0.86, far ±324px / 0.68. Measured near exposure is 66.76%; deterministic five-slot far exposure is 38.19%.
+- Motion continuity: R21's stable per-Agent nodes, 720ms balanced transform/z-index transition, circular navigation, and one-last-target queue are preserved. Stage/card opacity remains 1.
+- Autoplay: one cancellable 6000ms timeout with visible Pause/Play control. User pause, hover, focus-within, hidden document, active transition, reduced motion, and one Agent suppress scheduling; manual input and pause recovery require a fresh full interval.
+- Controlled-clock coverage: exact six-second single advance, cancellation/restart, every pause condition, no repeated interval tick, reduced motion, and single-Agent behavior passed.
+- Responsive: 1536/1440/1280/720 checks have no page-level horizontal overflow; center width safely becomes 280px at 720. Fresh isolated Demo console: 0 error / 0 warning.
+- Live handoff: `com.linkyun.agenthub.r22-live` (PID 47864) serves `/login`, `/workbench`, and `/assets` as HTTP 200 at 127.0.0.1:3002. Browser has no Demo marker and Console 0/0; the unchanged Agent endpoint remains HTTP 404, so Live shows the honest request boundary without fixture fallback.
+- Honest evidence: the existing Demo has two Agents, so Browser does not invent three more. Far-slot exposure is verified with deterministic geometry tests; Live remains fixture-free.
+- Comparisons: `docs/qa/images/lyn-004-r22/05-r21-r22-same-viewport-comparison.png`, `docs/qa/images/lyn-004-r22/06-user-feedback-r22-comparison.png`.
+- Reports: `docs/qa/reports/lyn-004-r22-current-audit.md`, `docs/qa/reports/lyn-004-r22-design-qa.md`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed

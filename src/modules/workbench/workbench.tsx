@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useCallback, useMemo, useReducer, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CaretLeft, CaretRight, Clock, Cpu, Plus } from "@phosphor-icons/react";
+import { ArrowRight, CaretLeft, CaretRight, Clock, Cpu, Pause, Play, Plus } from "@phosphor-icons/react";
 import { useAgents } from "@/modules/agents/queries";
 import type { Agent } from "@/modules/agents/types";
 import { resolveAgentLifecycle, type AgentLifecycleState } from "@/modules/agents/lifecycle";
@@ -13,6 +13,7 @@ import { ErrorState, LoadingState } from "@/shared/ui/request-state";
 import { countAgentLifecycles, deriveWorkbenchTasks, orderWorkbenchAgents, readiness, selectWorkbenchStage } from "./model";
 import motionStyles from "./workbench-transition.module.css";
 import { boundedCarouselSlot, circularAgentSlot, useWorkbenchAgentTransition } from "./workbench-transition";
+import { useDocumentHidden, usePrefersReducedMotion, useWorkbenchAutoplay } from "./workbench-autoplay";
 
 const lifecycleOrder: AgentLifecycleState[] = ["published", "draft", "creating", "unpublished", "archived"];
 
@@ -32,6 +33,31 @@ export function Workbench() {
   const orderedAgents = useMemo(() => orderWorkbenchAgents(agents), [agents]);
   const orderedAgentIds = useMemo(() => orderedAgents.map((agent) => agent.id), [orderedAgents]);
   const transition = useWorkbenchAgentTransition(orderedAgentIds);
+  const { request, requestRelative } = transition;
+  const [autoplayPaused, setAutoplayPaused] = useState(false);
+  const [stageHovered, setStageHovered] = useState(false);
+  const [stageFocusWithin, setStageFocusWithin] = useState(false);
+  const [autoplayResetGeneration, resetAutoplay] = useReducer((generation: number) => generation + 1, 0);
+  const reducedMotion = usePrefersReducedMotion();
+  const documentHidden = useDocumentHidden();
+  const requestAutomaticNext = useCallback(() => requestRelative(1), [requestRelative]);
+  const requestManualRelative = useCallback((offset: number) => {
+    resetAutoplay();
+    requestRelative(offset);
+  }, [requestRelative]);
+  const requestManualAgent = useCallback((id: number, direction: -1 | 1) => {
+    resetAutoplay();
+    request(id, direction);
+  }, [request]);
+  useWorkbenchAutoplay({
+    agentCount: orderedAgents.length,
+    phase: transition.phase,
+    pausedByUser: autoplayPaused,
+    hovered: stageHovered,
+    focusWithin: stageFocusWithin,
+    documentHidden,
+    reducedMotion,
+  }, autoplayResetGeneration, requestAutomaticNext);
   const stage = useMemo(() => selectWorkbenchStage(orderedAgents, transition.displayedId), [orderedAgents, transition.displayedId]);
   const focusAgent = stage.focus;
   const recentAgents = useMemo(() => [...agents].sort((left, right) => (Date.parse(right.updated_at || "") || 0) - (Date.parse(left.updated_at || "") || 0)).slice(0, 3), [agents]);
@@ -59,10 +85,34 @@ export function Workbench() {
 
       {focusAgent ? <>
         <section aria-label="Agent 舞台" className="grid gap-4 min-[1180px]:grid-cols-[minmax(0,1fr)_280px]" data-transition-phase={transition.phase} data-transition-direction={transition.direction < 0 ? "previous" : "next"}>
-          <div data-testid="workbench-agent-stage" className="panel relative overflow-hidden px-4 py-5 sm:px-6" style={{ minHeight: stableStageHeight }}>
+          <div
+            data-testid="workbench-agent-stage"
+            className="panel relative overflow-hidden px-4 py-5 sm:px-6"
+            style={{ minHeight: stableStageHeight }}
+            onMouseEnter={() => setStageHovered(true)}
+            onMouseLeave={() => setStageHovered(false)}
+            onFocusCapture={(event) => {
+              const onAutoplayControl = (event.target as Element).closest('[data-testid="workbench-autoplay-toggle"]');
+              setStageFocusWithin(!onAutoplayControl);
+            }}
+            onBlurCapture={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setStageFocusWithin(false);
+            }}
+          >
+            {orderedAgents.length > 1 && <button
+              type="button"
+              aria-label={autoplayPaused ? "继续自动轮播" : "暂停自动轮播"}
+              aria-pressed={autoplayPaused}
+              data-testid="workbench-autoplay-toggle"
+              onClick={() => setAutoplayPaused((paused) => !paused)}
+              className="absolute right-4 top-4 z-[70] inline-flex h-9 items-center gap-1.5 rounded-full border border-border bg-surface/95 px-3 text-xs font-medium text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+            >
+              {autoplayPaused ? <Play size={15} weight="fill" /> : <Pause size={15} weight="fill" />}
+              {autoplayPaused ? "继续轮播" : "暂停轮播"}
+            </button>}
             {orderedAgents.length > 1 && <>
-              <button type="button" aria-label="上一个 Agent" onClick={() => transition.requestRelative(-1)} className="absolute left-3 top-1/2 z-20 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface/90 text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><CaretLeft size={20} /></button>
-              <button type="button" aria-label="下一个 Agent" onClick={() => transition.requestRelative(1)} className="absolute right-3 top-1/2 z-20 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface/90 text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><CaretRight size={20} /></button>
+              <button type="button" aria-label="上一个 Agent" onClick={() => requestManualRelative(-1)} className="absolute left-3 top-1/2 z-[60] grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface/95 text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><CaretLeft size={20} /></button>
+              <button type="button" aria-label="下一个 Agent" onClick={() => requestManualRelative(1)} className="absolute right-3 top-1/2 z-[60] grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface/95 text-text-secondary shadow-lg hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><CaretRight size={20} /></button>
             </>}
             <div className={`${motionStyles.viewport} mx-auto min-h-[420px] w-full max-w-[900px]`} data-testid="workbench-carousel-viewport">
               <LayeredStage
@@ -71,7 +121,7 @@ export function Workbench() {
                 displayedId={transition.displayedId}
                 visualFocusId={transition.phase === "sliding" ? transition.targetId : transition.displayedId}
                 sliding={transition.phase === "sliding"}
-                onSelect={transition.request}
+                onSelect={requestManualAgent}
               />
             </div>
           </div>

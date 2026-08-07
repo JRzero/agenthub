@@ -32,8 +32,8 @@ describe("workbench V1 composition", () => {
   it("uses persistent per-Agent layered nodes without fading or keyed group replacement", () => {
     expect(source).toContain("useWorkbenchAgentTransition(orderedAgentIds)");
     expect(source).toContain("data-transition-phase={transition.phase}");
-    expect(source).toContain("transition.requestRelative(-1)");
-    expect(source).toContain("transition.requestRelative(1)");
+    expect(source).toContain("requestManualRelative(-1)");
+    expect(source).toContain("requestManualRelative(1)");
     expect(source).toContain('data-testid="workbench-carousel-viewport"');
     expect(source).toContain('data-testid="workbench-carousel-layer"');
     expect(source).toContain("key={agent.id}");
@@ -42,10 +42,40 @@ describe("workbench V1 composition", () => {
     expect(transitionStyles).toContain("720ms cubic-bezier(0.42, 0, 0.58, 1)");
     expect(transitionStyles).toContain("z-index 720ms linear");
     expect(transitionStyles).toContain("translate3d(calc(-50% + var(--slot-x)), 0, 0) scale(var(--slot-scale))");
-    expect(transitionStyles).toContain('--slot-x: -318px');
-    expect(transitionStyles).toContain('--slot-x: 318px');
+    expect(transitionStyles).toContain("width: min(326px, calc(100% - 72px))");
+    expect(transitionStyles).toContain('--slot-x: -210px');
+    expect(transitionStyles).toContain('--slot-x: 210px');
+    expect(transitionStyles).toContain('--slot-x: -324px');
+    expect(transitionStyles).toContain('--slot-x: 324px');
     expect(transitionStyles).not.toContain("opacity:");
     expect(transitionStyles).not.toMatch(/transition[^;]*(width|height|top|left)/);
+  });
+
+  it("meets the desktop near and far exposure bands", () => {
+    const centerWidth = 326;
+    const nearWidth = centerWidth * 0.86;
+    const farWidth = centerWidth * 0.68;
+    const centerRight = centerWidth / 2;
+    const nearRight = 210 + nearWidth / 2;
+    const farRight = 324 + farWidth / 2;
+    const nearExposure = (nearRight - centerRight) / nearWidth;
+    const farExposure = (farRight - nearRight) / farWidth;
+
+    expect(nearExposure).toBeGreaterThanOrEqual(0.58);
+    expect(nearExposure).toBeLessThanOrEqual(0.68);
+    expect(farExposure).toBeGreaterThanOrEqual(0.28);
+    expect(farExposure).toBeLessThanOrEqual(0.4);
+  });
+
+  it("provides controllable autoplay without changing carousel identity", () => {
+    expect(source).toContain('data-testid="workbench-autoplay-toggle"');
+    expect(source).toContain('aria-label={autoplayPaused ? "继续自动轮播" : "暂停自动轮播"}');
+    expect(source).toContain("useWorkbenchAutoplay({");
+    expect(source).toContain("onMouseEnter={() => setStageHovered(true)}");
+    expect(source).toContain("setStageFocusWithin(!onAutoplayControl)");
+    expect(source).toContain("requestManualRelative(-1)");
+    expect(source).toContain("requestManualRelative(1)");
+    expect(source).toContain("key={agent.id}");
   });
 
   it("keeps stage geometry stable and makes reduced motion effectively instant", () => {
