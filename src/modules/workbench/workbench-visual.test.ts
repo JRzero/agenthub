@@ -14,8 +14,8 @@ describe("workbench V1 composition", () => {
     expect(source).toContain("deriveWorkbenchTasks(agents)");
     expect(source).toContain("countAgentLifecycles(agents)");
     expect(source).toContain("selectWorkbenchStage(orderedAgents, transition.displayedId)");
-    expect(source).toContain('data-testid="workbench-agent-hero"');
-    expect(source).toContain("<StageFocusCard agent={focusAgent}");
+    expect(source).toContain('data-testid={primary ? "workbench-agent-hero" : undefined}');
+    expect(source).toContain("<StageFocusCard agent={stage.focus}");
     expect(source).toContain("<AgentArtwork agent={agent}");
   });
 
@@ -24,29 +24,32 @@ describe("workbench V1 composition", () => {
     expect(source).toContain('aria-label="下一个 Agent"');
     expect(source).toContain("<StageSideCard agent={stage.previous}");
     expect(source).toContain("<StageSideCard agent={stage.next}");
-    expect(source).toContain("orderedAgents.length === 2");
+    expect(source).toContain("agentCount === 2");
     expect(source).not.toContain("DEMO_AGENTS");
     expect(source).not.toContain("fake");
   });
 
-  it("uses a two-layer directional transition without animating layout properties", () => {
+  it("uses a persistent two-group horizontal track without fading the stage", () => {
     expect(source).toContain("useWorkbenchAgentTransition(orderedAgentIds)");
     expect(source).toContain("data-transition-phase={transition.phase}");
     expect(source).toContain("transition.requestRelative(-1)");
     expect(source).toContain("transition.requestRelative(1)");
-    expect(transitionStyles).toContain("70ms ease-in");
-    expect(transitionStyles).toContain("210ms ease-out");
-    expect(transitionStyles).toContain("transform: translateX");
-    expect(transitionStyles).toContain("opacity:");
+    expect(source).toContain('data-testid="workbench-carousel-viewport"');
+    expect(source).toContain('data-testid="workbench-carousel-track"');
+    expect(source).toContain('key={`${transition.displayedId}-${transition.targetId}-${transition.direction}`}');
+    expect(source).toContain("transition.phase === \"sliding\"");
+    expect(transitionStyles).toContain("240ms cubic-bezier(0.22, 1, 0.36, 1)");
+    expect(transitionStyles).toContain("translate3d(-50%, 0, 0)");
+    expect(transitionStyles).not.toContain("opacity:");
     expect(transitionStyles).not.toMatch(/animation[^;]*(width|height|top|left)/);
   });
 
-  it("keeps stage geometry stable and removes displacement for reduced motion", () => {
+  it("keeps stage geometry stable and makes reduced motion effectively instant", () => {
     expect(source).toContain("const stableStageHeight = tasks.length > 0 ? 522 : 460");
     expect(source.match(/minHeight: stableStageHeight/g)).toHaveLength(2);
     expect(transitionStyles).toContain("@media (prefers-reduced-motion: reduce)");
     expect(transitionStyles).toContain("animation-duration: 0.01ms");
-    expect(transitionStyles).toContain("transform: none");
+    expect(transitionStyles).not.toContain("transform: none");
   });
 
   it("does not fabricate analytics or revenue metrics", () => {

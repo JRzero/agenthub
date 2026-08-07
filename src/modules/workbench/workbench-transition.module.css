@@ -1,49 +1,45 @@
-.motionLayer {
-  will-change: transform, opacity;
+.viewport {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
 
-.exitPrevious {
-  animation: workbench-exit-previous 70ms ease-in both;
+.track {
+  display: flex;
+  width: 200%;
+  will-change: transform;
 }
 
-.exitNext {
-  animation: workbench-exit-next 70ms ease-in both;
+.group {
+  flex: 0 0 50%;
+  min-width: 0;
 }
 
-.enterPrevious {
-  animation: workbench-enter-previous 210ms ease-out both;
+.staticGroup {
+  width: 100%;
 }
 
-.enterNext {
-  animation: workbench-enter-next 210ms ease-out both;
+.slideNext {
+  animation: workbench-slide-next 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes workbench-exit-previous {
-  from { opacity: 1; transform: translateX(0); }
-  to { opacity: 0; transform: translateX(14px); }
+.slidePrevious {
+  animation: workbench-slide-previous 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes workbench-exit-next {
-  from { opacity: 1; transform: translateX(0); }
-  to { opacity: 0; transform: translateX(-14px); }
+@keyframes workbench-slide-next {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
 }
 
-@keyframes workbench-enter-previous {
-  from { opacity: 0; transform: translateX(-18px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes workbench-enter-next {
-  from { opacity: 0; transform: translateX(18px); }
-  to { opacity: 1; transform: translateX(0); }
+@keyframes workbench-slide-previous {
+  from { transform: translate3d(-50%, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .exitPrevious,
-  .exitNext,
-  .enterPrevious,
-  .enterNext {
+  .slideNext,
+  .slidePrevious {
     animation-duration: 0.01ms;
-    transform: none;
   }
 }

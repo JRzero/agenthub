@@ -1357,3 +1357,21 @@ final result: passed
 - Final findings: P0 = 0, P1 = 0, P2 = 0.
 
 final result: passed
+
+---
+
+# LYN-004-R18 Workbench Horizontal Carousel Motion Design QA
+
+- Scope: Workbench Agent stage transition only; static card composition, data, order, details, CTA, navigation, summary, and recent continuation remain unchanged.
+- Initial findings: P0 = 0, P1 = 1, P2 = 1. The R17 state machine faded the whole stage/detail layer to zero between a 70ms exit and 210ms enter, deterministically exposing the dark panel and making the 14–18px direction cue read as a blink.
+- Fix: one persistent overflow viewport with outgoing and incoming card groups on a 200%-wide track. Next slides left; previous slides right. Duration is 240ms with `cubic-bezier(0.22, 1, 0.36, 1)` and only `transform` is animated.
+- Stability: stage/track opacity stays 1, stage geometry stays 877 × 522px at 1440, background stays `rgb(15, 17, 19)`, and document horizontal overflow stays 0 throughout captured frames.
+- Fast input: the in-flight target is immutable; the latest valid target is queued and replayed with a keyed fresh animation. Incoming content is mounted but inert, so images can decode without clearing the outgoing stage or adding focus targets.
+- Reduced motion: 0ms state completion plus a 0.01ms transform-only CSS duration; no opacity, overlay, or empty-frame path.
+- Responsive: 1536/1440/1280/720 checks have no document overflow; focus card remains inside the stage at 720.
+- Browser: fresh Demo console 0 error / 0 warning. Live data remains API-only with no Demo fallback.
+- Comparisons: `docs/qa/images/lyn-004-r18/53-feedback-after-comparison.png`, `docs/qa/images/lyn-004-r18/54-before-after-midframe-comparison.png`, `docs/qa/images/lyn-004-r18/51-before-next-sequence.png`, `docs/qa/images/lyn-004-r18/52-after-next-sequence.png`.
+- Reports: `docs/qa/reports/lyn-004-r18-current-audit.md`, `docs/qa/reports/lyn-004-r18-design-qa.md`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
