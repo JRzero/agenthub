@@ -5,29 +5,37 @@ import { describe, expect, it } from "vitest";
 const source = readFileSync(join(process.cwd(), "src/modules/auth/auth-screen.tsx"), "utf8");
 const stylesheet = readFileSync(join(process.cwd(), "src/modules/auth/auth-screen.module.css"), "utf8");
 
-describe("AgentHub authentication screen", () => {
-  it("keeps the existing authentication and registration behaviors", () => {
-    expect(source).toContain("await signIn(username.trim(), password)");
-    expect(source).toContain("await signUp({ username, email, password, invitationCode })");
+describe("AgentHub mobile authentication screen", () => {
+  it("defaults /login to accessible SMS sign-in before password sign-in", () => {
+    expect(source).toContain('useState<LoginMethod>("sms")');
+    expect(source).toContain('role="tablist" aria-label="登录方式"');
+    expect(source.indexOf("验证码登录")).toBeLessThan(source.indexOf("密码登录"));
+    expect(source).toContain('autoComplete="one-time-code" inputMode="numeric"');
+    expect(source).toContain('autoComplete="current-password"');
+  });
+
+  it("keeps registration password-free and forwards invitation attribution", () => {
+    expect(source).toContain('await signUp({ phone, smsCode, invitationCode, invitationSource, landingPath })');
+    expect(source).toContain('searchParams.get("invitation_code")?.trim()');
+    expect(source).toContain('searchParams.get("invitation_source")');
+    expect(source).not.toContain("new-password");
+  });
+
+  it("clears transient SMS state while retaining account and phone inputs", () => {
+    expect(source).toContain("function clearTransientState()");
+    expect(source).toContain('setSmsCode("");');
+    expect(source).toContain('setPassword("");');
+    expect(source).toContain('setSmsCooldown(0);');
+    expect(source).toContain("setLoginMethod(nextMethod);");
+  });
+
+  it("preserves API Service controls, safe replace navigation, and responsive visual assets", () => {
     expect(source).toContain("setApiBaseUrlOverride(apiServiceUrl)");
-    expect(source).toContain('href={alternateHref}');
-    expect(source).toContain('role="alert"');
-  });
-
-  it("keeps all credential controls labeled and keyboard operable", () => {
-    expect(source).toContain('htmlFor={usernameId}');
-    expect(source).toContain('htmlFor={passwordId}');
-    expect(source).toContain('aria-label={showPassword ? "隐藏密码" : "显示密码"}');
-    expect(source).toContain('aria-expanded={apiSettingsOpen}');
-    expect(source).toContain('aria-controls={apiSettingsId}');
-    expect(source).toContain('aria-busy={loading}');
-  });
-
-  it("uses a standalone portrait asset instead of the selected design screenshot", () => {
+    expect(source).toContain("router.replace(next)");
     expect(source).toContain('src="/images/login-agent-portrait.png"');
-    expect(source).not.toContain("15-login-selected.png");
     expect(stylesheet).toContain("grid-template-columns: 22.5% 33% minmax(0, 1fr)");
     expect(stylesheet).toContain("@media (max-width: 1099px)");
     expect(stylesheet).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(stylesheet).toContain(".smsRow");
   });
 });
