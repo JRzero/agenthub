@@ -11,7 +11,15 @@ import {
 } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { DATA_MODE } from "@/config/capabilities";
-import { login, register, type AuthResult, type RegistrationInput } from "./api";
+import {
+  passwordLogin,
+  register,
+  smsLogin,
+  type AuthResult,
+  type PasswordLoginInput,
+  type RegistrationInput,
+  type SmsLoginInput,
+} from "./api";
 import { clearAccountScopedCache } from "./account-cache";
 import {
   AUTH_STORAGE_KEY,
@@ -25,7 +33,8 @@ interface AuthContextValue {
   session: AuthSession | null;
   ready: boolean;
   demo: boolean;
-  signIn: (username: string, password: string) => Promise<void>;
+  signInSms: (input: SmsLoginInput) => Promise<void>;
+  signInWithPassword: (input: PasswordLoginInput) => Promise<void>;
   signUp: (input: RegistrationInput) => Promise<void>;
   signOut: () => void;
   updateSessionUsername: (username: string) => void;
@@ -35,7 +44,10 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 const DEMO_SESSION: AuthSession = { apiKey: "demo-only", username: "李然" };
 
 function toSession(result: AuthResult): AuthSession {
-  return { apiKey: result.api_key, username: result.creator.username };
+  return {
+    apiKey: result.api_key,
+    username: result.creator.username || result.creator.email || "AgentHub 用户",
+  };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -88,25 +100,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("storage", handleStorage);
   }, [demo, queryClient]);
 
-  const signIn = useCallback(async (username: string, password: string) => {
+  const persistOrDemo = useCallback(async (request: () => Promise<AuthResult>) => {
     if (demo) {
       setSession(DEMO_SESSION);
       return;
     }
-    persistResult(await login(username.trim(), password));
+    persistResult(await request());
   }, [demo, persistResult]);
 
-  const signUp = useCallback(async (input: RegistrationInput) => {
-    if (demo) {
-      setSession(DEMO_SESSION);
-      return;
-    }
-    persistResult(await register(input));
-  }, [demo, persistResult]);
+  const signInSms = useCallback((input: SmsLoginInput) => persistOrDemo(() => smsLogin(input)), [persistOrDemo]);
+  const signInWithPassword = useCallback(
+    (input: PasswordLoginInput) => persistOrDemo(() => passwordLogin(input)),
+    [persistOrDemo],
+  );
+  const signUp = useCallback((input: RegistrationInput) => persistOrDemo(() => register(input)), [persistOrDemo]);
 
   const value = useMemo(
-    () => ({ session, ready, demo, signIn, signUp, signOut, updateSessionUsername }),
-    [demo, ready, session, signIn, signOut, signUp, updateSessionUsername],
+    () => ({ session, ready, demo, signInSms, signInWithPassword, signUp, signOut, updateSessionUsername }),
+    [demo, ready, session, signInSms, signInWithPassword, signOut, signUp, updateSessionUsername],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

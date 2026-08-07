@@ -1,4 +1,4 @@
-export const DEFAULT_AUTH_REDIRECT = "/assets";
+export const DEFAULT_AUTH_REDIRECT = "/workbench";
 
 export function resolveAuthRedirect(value: string | null | undefined): string {
   if (!value) return DEFAULT_AUTH_REDIRECT;

@@ -193,13 +193,6 @@
   letter-spacing: -0.035em;
 }
 
-.formDescription {
-  margin: 13px 0 0;
-  color: #a5a8ae;
-  font-size: 13px;
-  line-height: 1.7;
-}
-
 .authForm {
   display: grid;
   gap: 17px;
@@ -236,8 +229,8 @@
 
 .fieldInput {
   width: 100%;
-  height: 48px;
-  min-height: 48px;
+  height: 40px;
+  min-height: 40px;
   border: 1px solid #3b3e42;
   border-radius: 6px;
   background: #08090a;
@@ -247,6 +240,97 @@
   line-height: 1;
   outline: none;
   transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.phonePrefix {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 46px;
+  color: #aeb1b4;
+  font-size: 13px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.phoneInput {
+  padding-left: 82px;
+}
+
+.loginTabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #3b3e42;
+  border-radius: 6px;
+  background: #08090a;
+}
+
+.loginTab,
+.loginTabActive {
+  min-height: 38px;
+  border: 0;
+  border-radius: 4px;
+  padding: 0 12px;
+  background: transparent;
+  color: #979b9f;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.loginTab:hover,
+.loginTab:focus-visible {
+  color: #f5f7f8;
+}
+
+.loginTabActive {
+  background: #d7ff2f;
+  color: #090a0a;
+}
+
+.loginTabActive:focus-visible,
+.loginTab:focus-visible,
+.smsButton:focus-visible {
+  outline: 2px solid #d7ff2f;
+  outline-offset: 2px;
+}
+
+.smsRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.smsButton {
+  min-width: 112px;
+  height: 40px;
+  min-height: 40px;
+  border: 1px solid #3b3e42;
+  border-radius: 6px;
+  background: #101214;
+  color: #d7ff2f;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.smsButton:hover:not(:disabled) {
+  border-color: #d7ff2f;
+}
+
+.smsButton:disabled {
+  color: #777b80;
+  cursor: not-allowed;
+}
+
+.passwordField {
+  margin-top: 14px;
 }
 
 .fieldInput::placeholder {
@@ -354,7 +438,8 @@
   justify-content: center;
   gap: 15px;
   width: 100%;
-  min-height: 44px;
+  min-height: 40px;
+  height: 40px;
   border: 1px solid #d7ff2f;
   border-radius: 5px;
   background: #d7ff2f;
@@ -493,6 +578,7 @@
   .formTitle {
     font-size: 31px;
   }
+
 }
 
 @media (max-height: 760px) and (min-width: 1100px) {
@@ -514,7 +600,10 @@
   .fieldInput,
   .passwordToggle,
   .apiSettingsTrigger,
-  .submitButton {
+  .submitButton,
+  .loginTab,
+  .loginTabActive,
+  .smsButton {
     transition-duration: 0.01ms;
   }
 
