@@ -309,11 +309,13 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
   gap: 10px;
+  margin-top: 14px;
 }
 
 .smsButton {
   min-width: 112px;
-  height: 48px;
+  height: 40px;
+  min-height: 40px;
   border: 1px solid #3b3e42;
   border-radius: 6px;
   background: #101214;

@@ -39,5 +39,7 @@ describe("AgentHub mobile authentication screen", () => {
     expect(stylesheet).toContain("@media (max-width: 1099px)");
     expect(stylesheet).toContain("@media (prefers-reduced-motion: reduce)");
     expect(stylesheet).toContain(".smsRow");
+    expect(stylesheet).toContain("margin-top: 14px");
+    expect(stylesheet).toContain("min-height: 40px");
   });
 });
