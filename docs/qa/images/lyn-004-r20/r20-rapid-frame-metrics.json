@@ -1,0 +1,53 @@
+{
+  "first": {
+    "elapsed": 280,
+    "animationName": "workbench-transition-module__Jh6kNG__workbench-slide-next",
+    "duration": "0.52s",
+    "easing": "ease-in-out",
+    "heroTitle": "林月",
+    "now": 1786065313506,
+    "overflow": 0,
+    "phase": "sliding",
+    "progress": 0.41209915356711,
+    "stageHeight": 522,
+    "stageOpacity": "1",
+    "trackOpacity": "1",
+    "trackWidth": 1654,
+    "viewportWidth": 827,
+    "x": -340.806
+  },
+  "second": {
+    "elapsed": 574,
+    "animationName": "workbench-transition-module__Jh6kNG__workbench-slide-next",
+    "duration": "0.52s",
+    "easing": "ease-in-out",
+    "heroTitle": "知识向导",
+    "now": 1786065313800,
+    "overflow": 0,
+    "phase": "sliding",
+    "progress": 0.0004866590084643289,
+    "stageHeight": 522,
+    "stageOpacity": "1",
+    "trackOpacity": "1",
+    "trackWidth": 1654,
+    "viewportWidth": 827,
+    "x": -0.402467
+  },
+  "end": {
+    "elapsed": 1230,
+    "animationName": null,
+    "duration": null,
+    "easing": null,
+    "heroTitle": "林月",
+    "now": 1786065314456,
+    "overflow": 0,
+    "phase": "idle",
+    "progress": null,
+    "stageHeight": 522,
+    "stageOpacity": "1",
+    "trackOpacity": null,
+    "trackWidth": 0,
+    "viewportWidth": 827,
+    "x": 0
+  }
+}

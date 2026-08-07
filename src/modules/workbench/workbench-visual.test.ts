@@ -38,7 +38,7 @@ describe("workbench V1 composition", () => {
     expect(source).toContain('data-testid="workbench-carousel-track"');
     expect(source).toContain('key={`${transition.displayedId}-${transition.targetId}-${transition.direction}`}');
     expect(source).toContain("transition.phase === \"sliding\"");
-    expect(transitionStyles).toContain("420ms cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(transitionStyles).toContain("520ms cubic-bezier(0.42, 0, 0.58, 1)");
     expect(transitionStyles).toContain("translate3d(-50%, 0, 0)");
     expect(transitionStyles).not.toContain("opacity:");
     expect(transitionStyles).not.toMatch(/animation[^;]*(width|height|top|left)/);

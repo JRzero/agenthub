@@ -1,0 +1,18 @@
+{
+  "computedStyle": {
+    "duration": "0.52s",
+    "easing": "ease-in-out",
+    "sourceEasing": "cubic-bezier(0.42, 0, 0.58, 1)",
+    "animatedProperty": "transform"
+  },
+  "observedNext": [
+    { "elapsedMs": 272, "progress": 0.4122333736396614, "x": -340.917, "stageOpacity": "1", "trackOpacity": "1", "stageHeight": 522, "overflowPx": 0 },
+    { "elapsedMs": 428, "progress": 0.8568802902055622, "x": -708.64, "stageOpacity": "1", "trackOpacity": "1", "stageHeight": 522, "overflowPx": 0 },
+    { "elapsedMs": 652, "phase": "idle", "selectedAgent": "知识向导", "stageOpacity": "1", "stageHeight": 522, "overflowPx": 0 }
+  ],
+  "exactCurveCheck": {
+    "progressAt100Ms": 0.075331,
+    "progressAt260Ms": 0.5,
+    "progressAt520Ms": 1
+  }
+}

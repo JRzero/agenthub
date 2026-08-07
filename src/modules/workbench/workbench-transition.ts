@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
 
-export const WORKBENCH_SLIDE_MS = 420;
+export const WORKBENCH_SLIDE_MS = 520;
 
 export type WorkbenchTransitionDirection = -1 | 1;
 export type WorkbenchTransitionPhase = "idle" | "sliding";

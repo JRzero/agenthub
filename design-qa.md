@@ -51,8 +51,6 @@
 
 final result: passed
 
----
-
 # LYN-004-R12 Agent Grid Live Regression Design QA
 
 - Source truth: `/Users/king/Projects/linkyun/linkyun-control/deliverables/LYN-004-agenthub-v1-ui-designs/25-agent-library-four-column-feedback.png` (2254×1590 px).
@@ -1389,6 +1387,24 @@ final result: passed
 - Live handoff: 127.0.0.1:3002 `/login`, `/workbench`, and `/assets` return HTTP 200 under `com.linkyun.agenthub.r19-live` (PID 39151); fresh Live Browser console is 0 error / 0 warning with no Demo marker.
 - Comparisons: `docs/qa/images/lyn-004-r19/31-r18-r19-sequence-comparison.png`, `docs/qa/images/lyn-004-r19/32-r18-r19-early-mid-comparison.png`.
 - Reports: `docs/qa/reports/lyn-004-r19-current-audit.md`, `docs/qa/reports/lyn-004-r19-design-qa.md`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
+
+---
+
+# LYN-004-R20 Workbench Slower Ease-In-Out Carousel Design QA
+
+- Scope: timing/easing only on the R18/R19 two-group transform track; state machine, geometry, cards, imagery, order, CTA, navigation, API, and data remain unchanged.
+- Initial finding: P0 = 0, P1 = 0, P2 = 1. R19 reached 66.43% around 101ms and 77.87% around 130ms, so its strong ease-out still felt front-loaded.
+- Candidate decision: 520ms `cubic-bezier(0.4, 0, 0.2, 1)` was rejected because exact midpoint progress was 77.556%, outside the requested 50–75% range.
+- Fix: 520ms `cubic-bezier(0.42, 0, 0.58, 1)`; exact progress is 7.533% at 100ms, 50% at 260ms, and 100% at 520ms.
+- Stability: transform only; stage/track opacity stays 1; no scale, overlay, spring, overshoot, rebound, or second movement. Stage height stays 522px.
+- Queue/reduced motion: one last-target queue and independent key remain intact; reduced motion remains 0ms runtime / 0.01ms CSS.
+- Responsive: 1536/1440/1280/720 have zero overflow and unchanged final geometry. Fresh Demo console: 0 error / 0 warning.
+- Live handoff: 127.0.0.1:3002 `/login`, `/workbench`, and `/assets` return HTTP 200 under `com.linkyun.agenthub.r20-live` (PID 40956); fresh Live console is 0/0 with no Demo marker. The unchanged Agent request still returns HTTP 404, so Live remains fixture-free and motion QA uses isolated Demo evidence.
+- Comparisons: `docs/qa/images/lyn-004-r20/31-r19-r20-sequence-comparison.png`, `docs/qa/images/lyn-004-r20/32-r19-r20-mid-focus-comparison.png`.
+- Reports: `docs/qa/reports/lyn-004-r20-current-audit.md`, `docs/qa/reports/lyn-004-r20-design-qa.md`.
 - Final findings: P0 = 0, P1 = 0, P2 = 0.
 
 final result: passed

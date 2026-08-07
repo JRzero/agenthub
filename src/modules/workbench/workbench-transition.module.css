@@ -20,11 +20,11 @@
 }
 
 .slideNext {
-  animation: workbench-slide-next 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: workbench-slide-next 520ms cubic-bezier(0.42, 0, 0.58, 1) both;
 }
 
 .slidePrevious {
-  animation: workbench-slide-previous 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: workbench-slide-previous 520ms cubic-bezier(0.42, 0, 0.58, 1) both;
 }
 
 @keyframes workbench-slide-next {

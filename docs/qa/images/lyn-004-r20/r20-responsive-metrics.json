@@ -1,0 +1,74 @@
+[
+  {
+    "carousel": {
+      "height": 420,
+      "width": 900
+    },
+    "clientWidth": 1525,
+    "hero": {
+      "height": 420,
+      "width": 360
+    },
+    "overflow": 0,
+    "scrollWidth": 1525,
+    "stage": {
+      "height": 522,
+      "width": 973
+    },
+    "viewport": 1536
+  },
+  {
+    "carousel": {
+      "height": 420,
+      "width": 827
+    },
+    "clientWidth": 1429,
+    "hero": {
+      "height": 420,
+      "width": 360
+    },
+    "overflow": 0,
+    "scrollWidth": 1429,
+    "stage": {
+      "height": 522,
+      "width": 877
+    },
+    "viewport": 1440
+  },
+  {
+    "carousel": {
+      "height": 420,
+      "width": 667
+    },
+    "clientWidth": 1269,
+    "hero": {
+      "height": 420,
+      "width": 360
+    },
+    "overflow": 0,
+    "scrollWidth": 1269,
+    "stage": {
+      "height": 522,
+      "width": 717
+    },
+    "viewport": 1280
+  },
+  {
+    "carousel": {
+      "height": 420,
+      "width": 610.7734375
+    },
+    "clientWidth": 709,
+    "hero": {
+      "height": 420,
+      "width": 280
+    },
+    "overflow": 0,
+    "scrollWidth": 709,
+    "stage": {
+      "height": 522,
+      "width": 660.7734375
+    },
+    "viewport": 720
+  }
+]

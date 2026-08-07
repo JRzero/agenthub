@@ -8,9 +8,9 @@ import {
 } from "./workbench-transition";
 
 describe("workbench Agent transition", () => {
-  it("uses one buffered 380-440ms horizontal slide", () => {
-    expect(WORKBENCH_SLIDE_MS).toBe(420);
-    expect(workbenchSlideDelay(false)).toBe(420);
+  it("uses one balanced 500-560ms horizontal slide", () => {
+    expect(WORKBENCH_SLIDE_MS).toBe(520);
+    expect(workbenchSlideDelay(false)).toBe(520);
     expect(workbenchSlideDelay(true)).toBe(0);
   });
 
