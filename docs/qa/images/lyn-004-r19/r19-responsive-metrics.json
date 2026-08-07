@@ -1,0 +1,66 @@
+[
+  {
+    "label": "1536",
+    "clientWidth": 1525,
+    "hero": {
+      "height": 420,
+      "width": 360,
+      "x": 675.5
+    },
+    "innerWidth": 1536,
+    "scrollWidth": 1525,
+    "stage": {
+      "height": 522,
+      "width": 973,
+      "x": 228
+    }
+  },
+  {
+    "label": "1440",
+    "clientWidth": 1429,
+    "hero": {
+      "height": 420,
+      "width": 360,
+      "x": 627.5
+    },
+    "innerWidth": 1440,
+    "scrollWidth": 1429,
+    "stage": {
+      "height": 522,
+      "width": 877,
+      "x": 228
+    }
+  },
+  {
+    "label": "1280",
+    "clientWidth": 1269,
+    "hero": {
+      "height": 420,
+      "width": 360,
+      "x": 547.5
+    },
+    "innerWidth": 1280,
+    "scrollWidth": 1269,
+    "stage": {
+      "height": 522,
+      "width": 717,
+      "x": 228
+    }
+  },
+  {
+    "label": "720",
+    "clientWidth": 709,
+    "hero": {
+      "height": 420,
+      "width": 280,
+      "x": 214.609375
+    },
+    "innerWidth": 720,
+    "scrollWidth": 709,
+    "stage": {
+      "height": 522,
+      "width": 660.7734375,
+      "x": 24.2265625
+    }
+  }
+]

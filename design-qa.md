@@ -1375,3 +1375,20 @@ final result: passed
 - Final findings: P0 = 0, P1 = 0, P2 = 0.
 
 final result: passed
+
+---
+
+# LYN-004-R19 Workbench Buffered Carousel Motion Design QA
+
+- Scope: timing/easing only on the R18 Workbench transform track; layout, cards, images, content, data, order, CTA, navigation, state semantics, and API remain unchanged.
+- Initial finding: P0 = 0, P1 = 0, P2 = 1. R18 traversed 51.64% by ~70ms, 80.05% by ~100ms, and 90.55% by ~130ms, so its correct 240ms slide felt too front-loaded.
+- Fix: duration 420ms with `cubic-bezier(0.16, 1, 0.3, 1)`. R19 starts immediately, reaches 66.43% around 100ms and 77.87% around 130ms, then settles monotonically through 95.99% around 221ms and 100% around 433ms.
+- Stability: stage and track opacity remain 1 throughout; only transform is animated; progress never overshoots 1; no scale, spring, rebound, overlay, or black frame was introduced.
+- Queue/reduced motion: the active segment plus one last-target queue and per-segment key are preserved; additional requests replace the queued target. Reduced motion remains 0ms runtime / 0.01ms CSS.
+- Responsive: 1536/1440/1280/720 checks have zero document overflow and unchanged final geometry. Fresh Demo console: 0 error / 0 warning.
+- Live handoff: 127.0.0.1:3002 `/login`, `/workbench`, and `/assets` return HTTP 200 under `com.linkyun.agenthub.r19-live` (PID 39151); fresh Live Browser console is 0 error / 0 warning with no Demo marker.
+- Comparisons: `docs/qa/images/lyn-004-r19/31-r18-r19-sequence-comparison.png`, `docs/qa/images/lyn-004-r19/32-r18-r19-early-mid-comparison.png`.
+- Reports: `docs/qa/reports/lyn-004-r19-current-audit.md`, `docs/qa/reports/lyn-004-r19-design-qa.md`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed

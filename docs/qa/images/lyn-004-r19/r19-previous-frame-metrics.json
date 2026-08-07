@@ -1,0 +1,58 @@
+[
+  {
+    "label": "previous-45ms",
+    "clientWidth": 1429,
+    "phase": "sliding",
+    "progress": 0.5844752116082225,
+    "scrollWidth": 1429,
+    "stageHeight": 522,
+    "stageOpacity": "1",
+    "trackOpacity": "1",
+    "transform": "matrix(1, 0, 0, 1, -483.361, 0)",
+    "viewportWidth": 827,
+    "x": -483.361,
+    "elapsedMs": 58
+  },
+  {
+    "label": "previous-120ms",
+    "clientWidth": 1429,
+    "phase": "sliding",
+    "progress": 0.1433627569528416,
+    "scrollWidth": 1429,
+    "stageHeight": 522,
+    "stageOpacity": "1",
+    "trackOpacity": "1",
+    "transform": "matrix(1, 0, 0, 1, -118.561, 0)",
+    "viewportWidth": 827,
+    "x": -118.561,
+    "elapsedMs": 130
+  },
+  {
+    "label": "previous-280ms",
+    "clientWidth": 1429,
+    "phase": "sliding",
+    "progress": 0.0070789359129383314,
+    "scrollWidth": 1429,
+    "stageHeight": 522,
+    "stageOpacity": "1",
+    "trackOpacity": "1",
+    "transform": "matrix(1, 0, 0, 1, -5.85428, 0)",
+    "viewportWidth": 827,
+    "x": -5.85428,
+    "elapsedMs": 296
+  },
+  {
+    "label": "previous-complete",
+    "clientWidth": 1429,
+    "phase": "idle",
+    "progress": 0,
+    "scrollWidth": 1429,
+    "stageHeight": 522,
+    "stageOpacity": "1",
+    "trackOpacity": null,
+    "transform": "none",
+    "viewportWidth": 827,
+    "x": 0,
+    "elapsedMs": 479
+  }
+]

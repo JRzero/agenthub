@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
 
-export const WORKBENCH_SLIDE_MS = 240;
+export const WORKBENCH_SLIDE_MS = 420;
 
 export type WorkbenchTransitionDirection = -1 | 1;
 export type WorkbenchTransitionPhase = "idle" | "sliding";
@@ -90,6 +90,10 @@ function prefersReducedMotion(): boolean {
     && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+export function workbenchSlideDelay(reducedMotion: boolean): number {
+  return reducedMotion ? 0 : WORKBENCH_SLIDE_MS;
+}
+
 export function useWorkbenchAgentTransition(agentIds: number[]) {
   const [state, dispatch] = useReducer(
     workbenchTransitionReducer,
@@ -113,7 +117,7 @@ export function useWorkbenchAgentTransition(agentIds: number[]) {
 
   useEffect(() => {
     if (state.phase !== "sliding") return;
-    const delay = prefersReducedMotion() ? 0 : WORKBENCH_SLIDE_MS;
+    const delay = workbenchSlideDelay(prefersReducedMotion());
     const timer = window.setTimeout(() => dispatch({ type: "complete" }), delay);
     return () => window.clearTimeout(timer);
   }, [state.phase, state.targetId]);
