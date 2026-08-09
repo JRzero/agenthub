@@ -37,3 +37,10 @@
 - [x] 6.4 Add Agent Owner participant and limited-candidate deep-link routes with narrowing, recall, finite decision, revision/idempotency and non-enumerating recovery.
 - [x] 6.5 Add D–G contract/state/component tests, no-secret/no-mock assertions and exact 400/401/403/404/409/410/413/422/429/5xx/offline/unknown-result recovery coverage.
 - [x] 6.6 Run a disposable isolated backend and complete C-01..C-12, CM-01..CM-02 and AgentHub X-01..X-04 browser evidence; identify controlled browser fault injection explicitly, and treat unimplemented P1 platform moderation as N/A rather than a capability blocker.
+
+## 7. R1 Creator mobile correction
+
+- [x] 7.1 Reconcile the newer V1 hidden-entry decision with the Workspace-level deep-link contract and specify explicit full-width/min-width behavior for Creator detail loading, error, and populated states.
+- [x] 7.2 Prevent Creator World detail roots, request notices, cards, long public codes, and key actions from min-content collapse; preserve 44px mobile targets and operable confirmation triggers.
+- [x] 7.3 Add regression coverage and isolated synthetic browser evidence for 360/390/412/430px, desktop, 200% zoom, keyboard order, reduced motion, hidden entry, and absent platform moderation UI.
+- [x] 7.4 Run lint, typecheck, full tests, build, strict OpenSpec, sensitive-pattern scan, diff check, and record the final clean candidate identity.

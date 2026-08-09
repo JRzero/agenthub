@@ -6,7 +6,7 @@ AgentHub is a Next.js App Router frontend with a shared authenticated Workspace 
 
 **Goals:**
 
-- Provide a Workspace-level Living World Creator and Agent Owner experience backed by the frozen C API.
+- Provide a deep-linkable Workspace-level Living World Creator and Agent Owner experience backed by the frozen C API while the current V1 navigation entry remains hidden.
 - Preserve backend error codes, revision and idempotency semantics, and unknown-result recovery across all mutations.
 - Make runtime, timeline/recap, lifecycle, review/report and Agent Owner surfaces operable through frozen D–G APIs with no live-mode mock path.
 - Meet desktop/mobile, keyboard, focus, live-region, loading, stale, empty, partial, permission, conflict, rate-limit, offline, and reduced-motion requirements.
@@ -18,6 +18,7 @@ AgentHub is a Next.js App Router frontend with a shared authenticated Workspace 
 - Claim that a C launch request has created a runtime instance or initial event; bootstrap belongs to D.
 - Synthesize runtime summaries, budgets, timelines, reviews, moderation outcomes, or successful mutations.
 - Add npm dependencies, migrate existing storage keys, or place Living World under an Agent Asset route.
+- Open, advertise, or add navigation/cards for Living World before a separate product release decision.
 
 ## Decisions
 
@@ -39,7 +40,7 @@ AgentHub is a Next.js App Router frontend with a shared authenticated Workspace 
 
 10. **Keep governance scope explicit.** Creator can set listed/unlisted/hidden, submit review material, and read owner-scoped reports. Backend-only platform status is normalized to the Creator-owned submission state; no moderation capability or disposition control is rendered.
 
-8. **Use semantic responsive components.** The six-section editor uses a labeled `nav` with `aria-current=step`, error summary links, 44px mobile targets, and a sticky mobile action bar. Lists use semantic lists/cards rather than visually squeezed tables. Dialogs use the existing accessible dialog patterns and restore focus.
+8. **Use semantic responsive components with an explicit width contract.** Creator detail roots, headers, request notices, grids, and cards use `w-full`/`min-w-0` boundaries so loading, error, stale, and populated states cannot collapse to min-content after viewport changes. Below 640px, primary detail actions become full-width single-column controls with at least 44px targets; long public codes wrap within their card. The six-section editor uses a labeled `nav` with `aria-current=step`, error summary links, and a sticky mobile action bar. Dialogs use the existing accessible dialog patterns and restore focus.
 
 ## Risks / Trade-offs
 
@@ -51,7 +52,7 @@ AgentHub is a Next.js App Router frontend with a shared authenticated Workspace 
 
 ## Migration Plan
 
-Additive routes, module files, navigation, and capability entries can ship without data migration. Rollback removes those additions; no backend or local persisted World data is changed. The task keeps all changes uncommitted and does not archive the OpenSpec change.
+Additive routes, module files, and capability entries can ship without data migration; navigation stays hidden. Rollback removes those additions; no backend or local persisted World data is changed. The task does not archive the OpenSpec change.
 
 ## Open Questions
 

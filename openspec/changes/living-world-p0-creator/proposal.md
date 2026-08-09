@@ -4,7 +4,7 @@ AgentHub currently has no workspace-level Living World Creator or Agent Owner ex
 
 ## What Changes
 
-- Add workspace-level Living World navigation and routes for world listing, blank/template creation, six-section draft editing, preflight, schedules, launch requests, event cards, the world console, and Agent Owner invitation decisions.
+- Add workspace-level Living World deep-link routes for world listing, blank/template creation, six-section draft editing, preflight, schedules, launch requests, event cards, the world console, and Agent Owner invitation decisions. Keep the current V1 navigation entry hidden until a separate release decision.
 - Add a strict typed World API adapter, query-key isolation, stable error mapping, optimistic-revision conflict recovery, idempotency/unknown-result recovery, and no-mock capability readiness for the frozen C endpoints.
 - Implement responsive and accessible request states for loading, background stale data, empty, partial, validation, authorization, conflict, rate-limit, server, offline, and unknown outcomes.
 - Add real C-slice contract/component tests and QA evidence mapping for C-01..C-12, CM-01..CM-02, and the AgentHub responsibilities in X-01..X-04.
@@ -24,6 +24,6 @@ None.
 ## Impact
 
 - Adds `src/modules/living-worlds/` domain types, API/query adapters, route workspaces, and tests.
-- Adds `/worlds`, `/worlds/new`, `/worlds/templates`, `/worlds/[worldCode]/*`, and `/world-invitations/[invitationCode]` routes plus Workspace navigation.
+- Adds `/worlds`, `/worlds/new`, `/worlds/templates`, `/worlds/[worldCode]/*`, and `/world-invitations/[invitationCode]` routes without exposing a current V1 Workspace navigation entry.
 - Extends the centralized capability matrix without adding dependencies or changing backend contracts.
 - Keeps the accepted C slice intact and records the G2 D–G adapters as live contract code. Browser evidence is frozen only against the dispatched backend identity; platform moderation remains deferred to P1 and absent from this UI.

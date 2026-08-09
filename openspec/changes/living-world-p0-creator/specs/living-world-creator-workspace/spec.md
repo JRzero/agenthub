@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
-### Requirement: Living World is a Workspace-level capability
-AgentHub SHALL expose Living World from the Workspace navigation and SHALL provide refreshable routes for the world list, creation, templates, editing, console, preflight, schedule, event cards, and Agent Owner invitation decisions. It MUST NOT place the capability under a single Agent Asset or depend on navigation state for a deep link.
+### Requirement: Living World is a Workspace-level deep-link capability
+AgentHub SHALL provide refreshable Workspace-level routes for the world list, creation, templates, editing, console, preflight, schedule, event cards, and Agent Owner invitation decisions. The current V1 UI MUST NOT expose a Living World navigation, card, or menu entry until a separate release decision. It MUST NOT place the capability under a single Agent Asset or depend on navigation state for an authorized deep link.
 
 #### Scenario: Creator reloads a deep link
 - **WHEN** an authenticated Creator opens or reloads `/worlds/{world_code}/edit`
@@ -106,6 +106,10 @@ Creator routes SHALL provide a drawer/single-column/sticky-action layout below 7
 #### Scenario: Request state is announced
 - **WHEN** save succeeds or a permission/data-loss error occurs
 - **THEN** success uses a polite status live region while the critical error uses an alert without rereading the whole page
+
+#### Scenario: Creator detail reflows after a narrow viewport reload
+- **WHEN** the Creator detail is loaded, refreshed, or settles from an error at 360–430 CSS pixels or at 200% text zoom
+- **THEN** every page root, request notice, primary action, card, form, status, and confirmation trigger keeps the available width, long public codes wrap inside their card, and no content collapses to a single-character column or causes horizontal document overflow
 
 ### Requirement: QA evidence separates verified C from pending D–G
 The change SHALL map C-01..C-12, CM-01..CM-02, and AgentHub responsibilities for X-01..X-04 to exact routes, API calls, and tests. Each browser record SHALL contain candidate branch/HEAD/tree/diff identity, viewport, synthetic inputs, steps, expected/actual results, redacted network evidence, screenshot or recording, console, accessibility result, and PASS/FAIL/SKIP/pending. A script with a missing backend slice or evidence field MUST NOT be marked PASS, and this C-ready candidate MUST NOT be called the complete H or Goal.
