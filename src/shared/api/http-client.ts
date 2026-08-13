@@ -22,6 +22,29 @@ export function normalizeBaseUrl(value: string): string {
   return value.trim().replace(/\/+$/, "");
 }
 
+function isLoopbackUrl(value: URL): boolean {
+  return value.hostname === "localhost" || value.hostname === "127.0.0.1" || value.hostname === "[::1]" || value.hostname === "::1";
+}
+
+export function resolveApiBaseOverride(
+  override: string | null,
+  fallback: string,
+  production = process.env.NODE_ENV === "production",
+  allowlist = process.env.NEXT_PUBLIC_API_OVERRIDE_ALLOWLIST || "",
+): string {
+  if (!override?.trim()) return normalizeBaseUrl(fallback);
+  const normalized = normalizeBaseUrl(override);
+  try {
+    const candidate = new URL(normalized);
+    if (!/^https?:$/.test(candidate.protocol)) return normalizeBaseUrl(fallback);
+    if (!production || isLoopbackUrl(candidate)) return normalized;
+    const allowedOrigins = new Set(allowlist.split(",").map((item) => item.trim()).filter(Boolean).map((item) => new URL(item).origin));
+    return allowedOrigins.has(candidate.origin) ? normalized : normalizeBaseUrl(fallback);
+  } catch {
+    return normalizeBaseUrl(fallback);
+  }
+}
+
 export function getApiBaseUrl(): string {
   const fallback = normalizeBaseUrl(
     process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080",
@@ -31,7 +54,7 @@ export function getApiBaseUrl(): string {
     typeof window.localStorage?.getItem === "function"
       ? window.localStorage.getItem(API_OVERRIDE_KEY)
       : null;
-  return override?.trim() ? normalizeBaseUrl(override) : fallback;
+  return resolveApiBaseOverride(override, fallback);
 }
 
 export interface ApiRequestOptions extends Omit<RequestInit, "headers"> {
@@ -89,11 +112,15 @@ export async function apiRequest<T>(
           : undefined;
     const businessCode =
       typeof businessError?.code === "string" ? businessError.code : undefined;
+    const retryAfter = response.headers.get("Retry-After");
+    const details = retryAfter
+      ? { ...businessError, retry_after: retryAfter }
+      : businessError;
     throw new ApiError(
       envelope.error?.message || businessMessage || `请求失败（${response.status}）`,
       response.status,
       envelope.error?.code || businessCode,
-      businessError,
+      details,
     );
   }
 

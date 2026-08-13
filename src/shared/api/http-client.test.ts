@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { apiRequest, getApiBaseUrl } from "./http-client";
+import { apiRequest, getApiBaseUrl, resolveApiBaseOverride } from "./http-client";
 
 describe("AgentHub HTTP client", () => {
   beforeEach(() => {
@@ -39,6 +39,13 @@ describe("AgentHub HTTP client", () => {
     await apiRequest("/profile", { apiKey: "test", workspaceCode: "default" });
     const init = fetchMock.mock.calls[0][1] as RequestInit;
     expect(init.headers).not.toHaveProperty("X-Workspace-Code");
+  });
+  it("blocks arbitrary production overrides but permits loopback and an explicit origin allowlist", () => {
+    const fallback = "https://api.linkyun.example";
+    expect(resolveApiBaseOverride("https://attacker.example/collect", fallback, true, "")).toBe(fallback);
+    expect(resolveApiBaseOverride("http://127.0.0.1:8080/", fallback, true, "")).toBe("http://127.0.0.1:8080");
+    expect(resolveApiBaseOverride("https://staging.example/api/", fallback, true, "https://staging.example")).toBe("https://staging.example/api");
+    expect(resolveApiBaseOverride("javascript:alert(1)", fallback, false, "")).toBe(fallback);
   });
   it("normalizes version business errors from data", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(

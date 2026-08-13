@@ -168,6 +168,7 @@ export function Select({
         aria-controls={listboxId}
         aria-expanded={open}
         aria-haspopup="listbox"
+        aria-disabled={disabled}
         disabled={disabled}
         className={`control-select flex w-full min-w-max items-center justify-between gap-3 pr-3 text-left ${
           compact ? "control-compact" : ""
