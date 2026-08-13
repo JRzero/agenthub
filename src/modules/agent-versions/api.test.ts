@@ -22,6 +22,8 @@ vi.mock("@/shared/api/http-client", async (importOriginal) => ({
   apiRequest: vi.fn(),
 }));
 
+const EXPECTED_API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
 const auth = { apiKey: "et_test_version", workspaceCode: "studio" };
 
 describe("Agent version API contracts", () => {
@@ -201,7 +203,7 @@ describe("Agent version API contracts", () => {
       packageHash: "package-hash",
     });
     expect(fetch).toHaveBeenCalledWith(
-      "http://localhost:8080/api/v1/agent-exports/128/download",
+      `${EXPECTED_API_BASE}/api/v1/agent-exports/128/download`,
       {
         headers: {
           "X-API-Key": "et_test_version",

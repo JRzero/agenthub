@@ -2,6 +2,14 @@
 
 > AgentHub 独立前端仓库的 AI 操作手册。产品介绍和启动方式见 [`README.md`](./README.md)，已完成变更的规格、设计与任务记录见 [`openspec/changes/`](./openspec/changes/)。
 
+## Harness 导航
+
+- 仓库责任、禁止范围和协作规则：本文件。
+- Repository Harness 清单：[`harness.yaml`](./harness.yaml)。
+- 已确认的架构边界：[`docs/architecture.md`](./docs/architecture.md)。
+- 契约权威来源与兼容索引：[`docs/contracts.md`](./docs/contracts.md)。
+- 统一验证入口：`./scripts/verify fast` 或 `./scripts/verify full`。
+
 ## 0. 项目与协作边界
 
 - 本仓库是可独立安装、构建、测试和发布的 AgentHub 前端项目。
@@ -162,6 +170,8 @@ API 规则：
 
 ## 8. 验证与 QA
 
+默认通过统一入口运行门禁：日常快速检查使用 `./scripts/verify fast`，完整交付检查使用 `./scripts/verify full`。统一入口不替代下面列出的底层命令及与改动范围相关的浏览器、视觉和契约验证要求。
+
 代码变更提交前最低门禁：
 
 ```powershell
@@ -229,4 +239,3 @@ openspec validate --all --strict
 - Commit 应按目的拆分，推荐：`feat(agenthub): ...`、`fix(agenthub): ...`、`test(agenthub): ...`、`docs(openspec): ...`、`chore(agenthub): ...`。
 - 不主动提交或 push；用户要求后再执行。
 - 交付说明必须包含：修改范围、验证结果、尚未接入的后端能力、需要用户决策的后续项。
-

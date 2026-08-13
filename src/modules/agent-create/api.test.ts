@@ -12,6 +12,8 @@ import {
   saveGuidedCreationSkills,
 } from "./api";
 
+const EXPECTED_API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
 const input = {
   name: "暖屿",
   identity: "温柔清醒的心理陪伴员",
@@ -66,7 +68,7 @@ describe("guided Agent creation API", () => {
 
     expect(fetchMock).toHaveBeenCalledOnce();
     const [url, init] = fetchMock.mock.calls[0];
-    expect(url).toBe("http://localhost:8080/api/v1/agents/generate-basic-profile");
+    expect(url).toBe(`${EXPECTED_API_BASE}/api/v1/agents/generate-basic-profile`);
     expect(init?.headers).toMatchObject({
       "X-API-Key": "et_test_key",
       "X-Workspace-Code": "workspace-test",
@@ -89,7 +91,7 @@ describe("guided Agent creation API", () => {
     const candidate = await generateAvatarCandidate("et_test_key", 28, input, mapAgentToBasicRoleContent(agent));
 
     expect(fetchMock).toHaveBeenCalledOnce();
-    expect(fetchMock.mock.calls[0][0]).toBe("http://localhost:8080/api/v1/agents/28/avatar/generate-preview");
+    expect(fetchMock.mock.calls[0][0]).toBe(`${EXPECTED_API_BASE}/api/v1/agents/28/avatar/generate-preview`);
     expect(candidate).toMatchObject({
       url: "https://cdn.example.test/avatar.png",
       sourceUrl: "https://cdn.example.test/avatar.png",
@@ -129,8 +131,8 @@ describe("guided Agent creation API", () => {
     const progress = await getAgentCreationProgress("et_test_key", "workspace-test", 28);
     await completeAgentCreation("et_test_key", "workspace-test", 28, progress.draft_revision);
 
-    expect(fetchMock.mock.calls[0][0]).toBe("http://localhost:8080/api/v1/agents/28/creation-progress");
-    expect(fetchMock.mock.calls[1][0]).toBe("http://localhost:8080/api/v1/agents/28/complete-creation");
+    expect(fetchMock.mock.calls[0][0]).toBe(`${EXPECTED_API_BASE}/api/v1/agents/28/creation-progress`);
+    expect(fetchMock.mock.calls[1][0]).toBe(`${EXPECTED_API_BASE}/api/v1/agents/28/complete-creation`);
     expect(JSON.parse(String(fetchMock.mock.calls[1][1]?.body))).toEqual({ expected_draft_revision: 3 });
   });
 
@@ -181,9 +183,9 @@ describe("guided Agent creation API", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(fetchMock.mock.calls.map(([url]) => url)).toEqual([
-      "http://localhost:8080/api/v1/agents/28/pre-skills",
-      "http://localhost:8080/api/v1/agents/28/mid-skills",
-      "http://localhost:8080/api/v1/agents/28/post-skills",
+      `${EXPECTED_API_BASE}/api/v1/agents/28/pre-skills`,
+      `${EXPECTED_API_BASE}/api/v1/agents/28/mid-skills`,
+      `${EXPECTED_API_BASE}/api/v1/agents/28/post-skills`,
     ]);
     expect(fetchMock.mock.calls.map(([, init]) =>
       JSON.parse(String(init?.body)).expected_draft_revision,

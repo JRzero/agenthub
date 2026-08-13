@@ -21,6 +21,8 @@ import {
 } from "./professional-navigation";
 import { createBuildDraft, serializeBuildDraft } from "./types";
 
+const EXPECTED_API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
 const agent: Agent = {
   id: 32,
   uuid: "agent-32",
@@ -109,9 +111,9 @@ describe("professional Build contracts", () => {
   });
 
   it("resolves generated media urls before previewing candidates", () => {
-    expect(resolveGeneratedMediaUrl("avatar.png", "avatar")).toBe("http://localhost:8080/api/v1/avatars/avatar.png");
-    expect(resolveGeneratedMediaUrl("sheet.png", "character-sheet")).toBe("http://localhost:8080/api/v1/character-sheets/sheet.png");
-    expect(resolveGeneratedMediaUrl("/api/v1/files/generated.png", "avatar")).toBe("http://localhost:8080/api/v1/files/generated.png");
+    expect(resolveGeneratedMediaUrl("avatar.png", "avatar")).toBe(`${EXPECTED_API_BASE}/api/v1/avatars/avatar.png`);
+    expect(resolveGeneratedMediaUrl("sheet.png", "character-sheet")).toBe(`${EXPECTED_API_BASE}/api/v1/character-sheets/sheet.png`);
+    expect(resolveGeneratedMediaUrl("/api/v1/files/generated.png", "avatar")).toBe(`${EXPECTED_API_BASE}/api/v1/files/generated.png`);
     expect(resolveGeneratedMediaUrl("/images/lin-yue-avatar.png", "avatar")).toBe("/images/lin-yue-avatar.png");
   });
 

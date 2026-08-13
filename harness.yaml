@@ -1,0 +1,274 @@
+schema_version: 1
+kind: repository_harness
+metadata:
+  task_id: LYN-HAR-001-HAR-04H
+  repository: agenthub
+  status: active
+  formal_adaptation_complete: true
+  baseline:
+    ref: main
+    commit: 3ad3151e30ac5a7a991043021517beaeb39884a1
+    verified: true
+responsibilities:
+  - id: frontend_source
+    description: Maintain the AgentHub frontend source, frontend contract tests, QA evidence, and OpenSpec artifacts.
+    sources: [AGENTS.md]
+  - id: workspace_surfaces
+    description: Provide workspace-level asset, resource, client, operations, analytics, governance, revenue, and settings surfaces.
+    sources: [AGENTS.md]
+  - id: agent_asset_workspaces
+    description: Provide Agent Asset overview, build, test, version, and distribution workspaces.
+    sources: [AGENTS.md]
+  - id: cross_repository_requests
+    description: Record frontend contracts and cross-repository requests when the Linkyun Agent backend needs an interface change.
+    sources: [AGENTS.md]
+  - id: capability_modes
+    description: Keep live, demo, and unavailable capabilities explicit and isolated.
+    sources: [AGENTS.md]
+prohibited_scope:
+  - id: no_backend_implementation
+    description: Do not implement backend behavior or directly modify an external backend repository.
+    sources: [AGENTS.md]
+  - id: no_machine_local_dependencies
+    description: Do not import source through another repository's relative path or add machine-local path dependencies.
+    sources: [AGENTS.md]
+  - id: no_fake_live_success
+    description: Do not present fixture data, random values, or local fake writes as successful live backend behavior.
+    sources: [AGENTS.md]
+  - id: isolate_demo_and_live
+    description: Do not mix demo and live data in one persistent cache or submission path.
+    sources: [AGENTS.md]
+  - id: protect_sensitive_data
+    description: Do not log or expose authentication material, workspace invitations, private keys, cookies, or production user data.
+    sources: [AGENTS.md]
+  - id: no_gate_weakening
+    description: Do not remove tests, weaken type constraints, or hide contract errors to pass validation.
+    sources: [AGENTS.md]
+  - id: no_unapproved_release
+    description: Do not deploy, push remotely, force push, delete branches, or release without explicit approval.
+    sources: [AGENTS.md]
+technology:
+  - id: typescript
+    category: language
+    name: TypeScript with strict type checking
+    version: null
+    sources: [AGENTS.md, package.json]
+  - id: nextjs
+    category: framework
+    name: Next.js App Router
+    version: "15"
+    sources: [package.json]
+  - id: react
+    category: framework
+    name: React
+    version: "19"
+    sources: [package.json]
+  - id: tailwind
+    category: styling
+    name: Tailwind CSS
+    version: "3"
+    sources: [package.json]
+  - id: tanstack_query
+    category: data_access
+    name: TanStack Query through src/shared/api/
+    version: null
+    sources: [AGENTS.md, package.json]
+  - id: vitest
+    category: testing
+    name: Vitest with jsdom
+    version: null
+    sources: [package.json]
+  - id: npm
+    category: package_manager
+    name: npm with package-lock.json
+    version: null
+    sources: [package.json, package-lock.json]
+  - id: nextjs_standalone
+    category: build_output
+    name: Next.js standalone output
+    version: null
+    sources: [AGENTS.md]
+  - id: openspec
+    category: specification
+    name: OpenSpec spec-driven change artifacts
+    version: null
+    sources: [openspec/config.yaml, committed Git tree path index]
+verification_profiles:
+  fast:
+    status: confirmed
+    commands:
+      - cwd: .
+        command: npm run lint
+        source: AGENTS.md
+      - cwd: .
+        command: npm run typecheck
+        source: AGENTS.md
+      - cwd: .
+        command: npm test
+        source: AGENTS.md
+    approval_required: false
+    prerequisites: []
+    notes: Confirmed command sequence exposed through the repository-level scripts/verify fast wrapper.
+  full:
+    status: confirmed
+    commands:
+      - cwd: .
+        command: npm run lint
+        source: AGENTS.md
+      - cwd: .
+        command: npm run typecheck
+        source: AGENTS.md
+      - cwd: .
+        command: npm test
+        source: AGENTS.md
+      - cwd: .
+        command: npm run build
+        source: AGENTS.md
+      - cwd: .
+        command: openspec validate --all --strict
+        source: AGENTS.md
+    approval_required: false
+    prerequisites: []
+    notes: Documented pre-delivery validation gate; browser and visual checks remain task-specific.
+  conditional: []
+contracts:
+  status: partial
+  produces:
+    - id: frontend_contract_tests
+      kind: frontend_contract_tests
+      ref: src/shared/api/
+      status: partial
+      sources: [AGENTS.md]
+    - id: change_local_openspec
+      kind: openspec_change_specification
+      ref: openspec/changes/<change>/specs/<capability>/spec.md
+      status: confirmed
+      sources: [openspec/config.yaml, committed Git tree path index]
+  consumes:
+    - id: linkyun_agent_api
+      kind: openapi
+      ref: linkyun-agent:docs/openapi/openapi.yaml
+      status: partial
+      sources: [AGENTS.md, REPOS.yaml]
+  rules:
+    - id: shared_request_layer
+      description: Shared request behavior belongs in src/shared/api/, with business endpoints in the owning module.
+      sources: [AGENTS.md]
+    - id: api_base_resolution
+      description: Backend URLs must be resolved by shared API base logic rather than hard-coded in components.
+      sources: [AGENTS.md]
+    - id: authentication_expiry
+      description: Authentication expiry handling belongs in the shared request layer.
+      sources: [AGENTS.md]
+    - id: authenticated_sse
+      description: Authenticated SSE must use fetch, ReadableStream, and AbortController rather than native EventSource.
+      sources: [AGENTS.md]
+    - id: storage_compatibility
+      description: Established authentication, workspace, API-base override, and theme storage contracts require migration and rollback support before renaming.
+      sources: [AGENTS.md]
+    - id: request_header_compatibility
+      description: Existing user and workspace request-header contracts must be preserved.
+      sources: [AGENTS.md]
+    - id: capability_authority
+      description: src/config/capabilities.ts is the frontend authority for capability availability.
+      sources: [AGENTS.md]
+    - id: live_demo_boundary
+      description: Live mode exposes only backend-supported behavior; demo fixtures remain isolated.
+      sources: [AGENTS.md]
+  relationships:
+    - id: backend_api_dependency
+      direction: upstream
+      projects: [linkyun-agent]
+      artifacts: [docs/openapi/openapi.yaml, openspec/specs/]
+      status: partial
+      notes: Frontend consumption is known, but no automated cross-repository contract gate exists yet.
+      sources: [AGENTS.md, REPOS.yaml]
+  notes: Change-local OpenSpec artifacts exist; no canonical openspec/specs main set was detected in this baseline.
+risks:
+  - id: backend_contract_boundary
+    level: unknown
+    description: Unsupported backend interfaces could be presented as available frontend behavior.
+    control: Keep contracts explicit and record cross-repository requests instead of emulating missing live behavior.
+    escalation_required: true
+    sources: [AGENTS.md]
+  - id: live_demo_contamination
+    level: unknown
+    description: Demo state could be mistaken for or persisted as live state.
+    control: Isolate fixtures, caches, and submission paths by capability mode.
+    escalation_required: true
+    sources: [AGENTS.md]
+  - id: compatibility_regression
+    level: unknown
+    description: Storage keys, request headers, routes, or public API model changes can break compatibility.
+    control: Preserve contracts or provide an approved migration and rollback plan with tests.
+    escalation_required: true
+    sources: [AGENTS.md]
+  - id: credential_exposure
+    level: unknown
+    description: Authentication material or production data could leak through source, fixtures, logs, or QA evidence.
+    control: Use obvious fake values and never commit secrets or unsanitized production artifacts.
+    escalation_required: true
+    sources: [AGENTS.md]
+  - id: repository_ci_visibility
+    level: unknown
+    description: Repository-hosted workflow coverage was not detected.
+    control: Require documented local gates until CI ownership and enforcement are separately confirmed.
+    escalation_required: false
+    sources: [committed Git tree path index]
+  - id: openspec_main_index
+    level: unknown
+    description: Change-local specifications exist, but a canonical main specification set was not detected.
+    control: Review applicable change artifacts and treat synchronization or archival as a separate decision.
+    escalation_required: false
+    sources: [openspec/config.yaml, committed Git tree path index]
+ci:
+  repository:
+    status: not_detected
+    type: unknown
+    entry: null
+    evidence_sources: [.github/workflows/ committed path scan]
+  external:
+    status: not_checked
+    type: unknown
+    entry: null
+    evidence_sources: [HAR-04A approved scope]
+approvals:
+  - id: release
+    required: true
+    approver: human
+    status: not_requested
+    triggers: [commit, push, pull request, deployment, publication, release]
+  - id: contract_change
+    required: true
+    approver: human
+    status: not_requested
+    triggers: [public API, authentication header, storage contract, or cross-repository interface change]
+release:
+  status: partial
+  method: npm build output; deployment platform and production entry are not registered.
+  approval_required: true
+  default_branch: main
+  task_branch_pattern: task/<topic>_<YYYY-MM-DD>
+  release_branch_pattern: releaseYYYYMMDD
+  constraints:
+    - Do not commit, push, open a pull request, deploy, or publish without explicit user authorization.
+    - OpenSpec archival is a separate decision and is not implied by implementation completion.
+    - This Harness is not release approval and does not claim deployment readiness.
+  sources: [AGENTS.md, REPOS.yaml]
+evidence_sources:
+  - ref: AGENTS.md
+    use: Responsibilities, boundaries, commands, contracts, compatibility rules, approval requirements, and Harness navigation.
+  - ref: harness.yaml
+    use: Repository Harness v1 metadata, profiles, contract index, risks, approvals, and release constraints.
+  - ref: docs/architecture.md
+    use: Confirmed frontend structure, data flow, capability modes, and security boundaries.
+  - ref: docs/contracts.md
+    use: Authoritative contract locations and compatibility requirements.
+  - ref: scripts/verify
+    use: Unified fast and full local verification entry point with safety preflight checks.
+  - ref: package.json
+    use: Framework, tooling, and declared command evidence.
+  - ref: openspec/config.yaml
+    use: OpenSpec schema mode.
+  - ref: committed Git tree path index
+    use: Baseline, CI path, and OpenSpec path detection.

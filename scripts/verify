@@ -1,0 +1,92 @@
+#!/bin/sh
+
+set -eu
+
+usage() {
+  echo "usage: ./scripts/verify fast|full" >&2
+}
+
+case "${1-}" in
+  fast|full)
+    mode=$1
+    ;;
+  *)
+    usage
+    exit 2
+    ;;
+esac
+
+if [ "$#" -ne 1 ]; then
+  usage
+  exit 2
+fi
+
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+repo_root=$(CDPATH= cd -- "$script_dir/.." && pwd)
+cd "$repo_root"
+
+for env_file in ./.env ./.env.*; do
+  if [ ! -e "$env_file" ] && [ ! -L "$env_file" ]; then
+    continue
+  fi
+  if [ "$env_file" = "./.env.example" ] && git ls-files --error-unmatch -- .env.example >/dev/null 2>&1; then
+    continue
+  fi
+  echo "error: prohibited environment file exists in the repository root" >&2
+  exit 1
+done
+
+if ! command -v npm >/dev/null 2>&1; then
+  echo "error: npm is required and must already be installed" >&2
+  exit 1
+fi
+if [ ! -f package-lock.json ]; then
+  echo "error: package-lock.json is required" >&2
+  exit 1
+fi
+if [ ! -d node_modules ] || [ -L node_modules ]; then
+  echo "error: a local, non-symlink node_modules directory is required; dependencies will not be installed" >&2
+  exit 1
+fi
+
+required_bins="eslint tsc vitest"
+if [ "$mode" = "full" ]; then
+  required_bins="$required_bins next"
+fi
+for bin in $required_bins; do
+  if [ ! -x "node_modules/.bin/$bin" ]; then
+    echo "error: required local dependency executable is missing or unusable" >&2
+    exit 1
+  fi
+done
+
+if ! npm ls --depth=0 >/dev/null 2>&1; then
+  echo "error: local dependencies do not match the declared package tree" >&2
+  exit 1
+fi
+
+if [ "$mode" = "full" ]; then
+  if ! command -v openspec >/dev/null 2>&1; then
+    echo "error: OpenSpec 1.6.0 is required and will not be installed automatically" >&2
+    exit 1
+  fi
+  if [ "$(openspec --version)" != "1.6.0" ]; then
+    echo "error: OpenSpec version mismatch; expected 1.6.0" >&2
+    exit 1
+  fi
+fi
+
+unset NEXT_PUBLIC_AGENTHUB_DATA_MODE
+unset NEXT_PUBLIC_AGENT_EXPORT_ZIP_DOWNLOAD_ENABLED
+NEXT_PUBLIC_API_URL=http://127.0.0.1:1
+NEXT_TELEMETRY_DISABLED=1
+export NEXT_PUBLIC_API_URL NEXT_TELEMETRY_DISABLED
+
+npm run lint
+npm run typecheck
+npm test
+
+if [ "$mode" = "full" ]; then
+  npm run build
+  openspec validate --all --strict
+fi
