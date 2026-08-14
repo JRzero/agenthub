@@ -38,7 +38,9 @@ OYIIOYII 等应用只是 AgentHub 的发行或运行客户端之一。新增功�
 | 样式 | Tailwind CSS 3 |
 | 数据请求 | TanStack Query + `src/shared/api/` |
 | 测试 | Vitest + jsdom |
+| Node.js | 固定 `24.19.0`，`package.json` engines 为 `>=24.19.0 <25` |
 | 包管理器 | npm，锁文件为 `package-lock.json` |
+| OpenSpec | 固定仓内 `node_modules/.bin/openspec` 1.6.0，不依赖全局安装 |
 | 开发端口 | `3002` |
 | 默认后端 | `http://localhost:8080` |
 | API 环境变量 | `NEXT_PUBLIC_API_URL` |
@@ -48,7 +50,7 @@ OYIIOYII 等应用只是 AgentHub 的发行或运行客户端之一。新增功�
 常用命令：
 
 ```powershell
-npm install
+npm ci --ignore-scripts --no-audit --no-fund
 npm run dev
 npm run dev:webpack
 npm run lint
@@ -157,7 +159,7 @@ API 规则：
 
 实施前：
 
-1. `openspec list` 确认是否已有对应 change。
+1. `node_modules/.bin/openspec list` 确认是否已有对应 change。
 2. 阅读该 change 的 `proposal.md`、`design.md`、`specs/` 和 `tasks.md`。
 3. 不要跳过未确认的 artifact 阶段直接扩大实现范围。
 
@@ -165,7 +167,7 @@ API 规则：
 
 1. 更新 `tasks.md` 的完成状态。
 2. 保证代码、规格和 `docs/qa/` 证据一致。
-3. 执行 `openspec validate --all --strict`。
+3. 执行 `node_modules/.bin/openspec validate --all --strict`。
 4. 归档属于独立决策，不因代码完成而自动归档。
 
 ## 8. 验证与 QA
@@ -179,7 +181,7 @@ npm run lint
 npm run typecheck
 npm test
 npm run build
-openspec validate --all --strict
+node_modules/.bin/openspec validate --all --strict
 ```
 
 验证要求：

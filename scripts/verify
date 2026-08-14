@@ -51,7 +51,7 @@ fi
 
 required_bins="eslint tsc vitest"
 if [ "$mode" = "full" ]; then
-  required_bins="$required_bins next"
+  required_bins="$required_bins next openspec"
 fi
 for bin in $required_bins; do
   if [ ! -x "node_modules/.bin/$bin" ]; then
@@ -66,11 +66,11 @@ if ! npm ls --depth=0 >/dev/null 2>&1; then
 fi
 
 if [ "$mode" = "full" ]; then
-  if ! command -v openspec >/dev/null 2>&1; then
-    echo "error: OpenSpec 1.6.0 is required and will not be installed automatically" >&2
-    exit 1
-  fi
-  if [ "$(openspec --version)" != "1.6.0" ]; then
+  openspec_bin=node_modules/.bin/openspec
+  OPENSPEC_TELEMETRY=0
+  DO_NOT_TRACK=1
+  export OPENSPEC_TELEMETRY DO_NOT_TRACK
+  if [ "$("$openspec_bin" --version)" != "1.6.0" ]; then
     echo "error: OpenSpec version mismatch; expected 1.6.0" >&2
     exit 1
   fi
@@ -88,5 +88,5 @@ npm test
 
 if [ "$mode" = "full" ]; then
   npm run build
-  openspec validate --all --strict
+  "$openspec_bin" validate --all --strict
 fi
