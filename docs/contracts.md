@@ -38,6 +38,16 @@
 - Linkyun Agent OpenAPI 的权威位置为上游仓库 `linkyun-agent:docs/openapi/openapi.yaml`；本仓消费该契约，但不复制或修改其内容。
 - 当前只确认前端依赖该上游 API；自动化跨仓契约门禁尚未确认。若需要新增或调整接口，应在本仓记录前端契约和跨仓请求，由上游仓库独立处理。
 
+### Agent Version OpenAPI 消费者候选
+
+- 版本模块的最小消费者投影为 [`src/modules/agent-versions/openapi-consumer-contract.json`](../src/modules/agent-versions/openapi-consumer-contract.json)，确定性消费者摘要为 [`openapi-consumer-contract.sha256`](../src/modules/agent-versions/openapi-consumer-contract.sha256)：`a571d24411684a27dcc027c54121c60b8da8ec93d7cddeba4d68f3b67091896c`。
+- 消费者投影绑定 AgentHub 基线 `2fc749a9691129fd5437491f67a93709a5499d87`，覆盖版本/上下架、Client CRUD 与 runtime version、Agent 通用导出、Client 兼容导出和 ZIP 下载共 12 paths / 14 operations，并固定发布/恢复/Client 更新并发字段、9 个稳定版本错误码及 runtime/export 语义。
+- 离线门禁位于 [`src/modules/agent-versions/openapi-contract.test.ts`](../src/modules/agent-versions/openapi-contract.test.ts)。测试通过调用现有 API wrapper 发现端点与方法，并校验投影摘要、请求字段、类型和语义；它不访问网络或真实 API。
+- 生产者候选来自 `LYN-HAR-001-HAR-06C-LA`：未提交候选基线 `1a15df62f4954ca0fbb13c35b58f62df5a506cee`，权威路径 `docs/openapi/openapi.yaml`，候选 OpenAPI SHA-256 `e80b042cc1cf81f4da388073351d364c594e8d92541439c6a3499a84f4ac2b26`，覆盖 14 paths / 16 operations。其状态只能记为 `candidate_uncommitted`，消费者绑定只能记为 `candidate-bound-to-uncommitted-producer` / `partial`，不得写成 committed 或 active。
+- 生产者比当前消费者多 Agent Client heartbeat 与 acknowledgement 两个操作；它们是明确的“上游已覆盖、当前前端未消费”项，不是消费者 contract gap。当前消费者 14 个操作全部落在生产者候选范围内，`consumer_operations_outside_producer_candidate` 为空。
+- 生产者版本生命周期稳定错误使用 `data.code` / `data.error`，RespondErrorCode 与导出错误使用 `error.code` / `error.message`；离线投影分别固定这两种信封。
+- 只有生产者候选正式提交并再次核验 artifact SHA-256 后，才可通过独立变更提升绑定状态；不能因为候选通过 fast/full、vet 或总控只读核验就声称 active。
+
 ## 变更约束
 
 - Live 模式不能用 Demo fixture 或本地假写入替代缺失的上游能力。

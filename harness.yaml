@@ -140,7 +140,18 @@ verification_profiles:
       - Run npm ci --ignore-scripts --no-audit --no-fund on a fresh runner.
       - Require repository-local node_modules/.bin/openspec version 1.6.0.
     notes: Documented pre-delivery validation gate; browser and visual checks remain task-specific, and the repository workflow remains a local candidate until remote execution is observed.
-  conditional: []
+  conditional:
+    - id: agent_version_openapi_contract
+      status: candidate
+      commands:
+        - cwd: .
+          command: npm test -- src/modules/agent-versions/openapi-contract.test.ts src/modules/agent-versions/api.test.ts src/modules/agent-versions/model.test.ts
+          source: src/modules/agent-versions/openapi-contract.test.ts
+      approval_required: false
+      prerequisites:
+        - Use the repository-declared dependencies without network installation or upgrade.
+        - Keep the binding candidate/partial while the HAR-06C-LA producer artifact remains uncommitted.
+      notes: Offline gate bound to the exact HAR-06C-LA uncommitted producer candidate for Agent version endpoints, methods, concurrency fields, stable error envelopes, Client runtime following, and export semantics.
 contracts:
   status: partial
   produces:
@@ -160,6 +171,33 @@ contracts:
       ref: linkyun-agent:docs/openapi/openapi.yaml
       status: partial
       sources: [AGENTS.md, REPOS.yaml]
+    - id: linkyun_agent_version_api_projection
+      kind: openapi_consumer_projection
+      ref: src/modules/agent-versions/openapi-consumer-contract.json
+      digest:
+        algorithm: sha256
+        value: a571d24411684a27dcc027c54121c60b8da8ec93d7cddeba4d68f3b67091896c
+        subject: consumer_projection_bytes
+      authority: linkyun-agent:docs/openapi/openapi.yaml
+      producer_task: LYN-HAR-001-HAR-06C-LA
+      producer_baseline: 1a15df62f4954ca0fbb13c35b58f62df5a506cee
+      producer_digest:
+        algorithm: sha256
+        value: e80b042cc1cf81f4da388073351d364c594e8d92541439c6a3499a84f4ac2b26
+        subject: uncommitted_candidate_openapi
+      producer_status: candidate_uncommitted
+      binding_status: candidate-bound-to-uncommitted-producer
+      producer_coverage: {paths: 14, operations: 16}
+      consumer_coverage: {paths: 12, operations: 14}
+      producer_operations_not_consumed: [agent_client_heartbeat, agent_client_acknowledgement]
+      consumer_operations_outside_producer_candidate: []
+      baseline: 2fc749a9691129fd5437491f67a93709a5499d87
+      status: partial
+      sources:
+        - src/modules/agent-versions/openapi-consumer-contract.json
+        - src/modules/agent-versions/openapi-consumer-contract.sha256
+        - src/modules/agent-versions/openapi-contract.test.ts
+        - docs/contracts.md
   rules:
     - id: shared_request_layer
       description: Shared request behavior belongs in src/shared/api/, with business endpoints in the owning module.
@@ -191,8 +229,12 @@ contracts:
       projects: [linkyun-agent]
       artifacts: [docs/openapi/openapi.yaml, openspec/specs/]
       status: partial
-      notes: Frontend consumption is known, but no automated cross-repository contract gate exists yet.
-      sources: [AGENTS.md, REPOS.yaml]
+      notes: Agent version consumption is deterministically bound to the exact HAR-06C-LA uncommitted OpenAPI candidate; it remains partial until that producer artifact is committed and re-verified.
+      sources:
+        - AGENTS.md
+        - REPOS.yaml
+        - src/modules/agent-versions/openapi-consumer-contract.json
+        - docs/contracts.md
   notes: Change-local OpenSpec artifacts exist; no canonical openspec/specs main set was detected in this baseline.
 risks:
   - id: backend_contract_boundary
@@ -231,6 +273,15 @@ risks:
     control: Review applicable change artifacts and treat synchronization or archival as a separate decision.
     escalation_required: false
     sources: [openspec/config.yaml, committed Git tree path index]
+  - id: agent_version_producer_commit_gap
+    level: unknown
+    description: The Agent version consumer projection matches an exact producer candidate digest, but the Linkyun Agent OpenAPI candidate is uncommitted and therefore is not an active contract release.
+    control: Keep the binding candidate/partial, record producer_status as candidate_uncommitted, and re-check the authoritative artifact digest after the producer commit before confirming it.
+    escalation_required: false
+    sources:
+      - src/modules/agent-versions/openapi-consumer-contract.json
+      - src/modules/agent-versions/openapi-consumer-contract.sha256
+      - docs/contracts.md
 ci:
   repository:
     status: confirmed
@@ -284,3 +335,9 @@ evidence_sources:
     use: OpenSpec schema mode.
   - ref: committed Git tree path index
     use: Baseline, CI path, and OpenSpec path detection.
+  - ref: src/modules/agent-versions/openapi-consumer-contract.json
+    use: Deterministic Agent version OpenAPI consumer candidate, operation projection, required fields, stable errors, and runtime/export semantics.
+  - ref: src/modules/agent-versions/openapi-consumer-contract.sha256
+    use: SHA-256 of the exact UTF-8 consumer projection bytes; not a producer OpenAPI digest.
+  - ref: src/modules/agent-versions/openapi-contract.test.ts
+    use: Offline behavior and type assertions for the Agent version consumer candidate.
