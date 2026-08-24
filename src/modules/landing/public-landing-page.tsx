@@ -156,7 +156,6 @@ export function PublicLandingPage() {
           <h1 id="hero-title">让一个想法，<br />长成一个 <em>Agent</em></h1>
           <p className={styles.heroLead}>从第一句设定，到每一次真实运行。<br />AgentHub 帮助创作者完成角色、能力、测试、发布与持续运营。</p>
           <a className={styles.heroCta} href="#create" onClick={(event) => scrollToSection(event, "create")}>开始创建 <ArrowRight aria-hidden="true" /></a>
-          <p className={styles.heroNote}>先整理创作意图，生成与保存前需登录并完成邀请码验证。</p>
         </div>
         <div className={styles.heroSignal} aria-hidden="true">
           <span>角色设定</span><span>知识与技能</span><span>对话测试</span><span>发布运行</span>
