@@ -1,3 +1,64 @@
+# LYN-005-I3 User Visual Revision Design QA
+
+## Scope
+
+- Task: `LYN-005-I3` — AgentHub public site Living Blueprint refinement.
+- Visual baseline: `docs/qa/design-reference/lyn-005-i3/living-blueprint-visual-truth.png`.
+- Higher-priority target state: the user-marked revision removing the header `开始创建 →` and the complete angled Hero workbench on desktop and mobile.
+- Viewports: 1440 × 1000 desktop and 390 × 844 mobile.
+- Comparison canvases:
+  - `docs/qa/images/lyn-005-i3/revision-compare-desktop-before-after.png` (2858 × 992 px; previous state left, revised state right).
+  - `docs/qa/images/lyn-005-i3/revision-compare-mobile-before-after.png` (758 × 820 px; previous state left, revised state right).
+- Final captures:
+  - `docs/qa/images/lyn-005-i3/revision-desktop-hero-final.jpg` (1429 × 992 px at a 1440 × 1000 CSS viewport, DPR 1).
+  - `docs/qa/images/lyn-005-i3/revision-mobile-hero-final.jpg` (379 × 820 px at a 390 × 844 CSS viewport, DPR 1).
+- State: public `/` Hero with no authenticated interaction required. Before/after pairs use identical pixel dimensions, CSS viewport, DPR, scroll position, and content state; no density normalization was required.
+- Focused crop: not required because the two requested targets occupy the readable header and lower Hero regions in the full desktop canvas, while the full mobile canvas shows the complete breakpoint-specific removal and following-section transition.
+
+## Findings
+
+- [P1 fixed] Repeated header creation CTA. It duplicated the primary conversion action and was explicitly marked for removal. The header now contains `登录工作台` only at desktop and mobile.
+- [P1 fixed] Angled Hero workbench proof. The dark block dominated the paper composition and was explicitly marked for removal. The component, frame, UI content, and responsive styling are all absent; the raster path and four milestones remain continuous.
+- Post-fix review: P0 = 0, P1 = 0, P2 = 0. No open question remains.
+
+## Final review
+
+| Surface | Result | Evidence |
+| --- | --- | --- |
+| Typography and hierarchy | passed | Large Chinese Songti headline, handwritten Idea cue, editorial labels, and restrained body typography reproduce the reference hierarchy. |
+| Spacing and composition | passed | Removing the Hero proof exposes the complete growth path and leaves a deliberate paper field rather than a hole. A minimum 820 px desktop Hero prevents short-viewport annotation collisions; mobile closes the Hero at 720 px so the next editorial chapter enters the first screen. |
+| Color and image quality | passed | Warm-white paper, graphite, coral red, and the four raster registration marks remain consistent. The removed dark surface leaves no replacement CSS art or placeholder. |
+| Content fidelity | passed | The header retains only `登录工作台`; the Hero retains exactly one `开始创建` CTA and all four milestones. The following `#product` section remains the truthful build/test/version/distribution proof with `产品界面示意 · DEMO`. |
+| Interaction and state | passed | Public anchors, selectable product proof, five-step flow, creator scenarios, intent preparation, login/register continuation links, and `/assets/create` handoff remain operable. |
+| Responsive behavior | passed | At 390 px the visual story is recomposed rather than scaled. Measured page width equals client width; no horizontal overflow. |
+| Accessibility | passed | Semantic tabs/steps, visible keyboard focus, preserved landmark structure, and a tested reduced-motion path are present. |
+
+## Iteration record
+
+The initial I3 pass carried a purple legacy mark, crowded the Idea note, positioned the proof too low, and rendered the paper too yellow; those findings were fixed in the earlier R1 loop. The user then marked the repeated header CTA and the entire Hero workbench as unwanted P1 elements. This revision removes both nodes and their responsive CSS, raises the minimum desktop Hero to keep annotations clear on short screens, and shortens the mobile Hero so the paper composition resolves into the next chapter without a dead area.
+
+The final before/after canvases show both requested removals at desktop and mobile. No P0, P1, or P2 issue remains. The visual baseline's angled proof is intentionally superseded by the user's explicit revision; the authentic interactive product proof remains immediately below the Hero.
+
+## Follow-up polish
+
+None in the requested revision scope.
+
+## Verification notes
+
+- Production preview console errors: 0 at both viewports.
+- Desktop width: viewport 1440 px; document client/scroll width 1429/1429 px.
+- Mobile width: viewport 390 px; document client/scroll width 379/379 px.
+- DOM verification at both viewports: header creation CTA count 0; Hero workbench count 0; Hero primary CTA count 1; milestone titles count 4; downstream Demo product proof present.
+- Mobile primary CTA reaches the intent section; product-state selection and step 05 selection remain operable.
+- Browser media emulation was unavailable; reduced-motion behavior was verified through the existing `matchMedia` Vitest coverage and the CSS `prefers-reduced-motion` branch.
+- The browser profile contained an already-visible synthetic creator session, so anonymous redirect reproduction was not forced by mutating storage. Login/register continuation targets were inspected in the production page and protected-route behavior remains covered by the unchanged auth tests.
+
+final result: passed
+
+---
+
+# Historical design QA archive
+
 # LYN-004-R10 Agent Asset Grid Four-Column Design QA
 
 ## Comparison target

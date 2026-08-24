@@ -25,3 +25,11 @@
 - [x] 4.3 Extend focused tests for rapid tab selection, manual step hold, reduced-motion scrolling, and 390 px step operation.
 - [x] 4.4 Re-run all automatic gates and browser verification at 1440 px and 390 px; capture focused product, flow, scenario, intent, and mobile evidence.
 - [x] 4.5 Re-run design QA against V4 plus the higher-priority acceptance feedback, clear all P0/P1/P2 findings, and update the completion report.
+
+## 5. LYN-005-I3 Living Blueprint refinement
+
+- [x] 5.1 Register the selected Living Blueprint reference as the only visual truth and replace the dark portrait/particle direction with warm paper, raster blueprint growth path, editorial type, coral action language, print marks, and an angled native AgentHub proof.
+- [x] 5.2 Remove the Hero authentication note while preserving anchor navigation, product states, five-step flow, scenarios, creation intent, login/invitation handoff, and `/assets/create` continuation.
+- [x] 5.3 Recompose the 390 px hero, milestones, product proof, flow selector, and content order without horizontal overflow or desktop mechanical scaling.
+- [x] 5.4 Run full automated gates, in-app browser verification, and iterative same-canvas design QA; publish the I3 QA evidence and completion report with `final result: passed`.
+- [x] 5.5 Apply the user-marked Hero revision by removing the repeated header CTA and angled workbench proof at desktop/mobile, rebalance the paper composition, preserve the downstream product proof and interactions, and re-run 1440/390 visual QA.

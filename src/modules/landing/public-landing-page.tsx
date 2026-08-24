@@ -7,6 +7,7 @@ import {
   BookOpenText,
   Brain,
   ChatCircleText,
+  Check,
   CheckCircle,
   CirclesThreePlus,
   Code,
@@ -49,9 +50,9 @@ const creationSteps = [
 ];
 
 const creatorScenarios = [
-  { title: "独立 Agent 创作者", copy: "从灵感与设定开始，把一个想法变成可以持续打磨的创作资产。", image: "/images/agenthub-site/independent-creator-v4.png", alt: "虚构角色设定稿与创作材料组成的原创概念图", tag: "角色设定" },
-  { title: "IP 与内容团队", copy: "多人协作梳理角色宇宙、知识材料与表达规范，让内容保持一致。", image: "/images/login-agent-asset-hero.png", alt: "Agent 能力与资源连接的原创概念图", tag: "知识协作" },
-  { title: "Agent 运营团队", copy: "在真实对话中验证体验，管理发布状态，并把反馈带回下一次迭代。", image: "/images/agenthub-site/operations-creator-v4.png", alt: "包含对话、版本与运行状态界面的原创运营工作台概念图", tag: "测试与运营" },
+  { number: "01", title: "独立 Agent 创作者", copy: "从一句灵感开始，把角色、知识与表达方式沉淀为可以持续打磨的 Agent Asset。", tag: "角色设定", icon: UserFocus },
+  { number: "02", title: "IP 与内容团队", copy: "在同一条创作路径上梳理角色规范、知识材料和能力配置，让多人协作保持一致。", tag: "知识协作", icon: BookOpenText },
+  { number: "03", title: "Agent 运营团队", copy: "把真实对话中的反馈带回测试、版本与发行流程，让发布成为下一轮迭代的开始。", tag: "测试与运营", icon: RocketLaunch },
 ];
 
 export function PublicLandingPage() {
@@ -133,9 +134,11 @@ export function PublicLandingPage() {
   return (
     <main className={styles.site}>
       <a className={styles.skipLink} href="#main-content">跳到主要内容</a>
+      <PrintMarks />
+
       <header className={styles.header}>
         <a className={styles.brand} href="#top" aria-label="AgentHub 首页" onClick={(event) => scrollToSection(event, "top")}>
-          <Image src="/images/agenthub-logo.png" width={28} height={28} alt="" />
+          <Image src="/images/agenthub-site/living-agenthub-mark.png" width={25} height={25} alt="" />
           <span>AgentHub</span>
         </a>
         <nav className={styles.nav} aria-label="官网导航">
@@ -145,30 +148,34 @@ export function PublicLandingPage() {
         </nav>
         <div className={styles.headerActions}>
           <Link className={styles.loginLink} href={CREATE_LOGIN_HREF}>登录工作台</Link>
-          <a className={styles.primaryButton} href="#create" onClick={(event) => scrollToSection(event, "create")}>开始创建 <ArrowRight aria-hidden="true" /></a>
         </div>
       </header>
 
       <section id="top" className={styles.hero} aria-labelledby="hero-title">
-        <Image className={styles.heroImage} src="/images/agenthub-site/hero-creator-v4.png" alt="虚构创作者以光线连接角色、知识与 Agent 工作台的概念画面" fill sizes="(min-width: 900px) 72vw, 100vw" priority />
+        <Image className={styles.blueprintImage} src="/images/agenthub-site/living-blueprint-line.png" alt="" fill sizes="100vw" priority />
         <div id="main-content" className={styles.heroCopy}>
-          <p className={styles.kicker}>AGENT ASSET CREATION PLATFORM</p>
           <h1 id="hero-title">让一个想法，<br />长成一个 <em>Agent</em></h1>
-          <p className={styles.heroLead}>从第一句设定，到每一次真实运行。<br />AgentHub 帮助创作者完成角色、能力、测试、发布与持续运营。</p>
+          <p className={styles.ideaWord}>Idea</p>
+          <p className={styles.heroLead}>从角色设定，到知识与技能，再到对话测试、发布与持续运营，<br />AgentHub 帮助创作者完成从 0 到 1 的每一步。</p>
           <a className={styles.heroCta} href="#create" onClick={(event) => scrollToSection(event, "create")}>开始创建 <ArrowRight aria-hidden="true" /></a>
-          <p className={styles.heroNote}>先整理创作意图，生成与保存前需登录并完成邀请码验证。</p>
         </div>
-        <div className={styles.heroSignal} aria-hidden="true">
-          <span>角色设定</span><span>知识与技能</span><span>对话测试</span><span>发布运行</span>
+
+        <div className={styles.heroMilestones} aria-hidden="true">
+          <BlueprintNote className={styles.noteIdentity} title="角色设定" copy="定义 Agent 的身份与行为边界" />
+          <BlueprintNote className={styles.noteKnowledge} title="知识与技能" copy="连接知识、配置能力，让 Agent 真正有用" />
+          <BlueprintNote className={styles.noteTest} title="对话测试" copy="在真实交流中打磨体验与效果" />
+          <BlueprintNote className={styles.noteRuntime} title="发布上线" copy="发布到现有渠道，并持续运营迭代" />
         </div>
+
       </section>
 
       <section id="product" className={styles.productSection} aria-labelledby="product-title">
-        <div className={styles.sectionHeading}>
-          <p className={styles.kicker}>INSIDE AGENTHUB</p>
-          <h2 id="product-title">让创造过程，真正看得见</h2>
-          <p>同一个创作空间，承接角色设定、知识与技能、对话测试，以及发布后的运行状态。</p>
+        <div className={styles.editorialHeading}>
+          <p className={styles.kicker}>01 / INSIDE AGENTHUB</p>
+          <h2 id="product-title">创造不是一次生成，<br />而是一条持续生长的路径。</h2>
+          <p>同一个 Agent Asset 工作区，承接构建、测试、版本与发行。每一步都能回看，每一次发布都有真实状态。</p>
         </div>
+
         <div className={styles.productStage}>
           <div className={styles.stateTabs} role="tablist" aria-label="Agent 创建状态">
             {productStates.map((state) => (
@@ -179,15 +186,17 @@ export function PublicLandingPage() {
           </div>
           <div id="product-state-panel" className={styles.productWindow} role="tabpanel">
             <div className={styles.windowBar}>
-              <span className={styles.miniBrand}><Image src="/images/agenthub-logo.png" width={18} height={18} alt="" />AgentHub</span>
-              <span>Agent 资产 / 墨衡</span>
-              <span className={styles.windowStatus}>创作中</span>
+              <span className={styles.miniBrand}><Image src="/images/agenthub-site/living-agenthub-mark.png" width={17} height={17} alt="" />AgentHub</span>
+              <span>Agent Asset / 墨衡</span>
+              <span className={styles.windowStatus}>产品界面示意 · DEMO</span>
             </div>
             <div className={styles.productBody}>
-              <aside className={styles.productRail} aria-label="创建进度">
+              <aside className={styles.productRail} aria-label="Agent Asset 导航">
                 <div className={styles.agentIdentity}><span className={styles.avatar}>墨</span><span><b>墨衡</b><small>叙事顾问 · 草稿</small></span></div>
-                {productStates.map((state) => <span key={state.id} className={productState === state.id ? styles.railActive : ""}>{state.label}</span>)}
-                <span>安全边界</span>
+                <span className={productState === "identity" || productState === "knowledge" ? styles.railActive : ""}>构建</span>
+                <span className={productState === "test" ? styles.railActive : ""}>测试</span>
+                <span>版本</span>
+                <span className={productState === "runtime" ? styles.railActive : ""}>发行</span>
               </aside>
               <div className={styles.productStateViewport}>
                 {productStates.map((state) => (
@@ -200,9 +209,9 @@ export function PublicLandingPage() {
                 ))}
               </div>
               <aside className={styles.productContext}>
-                <span className={styles.contextLabel}>当前状态</span>
+                <span className={styles.contextLabel}>当前视图</span>
                 <strong>{currentProduct.label}</strong>
-                <p>{productState === "runtime" ? "已发布 · 运行中" : "未发布 · 本地草稿"}</p>
+                <p>{productState === "runtime" ? "发行状态可追踪" : "未发布 · 草稿"}</p>
                 <span className={styles.contextCheck}><CheckCircle weight="fill" aria-hidden="true" /> 状态清晰可追踪</span>
               </aside>
             </div>
@@ -212,9 +221,9 @@ export function PublicLandingPage() {
 
       <section id="flow" className={styles.flowSection} aria-labelledby="flow-title">
         <div className={styles.flowIntro}>
-          <p className={styles.kicker}>CREATION FLOW</p>
+          <p className={styles.kicker}>02 / CREATION FLOW</p>
           <h2 id="flow-title">从构想到<br />真正运行</h2>
-          <p>每一次滚动，只聚焦一个决定。</p>
+          <p>五个阶段，不是五张孤立的表单。它们沿着同一条创作脉络，反复验证、持续生长。</p>
           <div className={styles.stepNav} aria-label="五步创作流程">
             {creationSteps.map((step, index) => (
               <button key={step.number} type="button" className={activeStep === index ? styles.stepButtonActive : styles.stepButton} aria-current={activeStep === index ? "step" : undefined} onClick={() => selectStep(index)}>
@@ -228,8 +237,8 @@ export function PublicLandingPage() {
             const Icon = step.icon;
             return (
               <article key={step.number} ref={(node) => { stepRefs.current[index] = node; }} data-step={index} data-active={activeStep === index} className={`${styles.stepPanel} ${activeStep === index ? styles.stepPanelActive : ""}`}>
-                <div className={styles.stepVisual}><Icon size={42} weight="duotone" aria-hidden="true" /><span>{step.number}</span></div>
-                <div>
+                <div className={styles.stepIndex}><span>{step.number}</span><Icon aria-hidden="true" /></div>
+                <div className={styles.stepCopy}>
                   <p>{step.detail}</p>
                   <h3>{step.title}</h3>
                   <strong>{step.description}</strong>
@@ -244,23 +253,33 @@ export function PublicLandingPage() {
 
       <section id="scenarios" className={styles.scenarioSection} aria-labelledby="scenario-title">
         <div className={styles.scenarioHeading}>
-          <p className={styles.kicker}>CREATOR SCENARIOS</p>
-          <h2 id="scenario-title">为每一种 Agent 创作者而生</h2>
+          <p className={styles.kicker}>03 / CREATOR SCENARIOS</p>
+          <h2 id="scenario-title">为每一种<br />Agent 创作者而生</h2>
+          <p>不论从一个人的灵感出发，还是从团队的内容与运营流程出发，都能沿着同一条真实创作路径前进。</p>
         </div>
-        <div className={styles.scenarioGrid}>
-          {creatorScenarios.map((scenario) => (
-            <article className={styles.scenarioCard} data-feature={scenario.title === "独立 Agent 创作者" ? "lead" : "support"} key={scenario.title}>
-              <div className={styles.scenarioImage}><Image src={scenario.image} alt={scenario.alt} fill sizes="(min-width: 900px) 31vw, 100vw" loading="eager" /></div>
-              <div className={styles.scenarioCopy}><span>{scenario.tag}</span><h3>{scenario.title}</h3><p>{scenario.copy}</p></div>
-            </article>
-          ))}
+        <div className={styles.scenarioList}>
+          {creatorScenarios.map((scenario) => {
+            const Icon = scenario.icon;
+            return (
+              <article key={scenario.number} className={styles.scenarioItem}>
+                <span className={styles.scenarioNumber}>{scenario.number}</span>
+                <div className={styles.scenarioIcon}><Icon aria-hidden="true" /></div>
+                <div>
+                  <p>{scenario.tag}</p>
+                  <h3>{scenario.title}</h3>
+                  <p>{scenario.copy}</p>
+                </div>
+                <ArrowRight aria-hidden="true" />
+              </article>
+            );
+          })}
         </div>
       </section>
 
       <section id="create" className={styles.intentSection} aria-labelledby="intent-title">
         <div className={styles.intentIntro}>
-          <p className={styles.kicker}>START WITH INTENT</p>
-          <h2 id="intent-title">从一句话开始，<br />让它走进真实世界</h2>
+          <p className={styles.kicker}>04 / START WITH INTENT</p>
+          <h2 id="intent-title">从一句话开始，<br />让它走进真实世界。</h2>
           <p>先描述你想创造的 Agent，我们会在本次浏览器会话中整理这份创作意图。</p>
         </div>
         <div className={styles.intentPanel} data-ready={intentReady}>
@@ -290,7 +309,7 @@ export function PublicLandingPage() {
       </section>
 
       <footer className={styles.footer}>
-        <a className={styles.brand} href="#top" onClick={(event) => scrollToSection(event, "top")}><Image src="/images/agenthub-logo.png" width={28} height={28} alt="" /><span>AgentHub</span></a>
+        <a className={styles.brand} href="#top" onClick={(event) => scrollToSection(event, "top")}><Image src="/images/agenthub-site/living-agenthub-mark.png" width={25} height={25} alt="" /><span>AgentHub</span></a>
         <nav aria-label="页脚导航"><a href="#product" onClick={(event) => scrollToSection(event, "product")}>产品能力</a><a href="#flow" onClick={(event) => scrollToSection(event, "flow")}>创作流程</a><a href="#scenarios" onClick={(event) => scrollToSection(event, "scenarios")}>使用场景</a><Link href={CREATE_LOGIN_HREF}>登录工作台</Link></nav>
         <span>© 2026 AgentHub</span>
       </footer>
@@ -298,15 +317,30 @@ export function PublicLandingPage() {
   );
 }
 
+function PrintMarks() {
+  return (
+    <div className={styles.printMarks} aria-hidden="true">
+      <Image src="/images/agenthub-site/print-registration-mark.png" width={56} height={56} alt="" />
+      <Image src="/images/agenthub-site/print-registration-mark.png" width={56} height={56} alt="" />
+      <Image src="/images/agenthub-site/print-registration-mark.png" width={56} height={56} alt="" />
+      <Image src="/images/agenthub-site/print-registration-mark.png" width={56} height={56} alt="" />
+    </div>
+  );
+}
+
+function BlueprintNote({ className, title, copy }: { className: string; title: string; copy: string }) {
+  return <div className={className}><b>{title}</b><span>{copy}</span></div>;
+}
+
 function ProductStatePanel({ state }: { state: ProductState }) {
-  if (state === "identity") return <div className={styles.identityPanel}><UserFocus size={36} weight="duotone" aria-hidden="true" /><div><b>角色核心</b><p>克制、准确、擅长把复杂素材整理成可讲述的故事。</p></div><div><b>行为边界</b><p>不虚构来源；不替代创作者做未经确认的发布决定。</p></div></div>;
+  if (state === "identity") return <div className={styles.identityPanel}><UserFocus size={34} weight="duotone" aria-hidden="true" /><div><b>角色核心</b><p>克制、准确、擅长把复杂素材整理成可讲述的故事。</p></div><div><b>行为边界</b><p>不虚构来源；不替代创作者做未经确认的发布决定。</p></div></div>;
   if (state === "knowledge") return <div className={styles.resourcePanel}><ResourceRow icon={BookOpenText} name="世界观与角色设定" status="已连接" /><ResourceRow icon={Stack} name="采访与研究材料" status="已连接" /><ResourceRow icon={Code} name="内容结构技能" status="可配置" /></div>;
-  if (state === "runtime") return <div className={styles.runtimePanel}><RocketLaunch size={38} weight="duotone" aria-hidden="true" /><div><span>当前版本</span><strong>v1.0 · 已发布</strong></div><div><span>运行状态</span><strong className={styles.liveText}>运行中</strong></div></div>;
+  if (state === "runtime") return <div className={styles.runtimePanel}><RocketLaunch size={36} weight="duotone" aria-hidden="true" /><div><span>当前版本</span><strong>v1.0 · 已发布</strong></div><div><span>运行状态</span><strong className={styles.liveText}>运行中</strong></div></div>;
   return <div className={styles.chatPanel}><div className={styles.promptBubble}>如何让一段复杂设定更容易理解？</div><div className={styles.answerBubble}><span className={styles.avatar}>墨</span><p>先明确读者需要带走的核心判断，再用角色动机、冲突和结果组织材料。我们可以逐段检查。</p></div><div className={styles.chatInput}>输入测试问题… <PaperPlaneTilt aria-hidden="true" /></div></div>;
 }
 
 function ResourceRow({ icon: Icon, name, status }: { icon: typeof Compass; name: string; status: string }) {
-  return <div><Icon weight="duotone" aria-hidden="true" /><span><b>{name}</b><small>{status}</small></span></div>;
+  return <div><Icon weight="duotone" aria-hidden="true" /><span><b>{name}</b><small><Check aria-hidden="true" /> {status}</small></span></div>;
 }
 
 function StepPreview({ index }: { index: number }) {

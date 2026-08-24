@@ -81,8 +81,14 @@ describe("AgentHub public landing page", () => {
     expect(container.querySelector("#product")?.textContent).toContain("对话测试");
     expect(container.querySelector("#flow")?.textContent).toContain("持续迭代");
     expect(container.querySelectorAll("#scenarios article")).toHaveLength(3);
+    expect(container.querySelector("header")?.textContent).toBe("AgentHub产品能力创作流程使用场景登录工作台");
+    expect(container.querySelector('[aria-label="AgentHub 工作台产品界面示意"]')).toBeNull();
+    expect(container.querySelector("#top")?.textContent).toContain("开始创建");
+    expect(container.querySelector("#product")?.textContent).toContain("产品界面示意 · DEMO");
+    expect(container.textContent).not.toContain("先整理创作意图，生成与保存前需登录并完成邀请码验证。");
     expect(container.textContent).not.toContain("Living World");
     expect(container.textContent).not.toContain("Agent 市场");
+    expect(container.textContent).not.toContain("客户案例");
   });
 
   it("switches continuous product states with semantic selected state", async () => {
