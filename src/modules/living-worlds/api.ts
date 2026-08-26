@@ -1,6 +1,6 @@
 import { apiRequest } from "@/shared/api/http-client";
 import { eventCardDefinition } from "./model";
-import type { CursorPage, DecisionResult, InvitationDetail, InvitableAgent, LaunchRequest, ParticipantBinding, PlatformPendingPage, PreflightResult, WorldActorProjection, WorldAgentOwnerBinding, WorldContent, WorldDetail, WorldEventCard, WorldEventCardDefinition, WorldInstance, WorldInvitation, WorldLimitedChange, WorldLimitedChangeDecision, WorldListItem, WorldOwnerReport, WorldPermissions, WorldRecapPage, WorldReviewSubmission, WorldRuntimeContract, WorldRuntimeFence, WorldSchedule, WorldTemplate, WorldView, WorldVisibility, WorldVisibilityView } from "./types";
+import type { CursorPage, DecisionResult, InvitationDetail, InvitableAgent, LaunchRequest, ParticipantBinding, PlatformPendingPage, PreflightResult, WorldActorProjection, WorldAgentOwnerBinding, WorldContent, WorldDetail, WorldEventCard, WorldEventCardDefinition, WorldInstance, WorldInvitation, WorldLimitedChange, WorldLimitedChangeDecision, WorldListItem, WorldLiveEvent, WorldLiveEventCreateRequest, WorldOwnerReport, WorldPermissions, WorldRecapPage, WorldReviewSubmission, WorldRuntimeContract, WorldRuntimeFence, WorldSchedule, WorldTemplate, WorldView, WorldVisibility, WorldVisibilityView } from "./types";
 
 export interface WorldApiContext { apiKey: string; workspaceCode: string }
 const q = (value: string) => encodeURIComponent(value);
@@ -41,6 +41,9 @@ export const worldApi = {
   runtimeContract: (ctx: WorldApiContext, code: string) => request<WorldRuntimeContract>(ctx, `/worlds/${q(code)}/runtime-contract`),
   projection: (ctx: WorldApiContext, code: string, cursor = "") => request<WorldActorProjection>(ctx, `/worlds/${q(code)}/projection?cursor=${q(cursor)}`),
   barrier: (ctx: WorldApiContext, code: string, action: "pause" | "resume" | "takedown" | "archive", fence: { run_epoch: number; fencing_token: number; expected_revision: number }) => request<WorldRuntimeFence>(ctx, `/worlds/${q(code)}/runtime/barrier`, { method: "POST", body: json({ action, ...fence }) }),
+  liveEvents: (ctx: WorldApiContext, code: string, status = "") => withItems(request<{ items: WorldLiveEvent[] }>(ctx, `/worlds/${q(code)}/runtime/live-events${status ? `?status=${q(status)}` : ""}`)),
+  liveEvent: (ctx: WorldApiContext, code: string, eventCode: string) => request<WorldLiveEvent>(ctx, `/worlds/${q(code)}/runtime/live-events/${q(eventCode)}`),
+  createLiveEvent: (ctx: WorldApiContext, code: string, input: WorldLiveEventCreateRequest) => request<WorldLiveEvent>(ctx, `/worlds/${q(code)}/runtime/live-events`, { method: "POST", body: json(input) }),
   publicRecaps: (ctx: WorldApiContext, code: string, businessDate = "") => withItems(request<WorldRecapPage>(ctx, `/public/worlds/${q(code)}/recaps${businessDate ? `?business_date=${q(businessDate)}` : ""}`)),
   setVisibility: (ctx: WorldApiContext, code: string, visibility: WorldVisibility, expected_revision: number, idempotency_key: string) => request<WorldVisibilityView>(ctx, `/worlds/${q(code)}/public-visibility`, { method: "PUT", body: json({ visibility, expected_revision, idempotency_key }) }),
   reviewSubmissions: (ctx: WorldApiContext, code: string) => withItems(request<PlatformPendingPage<WorldReviewSubmission>>(ctx, `/worlds/${q(code)}/review-submissions`)),

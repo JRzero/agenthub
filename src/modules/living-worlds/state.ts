@@ -25,6 +25,8 @@ export const worldQueryKeys = {
   agentOwnerBinding: (workspaceCode: string, participantCode: string) => ["living-worlds", workspaceCode, "agent-owner-binding", participantCode] as const,
   limitedChange: (workspaceCode: string, changeCode: string) => ["living-worlds", workspaceCode, "limited-change", changeCode] as const,
   runtimeFence: (workspaceCode: string, worldCode: string) => ["living-worlds", workspaceCode, "runtime-fence", worldCode] as const,
+  liveEvents: (workspaceCode: string, worldCode: string, status = "") => ["living-worlds", workspaceCode, "live-events", worldCode, status || "all"] as const,
+  liveEvent: (workspaceCode: string, worldCode: string, eventCode: string) => ["living-worlds", workspaceCode, "live-event", worldCode, eventCode] as const,
 };
 
 export function newIdempotencyKey(prefix: string): string {

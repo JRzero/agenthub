@@ -78,6 +78,22 @@ describe("Living World C adapter", () => {
     expect(JSON.parse(String((fetchMock.mock.calls[1][1] as RequestInit).body))).toEqual({ action: "pause", run_epoch: 2, fencing_token: 3, expected_revision: 4 });
   });
 
+  it("RE-H creates and reconciles live events with the frozen runtime identity", async () => {
+    const event = { event_code: "wlive_00000000-0000-0000-0000-000000000001", status: "pending" };
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async () => ok(event, 201));
+    const input = { run_epoch: 2, fencing_token: 3, expected_revision: 4, title: "大厅停电", location_code: "lobby", observable_start: "大厅灯光突然熄灭。", participant_codes: ["resident-a"], max_effect: "temporary_local" as const, ttl_seconds: 600, idempotency_key: "world-live-event-fixed-key" };
+    await worldApi.createLiveEvent(ctx, "monster", input);
+    await worldApi.liveEvents(ctx, "monster", "pending");
+    await worldApi.liveEvent(ctx, "monster", event.event_code);
+    expect(fetchMock.mock.calls.map((call) => call[0])).toEqual([
+      "http://localhost:8080/api/v1/worlds/monster/runtime/live-events",
+      "http://localhost:8080/api/v1/worlds/monster/runtime/live-events?status=pending",
+      `http://localhost:8080/api/v1/worlds/monster/runtime/live-events/${event.event_code}`,
+    ]);
+    expect(JSON.parse(String((fetchMock.mock.calls[0][1] as RequestInit).body))).toEqual(input);
+    expect(fetchMock.mock.calls[0][0]).not.toContain("tick");
+  });
+
   it("F reads actor projection, runtime contract and recap revisions", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async () => ok({ items: [] }));
     await worldApi.projection(ctx, "monster", "next+/=");
@@ -141,6 +157,8 @@ describe("Living World state contract", () => {
   it("isolates Workspace and World identity in query keys", () => {
     expect(worldQueryKeys.detail("studio-a", "monster", 3)).toEqual(["living-worlds", "studio-a", "detail", "monster", 3]);
     expect(worldQueryKeys.detail("studio-b", "monster", 3)).not.toEqual(worldQueryKeys.detail("studio-a", "monster", 3));
+    expect(worldQueryKeys.liveEvents("studio-a", "monster")).toEqual(["living-worlds", "studio-a", "live-events", "monster", "all"]);
+    expect(worldQueryKeys.liveEvent("studio-a", "monster", "wlive-1")).toEqual(["living-worlds", "studio-a", "live-event", "monster", "wlive-1"]);
   });
 
   it("allows permissions to narrow but never broaden", () => {

@@ -47,6 +47,48 @@ export interface LaunchRequest { request_code: string; world_code: string; sourc
 export interface WorldInstance { instance_code: string; world_version_no: number; runtime_schema_version: number; runtime_contract_hash: string; seed: number; timezone: string; status: string; run_epoch: number; fencing_token: number; state_revision: number; started_at: string }
 
 export interface WorldRuntimeFence { instance_code: string; run_epoch: number; fencing_token: number; state_revision: number }
+export type WorldLiveEventStatus = "pending" | "selected" | "committed" | "rejected" | "expired";
+export type WorldLiveEventMaxEffect = "ambient_only" | "temporary_local" | "reversible_local";
+export interface WorldLiveEventCreateRequest {
+  run_epoch: number;
+  fencing_token: number;
+  expected_revision: number;
+  title: string;
+  location_code: string;
+  observable_start: string;
+  participant_codes: string[];
+  max_effect: WorldLiveEventMaxEffect;
+  ttl_seconds: number;
+  idempotency_key: string;
+}
+export interface WorldLiveEvent {
+  event_code: string;
+  candidate_code: string;
+  world_code: string;
+  instance_code: string;
+  run_epoch: number;
+  fencing_token: number;
+  expected_revision: number;
+  title: string;
+  location_code: string;
+  participant_codes: string[];
+  observable_start: string;
+  max_effect: WorldLiveEventMaxEffect;
+  occurrence: "once";
+  status: WorldLiveEventStatus;
+  revision: 1;
+  ttl_seconds: number;
+  expires_at: string;
+  created_at: string;
+}
+export interface WorldLiveEventDraft {
+  title: string;
+  location_code: string;
+  observable_start: string;
+  participant_codes: string[];
+  max_effect: WorldLiveEventMaxEffect;
+  ttl_seconds: number;
+}
 export interface WorldProjectionResident { participant_code: string; agent_code: string; public_identity: string; status: "active" }
 export interface WorldTimelineItem { event_code: string; event_sequence: number; event_type: string; semantic_kind: "fact" | "rumor" | "statement"; summary: string; cause_summary: string; affected_participant_codes: string[]; location_code?: string; source_intervention_code?: string; created_at: string }
 export interface WorldCreatorProjection { world_code: string; status: string; revision: number; runtime_health: string; public_residents: WorldProjectionResident[]; timeline: WorldTimelineItem[]; creator_audit_summary?: string; next_cursor?: string }
