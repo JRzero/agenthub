@@ -2,97 +2,95 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BookOpenText,
-  Brain,
-  ChatCircleText,
-  Check,
-  CheckCircle,
-  CirclesThreePlus,
-  Code,
-  Compass,
-  LockKey,
-  PaperPlaneTilt,
-  RocketLaunch,
-  Sparkle,
-  Stack,
-  UserFocus,
-} from "@phosphor-icons/react";
-import { FormEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import { ArrowRight, BookOpenText, CaretLeft, CaretRight, ChatCircleText, Check, Code, PaperPlaneTilt, RocketLaunch, Sparkle, Stack, UserFocus } from "@phosphor-icons/react";
+import { FormEvent, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { boundedCarouselSlot, circularAgentSlot, useWorkbenchAgentTransition } from "@/modules/workbench/workbench-transition";
+import { useDocumentHidden, usePrefersReducedMotion, useWorkbenchAutoplay } from "@/modules/workbench/workbench-autoplay";
 import styles from "./public-landing-page.module.css";
 
 export const CREATION_INTENT_SESSION_KEY = "agenthub_public_creation_intent";
 export const CREATE_LOGIN_HREF = "/login?next=%2Fassets%2Fcreate";
 export const CREATE_REGISTER_HREF = "/register?next=%2Fassets%2Fcreate";
 
-type ProductState = "identity" | "knowledge" | "test" | "runtime";
+type ProductState = "identity" | "knowledge" | "test" | "runtime" | "iterate";
+type ShowcaseRole = { id: number; name: string; type: string; description: string; image: string; imagePosition?: string; boundary: "Demo Asset" | "示例角色" };
+type HeroRoleCardSlot = {
+  id: string;
+  src: string;
+  alt: string;
+  slot: string;
+  zIndex: number;
+  tone: "main" | "near" | "outer";
+  objectPosition: string;
+  imageScale: number;
+  mobile: boolean;
+};
 
-const productStates: Array<{
-  id: ProductState;
-  label: string;
-  eyebrow: string;
-  title: string;
-  description: string;
-}> = [
-  { id: "identity", label: "角色设定", eyebrow: "01 · DEFINE", title: "先让角色站稳", description: "明确角色定位、性格边界与表达方式，为后续能力配置建立一致基线。" },
-  { id: "knowledge", label: "知识与技能", eyebrow: "02 · ENRICH", title: "把专业能力接进来", description: "组织知识材料、技能与工具，让 Agent 在真实任务中有据可依。" },
-  { id: "test", label: "对话测试", eyebrow: "03 · TEST", title: "在真实交流中打磨", description: "通过连续对话发现偏差，回到设定与能力配置继续优化。" },
-  { id: "runtime", label: "发布运行", eyebrow: "04 · RUN", title: "发布后继续看见状态", description: "确认版本与运行状态，让已发布 Agent 进入持续运营与迭代。" },
+const heroRoleCardSlots: HeroRoleCardSlot[] = [
+  { id: "top-strategist", src: "/images/agenthub-site/role-strategist-demo.png", alt: "", slot: "top-strategist", zIndex: 1, tone: "outer", objectPosition: "50% 22%", imageScale: 1.04, mobile: false },
+  { id: "top-anime", src: "/images/agenthub-site/role-gamehost-demo.png", alt: "", slot: "top-anime", zIndex: 1, tone: "near", objectPosition: "50% 18%", imageScale: 1.04, mobile: true },
+  { id: "top-support", src: "/images/agenthub-site/hero-headset-operator-r17.png", alt: "", slot: "top-support", zIndex: 1, tone: "near", objectPosition: "50% 18%", imageScale: 1.06, mobile: false },
+  { id: "mid-expert", src: "/images/agenthub-site/hero-senior-scientist-r17.png", alt: "", slot: "mid-expert", zIndex: 2, tone: "outer", objectPosition: "50% 18%", imageScale: 1.06, mobile: true },
+  { id: "mid-fantasy", src: "/images/agenthub-site/hero-rounded-fantasy-r17.png", alt: "", slot: "mid-fantasy", zIndex: 2, tone: "near", objectPosition: "50% 22%", imageScale: 1.06, mobile: true },
+  { id: "mid-right-partial", src: "/images/agenthub-site/hero-game-architect-r9.png", alt: "", slot: "mid-right-partial", zIndex: 2, tone: "outer", objectPosition: "50% 20%", imageScale: 1.12, mobile: false },
+  { id: "bottom-robot", src: "/images/agenthub-site/hero-robot-tester-r9.png", alt: "", slot: "bottom-robot", zIndex: 1, tone: "near", objectPosition: "50% 16%", imageScale: 1.05, mobile: true },
+  { id: "bottom-companion", src: "/images/agenthub-site/hero-alpaca-companion-r17.png", alt: "", slot: "bottom-companion", zIndex: 2, tone: "near", objectPosition: "50% 18%", imageScale: 1.05, mobile: true },
+  { id: "bottom-operator", src: "/images/agenthub-site/hero-young-operator-r17.png", alt: "", slot: "bottom-operator", zIndex: 1, tone: "outer", objectPosition: "50% 16%", imageScale: 1.04, mobile: false },
+  { id: "bottom-fantasy", src: "/images/agenthub-site/hero-silver-fantasy-r17.png", alt: "", slot: "bottom-fantasy", zIndex: 1, tone: "outer", objectPosition: "50% 18%", imageScale: 1.06, mobile: true },
+  { id: "right-mid-fantasy", src: "/images/agenthub-site/hero-anime-curator-r9.png", alt: "", slot: "right-mid-fantasy", zIndex: 2, tone: "outer", objectPosition: "50% 18%", imageScale: 1.08, mobile: false },
+  { id: "main", src: "/images/agenthub-site/hero-main-reference-r18.png", alt: "", slot: "main", zIndex: 6, tone: "main", objectPosition: "50% 50%", imageScale: 1, mobile: true },
 ];
 
-const creationSteps = [
-  { number: "01", title: "定义角色", description: "确定它是谁、面向谁，以及什么该做、什么不该做。", detail: "角色设定", body: "把创作构想变成清晰的角色定位、叙事语气和行为边界。", icon: UserFocus },
-  { number: "02", title: "丰富能力", description: "连接知识、技能与业务流程，让能力有真实来源。", detail: "知识与技能", body: "组织知识材料，选择适合的技能和工具，形成可持续维护的能力组合。", icon: Brain },
-  { number: "03", title: "对话打磨", description: "在真实交流中发现问题，而不是靠想象判断。", detail: "测试与评估", body: "围绕关键场景展开对话测试，观察回答质量并定位需要继续调整的部分。", icon: ChatCircleText },
-  { number: "04", title: "发布运行", description: "确认版本与渠道，让 Agent 进入实际使用场景。", detail: "发行与运行", body: "通过现有发布流程管理版本与运行状态，让每次变化都有明确承接。", icon: RocketLaunch },
-  { number: "05", title: "持续迭代", description: "根据使用反馈更新设定与能力，让 Agent 越用越好。", detail: "版本迭代", body: "回到构建、测试和版本记录中持续优化，不把发布当成创作的终点。", icon: CirclesThreePlus },
+const productStates: Array<{ id: ProductState; number: string; label: string; eyebrow: string; title: string; description: string }> = [
+  { id: "identity", number: "01", label: "角色设定", eyebrow: "DEFINE", title: "先让角色站稳", description: "明确角色定位、表达方式与行为边界，让后续能力始终围绕同一个角色生长。" },
+  { id: "knowledge", number: "02", label: "知识与技能", eyebrow: "ENRICH", title: "把真实能力接进来", description: "组织知识材料、技能与工具，让 Agent 面对任务时有清晰、可维护的能力来源。" },
+  { id: "test", number: "03", label: "对话测试", eyebrow: "TEST", title: "在真实交流中打磨", description: "围绕关键场景连续对话，发现设定偏差，并回到构建工作区继续调整。" },
+  { id: "runtime", number: "04", label: "发布运行", eyebrow: "RELEASE", title: "让版本走进真实场景", description: "确认版本、发行目标与运行状态，让已经准备好的 Agent 进入现有发布流程。" },
+  { id: "iterate", number: "05", label: "持续迭代", eyebrow: "ITERATE", title: "把反馈带回下一轮", description: "从测试与版本记录中整理改进方向，继续调整角色、能力和对话表现。" },
 ];
+
+const showcaseRoles: ShowcaseRole[] = [
+  { id: 32, name: "林月", type: "陪伴型 Agent", description: "来自当前 Demo 数据的陪伴型角色资产，用温柔、敏锐的表达接住用户情绪。", image: "/images/lin-yue-avatar.png", boundary: "Demo Asset" },
+  { id: 71, name: "知序", type: "知识策略顾问", description: "用于展示角色设定、知识组织与能力连接方式的品牌示例角色。", image: "/images/agenthub-site/role-strategist-demo.png", boundary: "示例角色" },
+  { id: 88, name: "墨衡", type: "叙事顾问", description: "以克制、准确、有依据的表达协助创作者整理复杂世界观与叙事材料。", image: "/images/login-agent-portrait.png", imagePosition: "50% 28%", boundary: "示例角色" },
+  { id: 96, name: "沐橙", type: "游戏内容主持", description: "用于展示声音、风格与场景能力组合的品牌示例角色。", image: "/images/agenthub-site/role-gamehost-demo.png", boundary: "示例角色" },
+  { id: 105, name: "创作搭档", type: "角色设计助手", description: "用于展示从创作意图到角色设定的品牌示例，不代表线上真实运行资产。", image: "/images/agenthub-site/role-creative-director-demo.png", boundary: "示例角色" },
+];
+const showcaseRoleIds = showcaseRoles.map((role) => role.id);
 
 const creatorScenarios = [
-  { number: "01", title: "独立 Agent 创作者", copy: "从一句灵感开始，把角色、知识与表达方式沉淀为可以持续打磨的 Agent Asset。", tag: "角色设定", icon: UserFocus },
-  { number: "02", title: "IP 与内容团队", copy: "在同一条创作路径上梳理角色规范、知识材料和能力配置，让多人协作保持一致。", tag: "知识协作", icon: BookOpenText },
-  { number: "03", title: "Agent 运营团队", copy: "把真实对话中的反馈带回测试、版本与发行流程，让发布成为下一轮迭代的开始。", tag: "测试与运营", icon: RocketLaunch },
+  { number: "01", title: "独立 Agent 创作者", copy: "从一句灵感开始，把角色、知识与表达方式沉淀为可以持续打磨的 Agent Asset。", tag: "角色设定", image: "/images/agenthub-site/independent-creator-v4.png", position: "65% 54%" },
+  { number: "02", title: "IP 与内容团队", copy: "在同一条创作路径上梳理角色规范、知识材料和能力配置，让多人协作保持一致。", tag: "知识协作", image: "/images/agenthub-site/hero-creator-v4.png", position: "72% 50%" },
+  { number: "03", title: "Agent 运营团队", copy: "把真实对话中的反馈带回测试、版本与发行流程，让发布成为下一轮迭代的开始。", tag: "测试与运营", image: "/images/agenthub-site/operations-creator-v4.png", position: "50% 50%" },
 ];
+const intentSuggestions = ["东方神话故事 Agent", "团队知识问答 Agent", "陪伴型角色 Agent"];
+
+export function flowStageFromProgress(progress: number, stageCount = productStates.length) {
+  const bounded = Math.max(0, Math.min(1, progress));
+  return Math.round(bounded * Math.max(0, stageCount - 1));
+}
 
 export function PublicLandingPage() {
-  const [productState, setProductState] = useState<ProductState>("test");
-  const [activeStep, setActiveStep] = useState(2);
+  const [activeStep, setActiveStep] = useState(0);
   const [intent, setIntent] = useState("");
   const [intentReady, setIntentReady] = useState(false);
-  const stepRefs = useRef<Array<HTMLElement | null>>([]);
+  const flowRef = useRef<HTMLElement | null>(null);
   const manualSelectionUntil = useRef(0);
 
   useEffect(() => {
     const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (reducedMotion) return;
-
     let frame = 0;
     const updateActiveStep = () => {
       frame = 0;
-      if (performance.now() < manualSelectionUntil.current) return;
-
-      const focusLine = window.innerHeight * 0.34;
-      let closestIndex = activeStep;
-      let closestDistance = Number.POSITIVE_INFINITY;
-
-      stepRefs.current.forEach((node, index) => {
-        if (!node) return;
-        const rect = node.getBoundingClientRect();
-        const distance = Math.abs(rect.top + rect.height * 0.42 - focusLine);
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestIndex = index;
-        }
-      });
-
-      setActiveStep((current) => (current === closestIndex ? current : closestIndex));
+      if (window.innerWidth <= 780 || performance.now() < manualSelectionUntil.current) return;
+      const flow = flowRef.current;
+      if (!flow) return;
+      const travel = Math.max(1, flow.offsetHeight - window.innerHeight);
+      const nextStep = flowStageFromProgress(-flow.getBoundingClientRect().top / travel);
+      setActiveStep((current) => current === nextStep ? current : nextStep);
     };
-    const scheduleUpdate = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(updateActiveStep);
-    };
-
+    const scheduleUpdate = () => { if (!frame) frame = window.requestAnimationFrame(updateActiveStep); };
     scheduleUpdate();
     window.addEventListener("scroll", scheduleUpdate, { passive: true });
     window.addEventListener("resize", scheduleUpdate);
@@ -101,15 +99,18 @@ export function PublicLandingPage() {
       window.removeEventListener("resize", scheduleUpdate);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  // The flow state is derived from geometry; activeStep stays intentionally outside this effect.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function selectStep(index: number) {
     manualSelectionUntil.current = performance.now() + 1100;
     setActiveStep(index);
+    if (window.innerWidth <= 780) return;
+    const flow = flowRef.current;
+    if (!flow) return;
     const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    stepRefs.current[index]?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+    const flowTop = window.scrollY + flow.getBoundingClientRect().top;
+    const travel = Math.max(1, flow.offsetHeight - window.innerHeight);
+    window.scrollTo({ top: flowTop + (index / Math.max(1, productStates.length - 1)) * travel, behavior: reducedMotion ? "auto" : "smooth" });
   }
 
   function scrollToSection(event: MouseEvent<HTMLAnchorElement>, id: string) {
@@ -129,224 +130,87 @@ export function PublicLandingPage() {
     setIntentReady(true);
   }
 
-  const currentProduct = productStates.find((item) => item.id === productState) ?? productStates[2];
+  const currentProduct = productStates[activeStep] ?? productStates[0];
 
-  return (
-    <main className={styles.site}>
-      <a className={styles.skipLink} href="#main-content">跳到主要内容</a>
-      <PrintMarks />
+  return <main className={styles.site}>
+    <a className={styles.skipLink} href="#main-content">跳到主要内容</a>
+    <header className={styles.header}>
+      <a className={styles.brand} href="#top" aria-label="AgentHub 首页" onClick={(event) => scrollToSection(event, "top")}><Image className={styles.brandMark} src="/images/agenthub-logo.png" width={30} height={30} alt="" /><span>AgentHub</span></a>
+      <nav className={styles.nav} aria-label="官网导航"><a href="#product" onClick={(event) => scrollToSection(event, "product")}>管理能力</a><a href="#flow" onClick={(event) => scrollToSection(event, "flow")}>运营流程</a><a href="#scenarios" onClick={(event) => scrollToSection(event, "scenarios")}>使用场景</a><a href="#assets" onClick={(event) => scrollToSection(event, "assets")}>角色资产</a><a href="#create" onClick={(event) => scrollToSection(event, "create")}>创建</a><a href="#product" onClick={(event) => scrollToSection(event, "product")}>产品边界</a></nav>
+      <Link className={styles.loginLink} href={CREATE_LOGIN_HREF}>登录平台</Link>
+    </header>
 
-      <header className={styles.header}>
-        <a className={styles.brand} href="#top" aria-label="AgentHub 首页" onClick={(event) => scrollToSection(event, "top")}>
-          <Image src="/images/agenthub-site/living-agenthub-mark.png" width={25} height={25} alt="" />
-          <span>AgentHub</span>
-        </a>
-        <nav className={styles.nav} aria-label="官网导航">
-          <a href="#product" onClick={(event) => scrollToSection(event, "product")}>产品能力</a>
-          <a href="#flow" onClick={(event) => scrollToSection(event, "flow")}>创作流程</a>
-          <a href="#scenarios" onClick={(event) => scrollToSection(event, "scenarios")}>使用场景</a>
-        </nav>
-        <div className={styles.headerActions}>
-          <Link className={styles.loginLink} href={CREATE_LOGIN_HREF}>登录工作台</Link>
+    <section id="top" className={styles.hero} aria-labelledby="hero-title">
+      <div id="main-content" className={styles.heroCopy}>
+        <h1 id="hero-title"><span>管理</span><span><em>每一个</em> AI 角色</span><span>让能力持续进化</span></h1>
+        <p className={styles.heroLead}>统一管理角色设定、知识能力、版本与发布，<br />实时掌握运行状态，让每个 Agent 稳定成长。</p>
+        <Link className={styles.heroCta} href={CREATE_LOGIN_HREF}>进入工作台</Link>
+        <div className={styles.heroStatus} aria-label="示例角色与真实创作阶段">
+          <span className={styles.heroAvatars} aria-hidden="true"><Image src="/images/agenthub-site/role-strategist-demo.png" width={28} height={28} alt="" /><Image src="/images/agenthub-site/role-gamehost-demo.png" width={28} height={28} alt="" /><Image src="/images/agenthub-site/hero-robot-tester-r9.png" width={28} height={28} alt="" /><Image src="/images/agenthub-site/hero-alpaca-companion-r17.png" width={28} height={28} alt="" /></span>
+          <span><strong>05 个阶段</strong><small>覆盖角色设定到持续迭代</small></span>
         </div>
-      </header>
+        <dl className={styles.heroStats} aria-label="AgentHub 能力边界"><div><dt>05</dt><dd>创作阶段</dd></div><div><dt>DEMO</dt><dd>示例资产</dd></div><div><dt>LIVE</dt><dd>登录后读取</dd></div></dl>
+      </div>
+      <figure className={styles.heroPortraits} aria-hidden="true">
+        <div className={styles.heroRoleStage} data-hero-role-stage="design-1503x734">
+          {heroRoleCardSlots.map((card) => <div key={card.id} className={styles.heroRoleCard} data-hero-role-card data-hero-role-slot={card.slot} data-hero-role-main={card.id === "main" ? "true" : undefined} data-tone={card.tone} data-mobile={card.mobile ? "true" : "false"} style={{ zIndex: card.zIndex }}><Image src={card.src} alt={card.alt} fill sizes="(max-width: 780px) 46vw, 32vw" priority={card.id === "main"} style={{ objectPosition: card.objectPosition, transform: `scale(${card.imageScale})` }} /></div>)}
+        </div>
+      </figure>
+    </section>
 
-      <section id="top" className={styles.hero} aria-labelledby="hero-title">
-        <Image className={styles.blueprintImage} src="/images/agenthub-site/living-blueprint-line.png" alt="" fill sizes="100vw" priority />
-        <div id="main-content" className={styles.heroCopy}>
-          <h1 id="hero-title">让一个想法，<br />长成一个 <em>Agent</em></h1>
-          <p className={styles.ideaWord}>Idea</p>
-          <p className={styles.heroLead}>从角色设定，到知识与技能，再到对话测试、发布与持续运营，<br />AgentHub 帮助创作者完成从 0 到 1 的每一步。</p>
-          <a className={styles.heroCta} href="#create" onClick={(event) => scrollToSection(event, "create")}>开始创建 <ArrowRight aria-hidden="true" /></a>
-        </div>
+    <RoleAssetShowcase />
 
-        <div className={styles.heroMilestones} aria-hidden="true">
-          <BlueprintNote className={styles.noteIdentity} title="角色设定" copy="定义 Agent 的身份与行为边界" />
-          <BlueprintNote className={styles.noteKnowledge} title="知识与技能" copy="连接知识、配置能力，让 Agent 真正有用" />
-          <BlueprintNote className={styles.noteTest} title="对话测试" copy="在真实交流中打磨体验与效果" />
-          <BlueprintNote className={styles.noteRuntime} title="发布上线" copy="发布到现有渠道，并持续运营迭代" />
+    <section id="product" ref={flowRef} className={styles.flowSection} aria-labelledby="flow-title">
+      <span id="flow" className={styles.anchorMarker} aria-hidden="true" />
+      <div className={styles.flowSticky}>
+        <header className={styles.flowHeading}><p className={styles.kicker}>02 / CREATION FLOW</p><h2 id="flow-title">从一个想法<br />到<em>持续生长</em></h2><p>向下滚动，查看一个 Agent 从角色设定到版本迭代的五个真实创作阶段。</p></header>
+        <div className={styles.flowGrid}>
+          <nav className={styles.stepNav} aria-label="五步创作流程">{productStates.map((step, index) => <button key={step.id} type="button" className={activeStep === index ? styles.stepButtonActive : styles.stepButton} aria-current={activeStep === index ? "step" : undefined} aria-controls="flow-product-panel" onClick={() => selectStep(index)}><i>{step.number}</i><span><strong>{step.label}</strong><small>{step.description}</small></span></button>)}</nav>
+          <div className={styles.productScene}><div id="flow-product-panel" className={styles.productWindow} aria-live="polite" aria-label="AgentHub 真实产品结构示意"><div className={styles.windowBar}><span className={styles.miniBrand}><Image className={styles.brandMark} src="/images/agenthub-logo.png" width={18} height={18} alt="" />AgentHub</span><span>Agent Asset / 墨衡</span><span className={styles.windowStatus}>产品界面示意 · DEMO</span></div><div className={styles.productBody}><aside className={styles.productRail} aria-label="Agent Asset 导航"><div className={styles.agentIdentity}><span className={styles.avatar}>墨</span><span><b>墨衡</b><small>叙事顾问 · 草稿</small></span></div><span className={currentProduct.id === "identity" || currentProduct.id === "knowledge" ? styles.railActive : ""}>构建</span><span className={currentProduct.id === "test" ? styles.railActive : ""}>测试</span><span className={currentProduct.id === "iterate" ? styles.railActive : ""}>版本</span><span className={currentProduct.id === "runtime" ? styles.railActive : ""}>发行</span></aside><div className={styles.productContent} data-state={currentProduct.id}><div className={styles.productStageTop}><p>{currentProduct.number} · {currentProduct.eyebrow}</p><span>{currentProduct.label}</span></div><h3>{currentProduct.title}</h3><p>{currentProduct.description}</p><ProductStatePanel state={currentProduct.id} /></div></div></div><span className={styles.flowCount}>{currentProduct.number}</span></div>
         </div>
+      </div>
+    </section>
 
-      </section>
+    <section id="scenarios" className={styles.scenarioSection} aria-labelledby="scenario-title"><div className={styles.scenarioHeading}><p className={styles.kicker}>03 / USE CASES</p><h2 id="scenario-title">让创作走进<br />真实场景</h2><p>从个人灵感到团队运营，让角色、能力、测试与发布彼此衔接。</p></div><div className={styles.scenarioList}>{creatorScenarios.map((scenario) => <article key={scenario.number} className={styles.scenarioItem}><Image src={scenario.image} alt="" fill sizes="(max-width: 780px) 100vw, 33vw" style={{ objectPosition: scenario.position }} /><div className={styles.scenarioCopy}><span>{scenario.number}</span><p>{scenario.tag}</p><h3>{scenario.title}</h3><p>{scenario.copy}</p></div></article>)}</div></section>
 
-      <section id="product" className={styles.productSection} aria-labelledby="product-title">
-        <div className={styles.editorialHeading}>
-          <p className={styles.kicker}>01 / INSIDE AGENTHUB</p>
-          <h2 id="product-title">创造不是一次生成，<br />而是一条持续生长的路径。</h2>
-          <p>同一个 Agent Asset 工作区，承接构建、测试、版本与发行。每一步都能回看，每一次发布都有真实状态。</p>
-        </div>
+    <section id="create" className={styles.intentSection} aria-labelledby="intent-title"><Image className={styles.intentAtmosphere} src="/images/agenthub-site/dark-lime-atmosphere.png" alt="" fill sizes="100vw" /><div className={styles.intentIntro}><p className={styles.kicker}>04 / START WITH INTENT</p><h2 id="intent-title"><span className={styles.intentTitleLine}>从一句话开始，</span><span className={styles.intentTitleLine}>让它走进真实世界。</span></h2></div><div className={styles.intentPanel} data-ready={intentReady}>{!intentReady ? <form onSubmit={submitIntent} className={styles.intentForm}><label className={styles.intentLabel} htmlFor="creation-intent">你想创造怎样的 Agent？</label><div className={styles.intentControl}><textarea id="creation-intent" value={intent} onChange={(event) => setIntent(event.target.value)} rows={3} maxLength={240} placeholder="例如：我想创造一个熟悉东方神话、表达克制的故事 Agent" required /><button type="submit" aria-label="整理创建意图"><PaperPlaneTilt weight="fill" aria-hidden="true" /></button></div><div className={styles.intentSuggestions} aria-label="创建意图示例">{intentSuggestions.map((suggestion) => <button key={suggestion} type="button" onClick={() => setIntent(`我想创造一个${suggestion}`)}>{suggestion}</button>)}</div></form> : <div className={styles.intentSummary} aria-live="polite"><p className={styles.summaryLabel}><Sparkle weight="fill" aria-hidden="true" /> 意图已整理</p><blockquote>“{intent}”</blockquote><div className={styles.summaryTags}><span><UserFocus aria-hidden="true" /> 角色方向</span><span><BookOpenText aria-hidden="true" /> 知识主题</span><span><ChatCircleText aria-hidden="true" /> 表达方式</span></div><p>这份内容只保留在当前浏览器会话。继续生成与保存前，需要登录或使用邀请码注册。</p><div className={styles.intentActions}><Link className={styles.primaryButton} href={CREATE_LOGIN_HREF}>登录后开始创建 <ArrowRight aria-hidden="true" /></Link><Link className={styles.secondaryButton} href={CREATE_REGISTER_HREF}>使用邀请码注册</Link></div><button className={styles.editIntent} type="button" onClick={() => setIntentReady(false)}>返回修改意图</button></div>}</div></section>
 
-        <div className={styles.productStage}>
-          <div className={styles.stateTabs} role="tablist" aria-label="Agent 创建状态">
-            {productStates.map((state) => (
-              <button key={state.id} type="button" role="tab" aria-selected={productState === state.id} aria-controls="product-state-panel" className={productState === state.id ? styles.stateTabActive : styles.stateTab} onClick={() => setProductState(state.id)}>
-                {state.label}
-              </button>
-            ))}
-          </div>
-          <div id="product-state-panel" className={styles.productWindow} role="tabpanel">
-            <div className={styles.windowBar}>
-              <span className={styles.miniBrand}><Image src="/images/agenthub-site/living-agenthub-mark.png" width={17} height={17} alt="" />AgentHub</span>
-              <span>Agent Asset / 墨衡</span>
-              <span className={styles.windowStatus}>产品界面示意 · DEMO</span>
-            </div>
-            <div className={styles.productBody}>
-              <aside className={styles.productRail} aria-label="Agent Asset 导航">
-                <div className={styles.agentIdentity}><span className={styles.avatar}>墨</span><span><b>墨衡</b><small>叙事顾问 · 草稿</small></span></div>
-                <span className={productState === "identity" || productState === "knowledge" ? styles.railActive : ""}>构建</span>
-                <span className={productState === "test" ? styles.railActive : ""}>测试</span>
-                <span>版本</span>
-                <span className={productState === "runtime" ? styles.railActive : ""}>发行</span>
-              </aside>
-              <div className={styles.productStateViewport}>
-                {productStates.map((state) => (
-                  <div key={state.id} className={`${styles.productContent} ${styles.productStateSlide}`} data-active={productState === state.id} aria-hidden={productState !== state.id}>
-                    <p className={styles.panelEyebrow}>{state.eyebrow}</p>
-                    <h3>{state.title}</h3>
-                    <p>{state.description}</p>
-                    <ProductStatePanel state={state.id} />
-                  </div>
-                ))}
-              </div>
-              <aside className={styles.productContext}>
-                <span className={styles.contextLabel}>当前视图</span>
-                <strong>{currentProduct.label}</strong>
-                <p>{productState === "runtime" ? "发行状态可追踪" : "未发布 · 草稿"}</p>
-                <span className={styles.contextCheck}><CheckCircle weight="fill" aria-hidden="true" /> 状态清晰可追踪</span>
-              </aside>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="flow" className={styles.flowSection} aria-labelledby="flow-title">
-        <div className={styles.flowIntro}>
-          <p className={styles.kicker}>02 / CREATION FLOW</p>
-          <h2 id="flow-title">从构想到<br />真正运行</h2>
-          <p>五个阶段，不是五张孤立的表单。它们沿着同一条创作脉络，反复验证、持续生长。</p>
-          <div className={styles.stepNav} aria-label="五步创作流程">
-            {creationSteps.map((step, index) => (
-              <button key={step.number} type="button" className={activeStep === index ? styles.stepButtonActive : styles.stepButton} aria-current={activeStep === index ? "step" : undefined} onClick={() => selectStep(index)}>
-                <span>{step.number}</span>{step.title}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className={styles.stepPanels}>
-          {creationSteps.map((step, index) => {
-            const Icon = step.icon;
-            return (
-              <article key={step.number} ref={(node) => { stepRefs.current[index] = node; }} data-step={index} data-active={activeStep === index} className={`${styles.stepPanel} ${activeStep === index ? styles.stepPanelActive : ""}`}>
-                <div className={styles.stepIndex}><span>{step.number}</span><Icon aria-hidden="true" /></div>
-                <div className={styles.stepCopy}>
-                  <p>{step.detail}</p>
-                  <h3>{step.title}</h3>
-                  <strong>{step.description}</strong>
-                  <p>{step.body}</p>
-                </div>
-                <StepPreview index={index} />
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section id="scenarios" className={styles.scenarioSection} aria-labelledby="scenario-title">
-        <div className={styles.scenarioHeading}>
-          <p className={styles.kicker}>03 / CREATOR SCENARIOS</p>
-          <h2 id="scenario-title">为每一种<br />Agent 创作者而生</h2>
-          <p>不论从一个人的灵感出发，还是从团队的内容与运营流程出发，都能沿着同一条真实创作路径前进。</p>
-        </div>
-        <div className={styles.scenarioList}>
-          {creatorScenarios.map((scenario) => {
-            const Icon = scenario.icon;
-            return (
-              <article key={scenario.number} className={styles.scenarioItem}>
-                <span className={styles.scenarioNumber}>{scenario.number}</span>
-                <div className={styles.scenarioIcon}><Icon aria-hidden="true" /></div>
-                <div>
-                  <p>{scenario.tag}</p>
-                  <h3>{scenario.title}</h3>
-                  <p>{scenario.copy}</p>
-                </div>
-                <ArrowRight aria-hidden="true" />
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section id="create" className={styles.intentSection} aria-labelledby="intent-title">
-        <div className={styles.intentIntro}>
-          <p className={styles.kicker}>04 / START WITH INTENT</p>
-          <h2 id="intent-title">从一句话开始，<br />让它走进真实世界。</h2>
-          <p>先描述你想创造的 Agent，我们会在本次浏览器会话中整理这份创作意图。</p>
-        </div>
-        <div className={styles.intentPanel} data-ready={intentReady}>
-          {!intentReady ? (
-            <form onSubmit={submitIntent} className={styles.intentForm}>
-              <label htmlFor="creation-intent">你想创造怎样的 Agent？</label>
-              <div className={styles.intentControl}>
-                <textarea id="creation-intent" value={intent} onChange={(event) => setIntent(event.target.value)} rows={3} maxLength={240} placeholder="例如：我想创造一个熟悉东方神话、表达克制的故事 Agent" required />
-                <button type="submit" aria-label="整理创建意图"><PaperPlaneTilt weight="fill" aria-hidden="true" /></button>
-              </div>
-              <div className={styles.intentMeta}><span>{intent.length}/240</span><span><LockKey aria-hidden="true" /> 仅暂存在本次浏览器会话，不会提交到服务器</span></div>
-            </form>
-          ) : (
-            <div className={styles.intentSummary} aria-live="polite">
-              <p className={styles.summaryLabel}><Sparkle weight="fill" aria-hidden="true" /> 意图已整理</p>
-              <blockquote>“{intent}”</blockquote>
-              <div className={styles.summaryTags}><span><UserFocus aria-hidden="true" /> 角色方向</span><span><BookOpenText aria-hidden="true" /> 知识主题</span><span><ChatCircleText aria-hidden="true" /> 表达方式</span></div>
-              <p>这份内容只保留在当前浏览器会话。继续生成与保存前，需要登录或使用邀请码注册。</p>
-              <div className={styles.intentActions}>
-                <Link className={styles.primaryButton} href={CREATE_LOGIN_HREF}>登录后开始创建 <ArrowRight aria-hidden="true" /></Link>
-                <Link className={styles.secondaryButton} href={CREATE_REGISTER_HREF}>使用邀请码注册</Link>
-              </div>
-              <button className={styles.editIntent} type="button" onClick={() => setIntentReady(false)}>返回修改意图</button>
-            </div>
-          )}
-        </div>
-      </section>
-
-      <footer className={styles.footer}>
-        <a className={styles.brand} href="#top" onClick={(event) => scrollToSection(event, "top")}><Image src="/images/agenthub-site/living-agenthub-mark.png" width={25} height={25} alt="" /><span>AgentHub</span></a>
-        <nav aria-label="页脚导航"><a href="#product" onClick={(event) => scrollToSection(event, "product")}>产品能力</a><a href="#flow" onClick={(event) => scrollToSection(event, "flow")}>创作流程</a><a href="#scenarios" onClick={(event) => scrollToSection(event, "scenarios")}>使用场景</a><Link href={CREATE_LOGIN_HREF}>登录工作台</Link></nav>
-        <span>© 2026 AgentHub</span>
-      </footer>
-    </main>
-  );
+    <footer className={styles.footer}><a className={styles.brand} href="#top" onClick={(event) => scrollToSection(event, "top")}><Image className={styles.brandMark} src="/images/agenthub-logo.png" width={26} height={26} alt="" /><span>AgentHub</span></a><nav aria-label="页脚导航"><a href="#product" onClick={(event) => scrollToSection(event, "product")}>产品能力</a><a href="#flow" onClick={(event) => scrollToSection(event, "flow")}>创作流程</a><a href="#scenarios" onClick={(event) => scrollToSection(event, "scenarios")}>使用场景</a><a href="#assets" onClick={(event) => scrollToSection(event, "assets")}>角色资产</a><Link href={CREATE_LOGIN_HREF}>登录工作台</Link></nav><span>© 2026 AgentHub</span></footer>
+  </main>;
 }
 
-function PrintMarks() {
-  return (
-    <div className={styles.printMarks} aria-hidden="true">
-      <Image src="/images/agenthub-site/print-registration-mark.png" width={56} height={56} alt="" />
-      <Image src="/images/agenthub-site/print-registration-mark.png" width={56} height={56} alt="" />
-      <Image src="/images/agenthub-site/print-registration-mark.png" width={56} height={56} alt="" />
-      <Image src="/images/agenthub-site/print-registration-mark.png" width={56} height={56} alt="" />
-    </div>
-  );
-}
+function RoleAssetShowcase() {
+  const transition = useWorkbenchAgentTransition(showcaseRoleIds);
+  const [hovered, setHovered] = useState(false);
+  const [focusWithin, setFocusWithin] = useState(false);
+  const [resetGeneration, setResetGeneration] = useState(0);
+  const reducedMotion = usePrefersReducedMotion();
+  const documentHidden = useDocumentHidden();
+  const visualFocusId = transition.phase === "sliding" ? transition.targetId : transition.displayedId;
+  const activeIndex = Math.max(0, showcaseRoleIds.indexOf(visualFocusId ?? showcaseRoleIds[0]));
+  const currentRole = showcaseRoles.find((role) => role.id === visualFocusId) ?? showcaseRoles[0];
+  const { request, requestRelative: transitionRequestRelative } = transition;
+  const advance = useCallback(() => transitionRequestRelative(1), [transitionRequestRelative]);
+  useWorkbenchAutoplay({ agentCount: showcaseRoles.length, phase: transition.phase, hovered, focusWithin, documentHidden, reducedMotion }, resetGeneration, advance);
+  const requestRelative = useCallback((offset: number) => { setResetGeneration((value) => value + 1); transitionRequestRelative(offset); }, [transitionRequestRelative]);
+  const requestRole = useCallback((roleId: number, direction: -1 | 1) => { setResetGeneration((value) => value + 1); request(roleId, direction); }, [request]);
+  const cards = useMemo(() => showcaseRoles.map((role) => {
+    const committedSlot = boundedCarouselSlot(circularAgentSlot(showcaseRoleIds, transition.displayedId, role.id));
+    const visualSlot = boundedCarouselSlot(circularAgentSlot(showcaseRoleIds, visualFocusId, role.id));
+    return { role, visualSlot, visible: Math.abs(committedSlot) <= 2 || Math.abs(visualSlot) <= 2, primary: transition.phase === "idle" && role.id === transition.displayedId };
+  }), [transition.displayedId, transition.phase, visualFocusId]);
 
-function BlueprintNote({ className, title, copy }: { className: string; title: string; copy: string }) {
-  return <div className={className}><b>{title}</b><span>{copy}</span></div>;
+  return <section id="assets" className={styles.assetSection} aria-labelledby="assets-title"><div className={styles.assetIntro}><p className={styles.kicker}>01 / ROLE ASSETS</p><h2 id="assets-title"><span className={styles.assetTitleLine}>让角色管理</span><span className={styles.assetTitleLine}>更清晰、更高效。</span></h2><p>把角色设定、知识、技能、测试与版本收进同一份 Agent Asset。这里展示的是 Demo Asset 与品牌示例角色，不代表线上真实运行数据。</p><div className={styles.assetControls}><button type="button" aria-label="上一个示例角色" onClick={() => requestRelative(-1)}><CaretLeft aria-hidden="true" /></button><button type="button" aria-label="下一个示例角色" onClick={() => requestRelative(1)}><CaretRight aria-hidden="true" /></button><span aria-live="polite" aria-atomic="true" aria-label={`当前示例角色：${currentRole.name}，${currentRole.type}`}><b>{String(activeIndex + 1).padStart(2, "0")}</b> / {String(showcaseRoles.length).padStart(2, "0")}</span></div></div><div className={styles.assetCarousel} data-transition-phase={transition.phase} data-transition-direction={transition.direction < 0 ? "previous" : "next"} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onFocusCapture={() => setFocusWithin(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocusWithin(false); }}><div className={styles.assetLayer}>{cards.map(({ role, visualSlot, visible, primary }) => { const selectable = transition.phase === "idle" && visible && visualSlot !== 0; return <article key={role.id} className={styles.assetCard} data-role-id={role.id} data-slot={visualSlot} data-visible={visible} data-primary={primary} aria-hidden={visible ? undefined : true} inert={visible ? undefined : true}><Image src={role.image} alt={`${role.name}，${role.boundary}`} fill sizes="(max-width: 780px) 212px, 280px" style={{ objectPosition: role.imagePosition }} />{selectable && <button type="button" className={styles.sideSelect} onClick={() => requestRole(role.id, visualSlot < 0 ? -1 : 1)} aria-label={`聚焦 ${role.name}`} />}<div className={styles.assetCardCopy}><span>{role.boundary}</span><h3>{role.name}</h3><p>{role.type}</p><small>{role.description}</small></div></article>; })}</div><div className={styles.assetProgress} aria-label="示例角色进度">{showcaseRoles.map((role, index) => <button key={role.id} type="button" aria-label={`切换到 ${role.name}`} aria-current={index === activeIndex ? "true" : undefined} onClick={() => requestRole(role.id, index < activeIndex ? -1 : 1)}><span /></button>)}</div></div></section>;
 }
 
 function ProductStatePanel({ state }: { state: ProductState }) {
   if (state === "identity") return <div className={styles.identityPanel}><UserFocus size={34} weight="duotone" aria-hidden="true" /><div><b>角色核心</b><p>克制、准确、擅长把复杂素材整理成可讲述的故事。</p></div><div><b>行为边界</b><p>不虚构来源；不替代创作者做未经确认的发布决定。</p></div></div>;
-  if (state === "knowledge") return <div className={styles.resourcePanel}><ResourceRow icon={BookOpenText} name="世界观与角色设定" status="已连接" /><ResourceRow icon={Stack} name="采访与研究材料" status="已连接" /><ResourceRow icon={Code} name="内容结构技能" status="可配置" /></div>;
-  if (state === "runtime") return <div className={styles.runtimePanel}><RocketLaunch size={36} weight="duotone" aria-hidden="true" /><div><span>当前版本</span><strong>v1.0 · 已发布</strong></div><div><span>运行状态</span><strong className={styles.liveText}>运行中</strong></div></div>;
+  if (state === "knowledge") return <div className={styles.resourcePanel}><ResourceRow icon={BookOpenText} name="世界观与角色设定" status="Demo 已连接" /><ResourceRow icon={Stack} name="采访与研究材料" status="Demo 已连接" /><ResourceRow icon={Code} name="内容结构技能" status="可配置" /></div>;
+  if (state === "runtime") return <div className={styles.runtimePanel}><RocketLaunch size={36} weight="duotone" aria-hidden="true" /><div><span>示例版本</span><strong>v1.0 · Demo</strong></div><div><span>发行边界</span><strong className={styles.liveText}>按现有发行流程继续</strong></div></div>;
+  if (state === "iterate") return <div className={styles.iteratePanel}><div><span>本轮调整</span><b>角色边界更清晰</b></div><div><span>能力补充</span><b>补齐研究材料来源</b></div><div><span>下一步</span><b>回到对话测试</b></div></div>;
   return <div className={styles.chatPanel}><div className={styles.promptBubble}>如何让一段复杂设定更容易理解？</div><div className={styles.answerBubble}><span className={styles.avatar}>墨</span><p>先明确读者需要带走的核心判断，再用角色动机、冲突和结果组织材料。我们可以逐段检查。</p></div><div className={styles.chatInput}>输入测试问题… <PaperPlaneTilt aria-hidden="true" /></div></div>;
 }
 
-function ResourceRow({ icon: Icon, name, status }: { icon: typeof Compass; name: string; status: string }) {
+function ResourceRow({ icon: Icon, name, status }: { icon: typeof BookOpenText; name: string; status: string }) {
   return <div><Icon weight="duotone" aria-hidden="true" /><span><b>{name}</b><small><Check aria-hidden="true" /> {status}</small></span></div>;
-}
-
-function StepPreview({ index }: { index: number }) {
-  if (index === 0) return <div className={styles.stepDemo}><span>角色定位</span><b>东方叙事顾问</b><span>表达风格</span><b>克制 · 清晰 · 有依据</b></div>;
-  if (index === 1) return <div className={styles.stepDemo}><span><BookOpenText aria-hidden="true" /> 世界观设定</span><span><Stack aria-hidden="true" /> 研究材料</span><span><Code aria-hidden="true" /> 内容结构技能</span></div>;
-  if (index === 2) return <div className={styles.stepDemo}><span className={styles.demoPrompt}>如何让复杂设定更容易理解？</span><span className={styles.demoAnswer}>先明确读者需要带走的核心判断，再用角色动机与结果组织材料。</span></div>;
-  if (index === 3) return <div className={styles.stepDemo}><span>版本</span><b>v1.0 · 已发布</b><span>状态</span><b className={styles.liveText}>运行中</b></div>;
-  return <div className={styles.stepDemo}><span>草稿调整</span><b>角色边界更清晰</b><span>下一步</span><b>回到对话测试</b></div>;
 }

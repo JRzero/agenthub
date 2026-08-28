@@ -1,57 +1,313 @@
-# LYN-005-I3 User Visual Revision Design QA
+# LYN-005-I3 R21 Hero CTA and Proof Rhythm QA
 
-## Scope
+- Visual source: `docs/qa/design-reference/lyn-005-i3-hero-cta-r21/user-annotation.png` (2930×1604 @2×, normalized to 1465×802).
+- Desktop CTA: 116×44 / 13px → 148×52 / 14px; CTA→status 24px → 38px; status→stats remains 29px.
+- Mobile CTA: 112×46 / 12px → 126×48 / 13px; CTA→status 16px → 25px; status→stats remains 20px.
+- Existing CTA href, hover/focus/keyboard behavior, Hero title/lead/wall/frame, R20 role exhibition, R19 intent, downstream sections, and footer are unchanged.
+- Desktop/mobile document overflow: 0; browser console errors/warnings: 0/0; P0/P1/P2: 0/0/0.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-hero-cta-r21/comparison/`; detailed QA: `docs/qa/reports/lyn-005-i3-hero-cta-r21/design-qa.md`.
 
-- Task: `LYN-005-I3` — AgentHub public site Living Blueprint refinement.
-- Visual baseline: `docs/qa/design-reference/lyn-005-i3/living-blueprint-visual-truth.png`.
-- Higher-priority target state: the user-marked revision removing the header `开始创建 →` and the complete angled Hero workbench on desktop and mobile.
-- Viewports: 1440 × 1000 desktop and 390 × 844 mobile.
-- Comparison canvases:
-  - `docs/qa/images/lyn-005-i3/revision-compare-desktop-before-after.png` (2858 × 992 px; previous state left, revised state right).
-  - `docs/qa/images/lyn-005-i3/revision-compare-mobile-before-after.png` (758 × 820 px; previous state left, revised state right).
-- Final captures:
-  - `docs/qa/images/lyn-005-i3/revision-desktop-hero-final.jpg` (1429 × 992 px at a 1440 × 1000 CSS viewport, DPR 1).
-  - `docs/qa/images/lyn-005-i3/revision-mobile-hero-final.jpg` (379 × 820 px at a 390 × 844 CSS viewport, DPR 1).
-- State: public `/` Hero with no authenticated interaction required. Before/after pairs use identical pixel dimensions, CSS viewport, DPR, scroll position, and content state; no density normalization was required.
-- Focused crop: not required because the two requested targets occupy the readable header and lower Hero regions in the full desktop canvas, while the full mobile canvas shows the complete breakpoint-specific removal and following-section transition.
+final result: passed
 
-## Findings
+# LYN-005-I3 R20 Role-asset Title and Rounded-card QA
 
-- [P1 fixed] Repeated header creation CTA. It duplicated the primary conversion action and was explicitly marked for removal. The header now contains `登录工作台` only at desktop and mobile.
-- [P1 fixed] Angled Hero workbench proof. The dark block dominated the paper composition and was explicitly marked for removal. The component, frame, UI content, and responsive styling are all absent; the raster path and four milestones remain continuous.
-- Post-fix review: P0 = 0, P1 = 0, P2 = 0. No open question remains.
+- Scope: only the role-asset intro title/rhythm and the layered carousel card clipping contract. Hero R18, Intent R19, header, Footer, all other sections, role data, card geometry, transforms, controls, and motion remain unchanged.
+- Visual source: fresh 1452×604 and 390×844 before captures in `docs/qa/images/lyn-005-i3-role-rounding-r20/before/`, plus the exact user-specified copy/radius annotation.
+- Copy: `每一个角色，都在这里继续生长。` is absent. `让角色管理更清晰、更高效。` is rendered as semantic desktop lines `让角色管理` / `更清晰、更高效。`; mobile preserves the same two complete phrases.
+- Typography/rhythm: desktop title is 39.204px / 45.085px; mobile is 38px / 44.84px. The intro retains 369px desktop / 322px mobile height, the controls remain at y541.5 / y407, and the section remains 625px / approximately 807px.
+- Cards: every active/inactive article is `overflow:hidden` with 18px desktop / 14px mobile radius; image inherits that radius, the content overlay uses the matching lower corners, and the side-select layer inherits the parent radius. Existing lime active border has no extra halo.
+- Browser after a completed role switch: both active and inactive card/image/copy layers retained their radius/clipping; current accessible role updated correctly. Horizontal overflow 0 and console errors 0.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-role-rounding-r20/comparison/`; detailed QA: `docs/qa/reports/lyn-005-i3-role-rounding-r20/`.
+- Gates: focused 18/18, full Vitest 93 files / 471 tests, lint, typecheck, production build (19 pages), OpenSpec strict 37/37, and `git diff --check` passed. PID 75472 remains on `*:3002`; local and LAN previews return HTTP 200.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
 
-## Final review
+final result: passed
+
+---
+
+# LYN-005-I3 R19 Intent Submit-button Containment QA
+
+- Scope: only the initial creation-intent capsule and its focused contract test. Hero/R18, title, suggestions, Footer, routes, validation, submission, authentication, and every other surface remain unchanged.
+- User annotation: `docs/qa/design-reference/lyn-005-i3-intent-control-r19/user-annotation.png` (3020×1122 Retina, normalized to 1510×561).
+- Before: the wrapper was transparent and borderless at 680×69.5px; the 64px textarea independently owned the border/background, while the 50px button sat at top/bottom insets 12.5/7px and right inset 7px.
+- After desktop: one 680×64px bordered capsule owns the surface; the 50px button is centered at 7/7px vertical insets and 11px right visual inset (CSS `right: 10px`), with all four edges inside the control.
+- After mobile: one 322×58px capsule contains the 46px button at 6/6px vertical and 9px right visual inset (CSS `right: 8px`). Document/client width is 390/390.
+- Textarea is transparent/borderless with 84px desktop and 72px mobile right padding. Focus-within uses a lime border and 3px low-opacity ring without clipping the button focus ring.
+- Suggestion selection, required/maxLength submission, summary state, and existing login/invitation continuation passed. Browser console errors 0; horizontal overflow 0.
+- Gates: focused 18/18, full Vitest 93 files / 471 tests, lint, typecheck, production build (19 pages), OpenSpec strict 37/37, and `git diff --check` passed. PID 75472 remains on `*:3002`; local and LAN URLs return HTTP 200.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-intent-control-r19/comparison/`; detailed QA: `docs/qa/reports/lyn-005-i3-intent-control-r19/`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R16 Creation-intent Cleanup QA
+
+- Scope: only the initial `04 / START WITH INTENT` form DOM and its vertical rhythm. Hero/R15, role assets, flow, scenarios, Footer, routes, authentication, workspace, and APIs are unchanged.
+- Removed from DOM: the explanatory sentence below the heading and the complete counter/lock/privacy metadata row below the suggestions. The corresponding CSS selectors and stale spacing are absent.
+- Desktop 1440×1000: heading→input 54px, input→suggestions 26px, suggestions→section bottom 42px; section 500px; input remains 680×69.5px.
+- Mobile 390×844: 48px / 26px / 48.664px; section 480px; input remains 322×63.5px; no horizontal overflow.
+- Suggestion selection, required/240-character validation, submit summary, and login/invitation `/assets/create` continuation passed. Final browser console errors 0.
+- Evidence: `docs/qa/images/lyn-005-i3-intent-cleanup-r16/`; detailed QA: `docs/qa/reports/lyn-005-i3-intent-cleanup-r16/`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R17 Reference-perfect Hero Design QA
+
+- Unique visual truth: `docs/qa/design-reference/lyn-005-i3-hero-perfect-r17/reference-1503x734.png`, normalized from the supplied 3006×1468 Retina image.
+- Final Hero: `docs/qa/images/lyn-005-i3-hero-perfect-r17/after/desktop-1503x734-pass4.png`.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-hero-perfect-r17/comparison/pass4-full.png`, `pass4-right-focus.png`, and `pass4-main-focus.png`.
+- Measured final anchors: header x130/y38; heading x148.8/y171; CTA x148.8/y519; focal card x764.2/y47.4 at 590.7×558.5; shared card matrix `skewX(-12deg) rotateZ(1deg)`.
+- Runtime uses twelve independent role-card nodes and twelve unique role rasters. Pass 4 replaces the mismatched creative-director demo with a 1200×1420 perspective-corrected extraction of only the supplied focal-card interior, preserving the exact reference subject, gaze, jacket, light, shoulder line, and lime details. The asset has no outer frame, adjacent card, Hero copy, or composite wall content; no sprite, canvas, background slice, or 3D transform is used.
+- Reference-only 800+/40K+/15K+/27K+ claims were replaced by truthful 05/DEMO/LIVE capability-boundary labels; every navigation/CTA destination is an existing anchor or login continuation.
+- 1503×734, 1440×900, 1920×1080, and 390×844 passed copy safety, crop, hierarchy, responsive, console, and overflow review.
+- P0 = 0, P1 = 0, P2 = 0. Detailed report: `docs/qa/reports/lyn-005-i3-hero-perfect-r17/design-qa.md`.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R15 Responsive Hero-wall Width QA
+
+- Source visual truth: the frozen R13 composition at `docs/qa/images/lyn-005-i3-hero-width-r15/before/desktop-1440x1000.png`, wide-screen before captures in the same directory, and the unchanged R13 mobile source at `docs/qa/images/lyn-005-i3-hero-cards-r13/after/mobile-390x844.png`.
+- Desktop stage changed only from fixed `1094.09px` to `clamp(1094px, 76vw, 1600px)`, retaining the 1449:1086 ratio and adding vertical centering inside the frozen 820px Hero.
+- Measured stage width ratios after: 1440 `1094.40px / 76.00%`, 1680 `1276.80px / 76.00%`, 1920 `1459.20px / 76.00%`, 2048 `1556.48px / 76.00%`.
+- Visible card-envelope ratios now remain `57.89%` across all four desktop widths; its left edge stays between `40.03%` and `40.65%` of the viewport. Before, the 2048 stage/envelope had fallen to `53.42% / 40.69%` and started at `57.85%`.
+- 1440 changed by only 0.31px in stage width. At 1680–2048 the Hero performs intentional symmetric top/bottom cropping; the wall never escapes the Hero or overlaps downstream sections.
+- Mobile remains 560×420 at x=-70/y=398 with `transform: none`, twelve DOM cards and the same six visible cards; R13/R15 same-canvas evidence shows no visual regression.
+- Twelve independent cards, one main card, zero R12 composite images, CTA `#create`, navigation, R14 intent spacing, fonts, colors, imagery, and copy all remain unchanged. Console errors/warnings 0; widths 1440/1440, 1920/1920, 2048/2048, and 390/390.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-hero-width-r15/comparison/`; detailed reports: `docs/qa/reports/lyn-005-i3-hero-width-r15/`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R14 Creation-intent Spacing QA
+
+- Scope: only the `04 / START WITH INTENT` title markup and intent-section spacing; Hero/R13, upstream sections, copy, control geometry, interactions, imagery, colors, and Footer styling remain unchanged.
+- Fresh browser evidence: `docs/qa/images/lyn-005-i3-intent-spacing-r14/before/` and `after/` at exact 1440×1000 and 390×844 viewports.
+- Desktop heading changed from `57.6px / 62.208px` leading to `57.6px / 67.968px`; the two explicit spans have a measured 23px visible glyph gap. Progressive gaps are `34 / 32 / 48 / 26 / 18px` for kicker→heading→subtitle→input→suggestions→metadata.
+- Mobile heading is `38px / 45.6px`, wraps naturally to three visible lines, and uses `28 / 24 / 34 / 20 / 16px` progressive gaps. Document/client width remains 390/390.
+- The input control remains 680px wide on desktop and 322px on mobile with its textarea, button, border, placeholder, and behavior unchanged.
+- Intent suggestion, counter, privacy disclosure, submit affordance, navigation/CTA, and title passed in the application browser; final local-preview console errors/warnings are 0.
+- Same-canvas boards: `docs/qa/images/lyn-005-i3-intent-spacing-r14/comparison/`; full report: `docs/qa/reports/lyn-005-i3-intent-spacing-r14/`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R13 Independent Hero-card QA
+
+- Sole geometry source: `docs/qa/design-reference/lyn-005-i3-hero-cards-r13/reference.png` (`1449 × 1086`).
+- Hero runtime now renders a data-driven array of twelve independent card containers and twelve independent R9 image nodes; the R12 whole-image runtime asset was removed.
+- Desktop stage is `1094.09 × 820px`. All cards share `skewX(-10deg) rotateZ(2deg)` with no perspective/rotateX/rotateY/translateZ; the focal visible bbox is `450.4 × 446.9px` at stage-relative `(568.0, 149.6)`.
+- Mobile keeps all twelve nodes in DOM and displays six independent cards, with 390/390 document/client width and no composite fallback.
+- Copy, navigation, CTA, Hero 820/760 heights, downstream page, role carousel, routes, and interactions remain frozen.
+- A fresh final in-app-browser tab at 1440×1000 reported console errors 0 and warnings 0.
+- Same-canvas reference/final and R12/R13 boards: `docs/qa/images/lyn-005-i3-hero-cards-r13/comparison/`; full reports: `docs/qa/reports/lyn-005-i3-hero-cards-r13/`.
+- Gates: targeted 17/17, full Vitest 93 files / 470 tests, lint, typecheck, build, OpenSpec strict 37/37, and `git diff --check` passed.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R12 Hero Supplied-composite QA
+
+- Sole source: `docs/qa/design-reference/lyn-005-i3-hero-composite-r12/reference.png` (`1449 × 1086`).
+- Fresh R11 before evidence and final R12 browser captures: `docs/qa/images/lyn-005-i3-hero-composite-r12/before/` and `after/`, at exact 1440×1000 / 390×844 viewports and DPR 1.
+- R12 replaces the eleven-card 3D Hero reconstruction with the exact supplied raster at `public/images/agenthub-site/hero-role-collage-r12.png`; it is rendered as one decorative, unoptimized image.
+- Old wall slots, parent plane, perspective, rotateX/rotateY/translateZ, focal-card geometry, brightness tiers, overlay mask, and separate card shadows are absent from Hero DOM/CSS. Existing R9 assets remain on disk but Hero no longer consumes them.
+- Desktop raster bounds are approximately x=315.45, y=26, `1094.55 × 820px`; mobile uses the same source at x=-70, y=398, `560 × 420px`, clipped inside the frozen 760px Hero.
+- Normalized source/final and R11/R12 desktop/mobile boards: `docs/qa/images/lyn-005-i3-hero-composite-r12/comparison/`.
+- Browser: navigation and primary CTA passed, console errors 0, widths 1440/1440 and 390/390. Hero copy, navigation, CTA, heights, downstream page, routes, and interactions remain frozen.
+- Gates: targeted 17/17, full Vitest 93 files / 470 tests, lint, typecheck, build, OpenSpec strict 37/37, and `git diff --check` passed.
+- Complete visual audit and QA: `docs/qa/reports/lyn-005-i3-hero-composite-r12/`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R11 Hero Focal-card Two-level 3D QA
+
+- Sole source: `docs/qa/design-reference/lyn-005-i3-hero-main-r11/reference.png` (`3022 × 1488`); raw edge/corner measurement and computed browser matrices are in `docs/qa/reports/lyn-005-i3-hero-main-r11/measurement-before.md`.
+- R10's flat `440 × 622px / 6deg` focal card is replaced by a `530 × 730px` card inside the frozen `820px` Hero. Final transformed bounds are approximately `620.82 × 812.03px`, leaving about `4.10px` before the Hero's lower clip instead of `102.71px`.
+- Transform order is preserved end-to-end: `perspective(1800px)` stage → shared `rotateX(3.2deg) rotateY(-4.2deg) rotateZ(3.6deg)` parent plane → focal `translateZ(72px) rotateX(-4deg) rotateY(-1.8deg) rotateZ(2.4deg)`.
+- The projected top-right corner has the greatest z (`107.732`), confirming the requested restrained upper-right lift. A soft lower-left black shadow expresses the Z elevation; no colored halo was added.
+- Mobile retains the same hierarchy at `1100px` perspective / `36px` Z lift; document/client widths are `390/390`. Desktop is `1440/1440`.
+- Ten background cards/content, copy, navigation, CTA, Hero `820/760px` heights, assets, downstream sections, routes, and interactions remain frozen.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-hero-main-r11/comparison/`; complete QA: `docs/qa/reports/lyn-005-i3-hero-main-r11/design-qa.md`.
+- Gates: landing 17/17, full Vitest 93 files / 470 tests, lint, typecheck, build, OpenSpec strict 37/37, and `git diff --check` passed. Browser console errors 0; horizontal overflow 0.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R10 Hero Cinematic Card-wall QA
+
+- Sole reference: `docs/qa/design-reference/lyn-005-i3-hero-wall-r10/reference.png` (3022 × 1488); the pre-implementation pixel/ratio measurement is in `docs/qa/reports/lyn-005-i3-hero-wall-r10/measurement-before.md`.
+- R9's five-card, 55%-onset, `rotateY` stage was replaced by an eleven-position, three-column/multirow Hero background wall with one shared flat 6° clockwise axis.
+- The focal card is 440 × 622 px (31.9% Hero width × 75.9% Hero height), center-right, and occludes multiple rows; background cards crop through the Hero's top, right and bottom edges.
+- A neutral black mask protects the left copy field; `.42/.70/.96` brightness levels and occlusion establish depth without green fog, CSS halo or 3D narrowing.
+- Mobile independently renders one 230 × 320 focal card plus four staggered background cards, with 390/390 document/client width.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-hero-wall-r10/comparison/reference-vs-implementation-full.png`, `reference-vs-implementation-wall-focus.png`, and desktop/mobile before-after boards.
+- Navigation, CTA, Hero 820/760 heights, copy, downstream sections and reduced-motion behavior remain unchanged; console errors 0.
+- Complete report: `docs/qa/reports/lyn-005-i3-hero-wall-r10/design-qa.md`.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R9 Hero Perspective Matrix QA
+
+- Source annotation: `docs/qa/design-reference/lyn-005-i3-hero-array-r9/source-annotated.png` (2942 × 1454).
+- Implementation: `docs/qa/images/lyn-005-i3-hero-array-r9/after/desktop-1440x1000.png` and `after/mobile-390x844.png`, CSS/output DPR 1.
+- Combined evidence: `comparison/source-vs-final-full.png`, `comparison/source-vs-final-focus.png`, and desktop/mobile before-after canvases.
+- P1 fixed: all five Hero cards now share one right-up perspective direction; the primary card is centered instead of low/right.
+- P1 fixed: the image set now spans cinematic photography, cel anime, AAA game concept art, non-human robotics, and painterly fantasy.
+- P1 fixed: the primary raster uses a true black backdrop with physically rendered purple/cobalt rim light; no CSS light simulation was added.
+- P2 fixed: the full-width green atmosphere was removed from the left copy field, leaving navigation, headline, support copy, and CTA on clean near-black.
+- P2 fixed: 390 px now uses one primary plus three supporting studies with a 9 px CTA gap and no horizontal overflow.
+- Hero heights, copy, navigation, CTA, downstream role carousel, formal five-stage flow, scenarios, intent, and Footer remain unchanged and operable.
+- Browser: 1440/1440 and 390/390 document/client widths, console errors 0. Complete report: `docs/qa/reports/lyn-005-i3-hero-array-r9/design-qa.md`.
+
+final result: passed
+
+---
+
+# LYN-005-I3 Full-page Reference Layout Design QA
+
+# LYN-005-I3 R7 Hero Bottom Cleanup QA
+
+- Source annotation: `docs/qa/design-reference/lyn-005-i3-hero-cleanup-r7/user-annotation-desktop.png` (2422 × 1062 px).
+- Implementation: `docs/qa/images/lyn-005-i3-hero-cleanup-r7/after/desktop-hero-1440x1000.jpg` and `after/mobile-hero-390x844.jpg`, DPR 1.
+- Same-canvas evidence: `comparison/desktop-before-after-1440x1000.jpg`, `comparison/mobile-before-after-390x844.jpg`, and `comparison/annotation-vs-final-hero-focus.jpg`.
+- P1 fixed: the Hero-only four-stage trail and its links were removed from the DOM/CSS; no hidden or empty replacement remains.
+- P1 fixed: the two lower portrait cards attached to that lower composition were removed from DOM/CSS.
+- P2 fixed: desktop Hero tightened from 948 to 820 px and mobile from 844 to 760 px; copy and remaining portrait geometry were rebalanced so the role-assets transition begins naturally.
+- The later formal five-stage flow still exposes five semantic buttons and updates the product panel; navigation and CTA links remain functional.
+- Browser: 1440/1440 and 390/390 document/client widths, console errors 0. Complete report: `docs/qa/reports/lyn-005-i3-hero-cleanup-r7/design-qa.md`.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R6 Role Asset Scale QA
+
+- Source annotation: `docs/qa/design-reference/lyn-005-i3-role-scale-r6/user-annotation-desktop.png` (2980 × 1390 px).
+- Implementation: `docs/qa/images/lyn-005-i3-role-scale-r6/after/desktop-role-section-1440x1000.jpg` (1440 × 1000) and `after/mobile-role-section-390x844.jpg` (390 × 844), DPR 1.
+- Combined comparisons: `comparison/desktop-before-after-1440x1000.jpg`, `comparison/mobile-before-after-390x844.jpg`, and `comparison/annotation-vs-final-role-focus.jpg`.
+- P1 fixed: removed the visible current-role summary paragraph from the DOM and removed `.assetCurrent`; the existing counter carries the polite, atomic accessible current-role label.
+- P1 fixed: desktop focus card changed from 330 × 500 to 280 × 410; carousel/layer changed from 570/545 to 476/450.
+- P2 fixed: mobile focus card changed from 248 × 365 to 212 × 300; carousel/layer changed from 420/395 to 350/326.
+- Layered offsets, center emphasis, side selection, three-second autoplay, hover/focus/hidden/reduced-motion/transition pause semantics, and progress controls remain intact.
+- Browser measurements: desktop section 604 px and mobile section 816 px; horizontal overflow 0; console errors 0.
+- Required fidelity surfaces: typography, spacing/layout, colors/tokens, raster image quality, copy/content, interaction, responsive behavior, and accessibility all passed. Complete iteration history: `docs/qa/reports/lyn-005-i3-role-scale-r6/design-qa.md`.
+
+final result: passed
+
+---
+
+## Scope and evidence
+
+- Visual truths: `docs/qa/design-reference/lyn-005-i3-layout-r2/`, including the direct live capture, user-provided desktop/mobile captures, exact DOM/style/interaction snapshot, and the higher-priority 图 1 role-carousel composition.
+- Viewports: 1440 × 1000 and 390 × 844 at DPR 1.
+- Full-page captures: `docs/qa/images/lyn-005-i3-layout-r2/desktop-full.png` and `mobile-full.png`.
+- Same-canvas comparisons: `compare-desktop-segments.jpg`, `compare-desktop-hero.jpg`, `compare-desktop-assets.jpg`, and `compare-mobile-hero.jpg` in `docs/qa/images/lyn-005-i3-layout-r2/`.
+- Focused implementation captures: desktop Hero, role assets, five-stage sticky states, scenarios, and mobile Hero/assets/flow/intent in the same evidence directory.
+
+## Findings and fixes
+
+- [P1 fixed] The prior page matched the palette but kept separate product and flow sections. The final page now follows the reference order: full Hero → role assets → one long-scroll sticky product flow → three wide scenarios → horizontal intent handoff → flat footer.
+- [P1 fixed] The previous flow used a lime ledger with five stacked cards. The final desktop flow holds one viewport-height dark stage and deterministically maps scroll travel to five truthful product states; mobile removes sticky and exposes one product window plus the complete selector.
+- [P2 fixed] The role-asset heading initially wrapped into short single-character fragments in the 310px narrative rail. Its desktop size was recalibrated to preserve the reference rhythm and readable three-line hierarchy.
+- Final review: P0 = 0, P1 = 0, P2 = 0.
+
+## Fidelity and behavior
 
 | Surface | Result | Evidence |
 | --- | --- | --- |
-| Typography and hierarchy | passed | Large Chinese Songti headline, handwritten Idea cue, editorial labels, and restrained body typography reproduce the reference hierarchy. |
-| Spacing and composition | passed | Removing the Hero proof exposes the complete growth path and leaves a deliberate paper field rather than a hole. A minimum 820 px desktop Hero prevents short-viewport annotation collisions; mobile closes the Hero at 720 px so the next editorial chapter enters the first screen. |
-| Color and image quality | passed | Warm-white paper, graphite, coral red, and the four raster registration marks remain consistent. The removed dark surface leaves no replacement CSS art or placeholder. |
-| Content fidelity | passed | The header retains only `登录工作台`; the Hero retains exactly one `开始创建` CTA and all four milestones. The following `#product` section remains the truthful build/test/version/distribution proof with `产品界面示意 · DEMO`. |
-| Interaction and state | passed | Public anchors, selectable product proof, five-step flow, creator scenarios, intent preparation, login/register continuation links, and `/assets/create` handoff remain operable. |
-| Responsive behavior | passed | At 390 px the visual story is recomposed rather than scaled. Measured page width equals client width; no horizontal overflow. |
-| Accessibility | passed | Semantic tabs/steps, visible keyboard focus, preserved landmark structure, and a tested reduced-motion path are present. |
-
-## Iteration record
-
-The initial I3 pass carried a purple legacy mark, crowded the Idea note, positioned the proof too low, and rendered the paper too yellow; those findings were fixed in the earlier R1 loop. The user then marked the repeated header CTA and the entire Hero workbench as unwanted P1 elements. This revision removes both nodes and their responsive CSS, raises the minimum desktop Hero to keep annotations clear on short screens, and shortens the mobile Hero so the paper composition resolves into the next chapter without a dead area.
-
-The final before/after canvases show both requested removals at desktop and mobile. No P0, P1, or P2 issue remains. The visual baseline's angled proof is intentionally superseded by the user's explicit revision; the authentic interactive product proof remains immediately below the Hero.
-
-## Follow-up polish
-
-None in the requested revision scope.
+| Hero | passed | Full-screen reference rhythm, transparent navigation, one primary CTA, creator-first title/copy, asymmetric raster roles, and no fabricated metrics. |
+| Role assets | passed | Immediately follows Hero and matches 图 1's left narrative plus focused/near/receded depth model; every card is Demo Asset or 示例角色. |
+| Sticky flow | passed | One desktop sticky stage maps five scroll ranges to role, knowledge, test, release, and iteration; the native window uses build/test/version/distribution IA and is labeled `产品界面示意 · DEMO`. |
+| Scenarios / intent / footer | passed | Three equal wide image cards, horizontal title-plus-input handoff, working shortcuts and auth continuation, and flat full-width footer match the source sequence. |
+| Carousel | passed | Reuses workbench transition/autoplay helpers; previous/next, side-card selection, three-second advance, hover/focus/hidden/reduced-motion/transition pause semantics, and reset-after-manual-input are covered. |
+| Responsive | passed | 390px uses an independently composed Hero, layered carousel, non-sticky product window, full vertical stage selector, stacked scenarios, and no horizontal overflow; measured widths are 390/390 and 1440/1440. |
+| Accessibility | passed | Native links/buttons, current-step state, labeled controls, visible lime focus, session-only intent disclosure, and reduced-motion CSS/component coverage are present. |
 
 ## Verification notes
 
-- Production preview console errors: 0 at both viewports.
-- Desktop width: viewport 1440 px; document client/scroll width 1429/1429 px.
-- Mobile width: viewport 390 px; document client/scroll width 379/379 px.
-- DOM verification at both viewports: header creation CTA count 0; Hero workbench count 0; Hero primary CTA count 1; milestone titles count 4; downstream Demo product proof present.
-- Mobile primary CTA reaches the intent section; product-state selection and step 05 selection remain operable.
-- Browser media emulation was unavailable; reduced-motion behavior was verified through the existing `matchMedia` Vitest coverage and the CSS `prefers-reduced-motion` branch.
-- The browser profile contained an already-visible synthetic creator session, so anonymous redirect reproduction was not forced by mutating storage. Login/register continuation targets were inspected in the production page and protected-route behavior remains covered by the unchanged auth tests.
+- Application browser console errors: 0 at both viewports.
+- Header maps only to product, flow, scenarios, role assets, and login; no repeated header creation CTA or Hero workbench appears.
+- Desktop small-step scrolling activated role, knowledge, release, and iteration states inside one stable product window. Mobile computed `position: relative` for the flow and switched to iteration through the touch/keyboard-operable stage control.
+- Intent shortcut filled the real textarea, submission produced the session-only summary, and the continuation hrefs were exactly `/login?next=%2Fassets%2Fcreate` and `/register?next=%2Fassets%2Fcreate`.
+- Application browser console errors: 0. Document/client widths: 1440/1440 and 390/390.
+- Reduced motion is verified by landing contract coverage, shared workbench autoplay tests, and the scoped media query; the in-app browser exposes no media-feature emulation API.
+- The live reference's mobile reload later returned a closed connection, so the already supplied 390×844 source capture and exact DOM/style/interaction snapshot were used alongside the successful live desktop capture. No implementation decision was inferred from prose alone.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R5 Live Full-page Reference QA
+
+- Source access: passed. The requested live URL was opened in the Codex in-app browser after a slow 41.8 s navigation; desktop and mobile were captured from top to bottom before implementation.
+- Captured source geometry: 1440 × 1000 body 6904 px; 390 × 844 body 4140 px. Desktop principal rhythm was 948 px Hero, 408 px asset strip, 4600 px sticky flow, 192 px scenes, 440 px CTA, and 70 px footer.
+- Implementation: inset cinematic Hero, approved 图 1 role carousel, truthful sticky five-stage AgentHub stage, compact scene strip, centered session-only intent, and flat footer.
+- Truthfulness: reference-only management labels, `800+`, `40K+`, `15K+`, `27K+`, pricing, documentation, customer claims, and fabricated operating metrics are absent.
+- Interaction: carousel controls/autoplay pauses, sticky desktop progression, mobile stage buttons, anchors, intent submission, login, invitation continuation, keyboard focus, and reduced-motion branches remain functional.
+- Responsive: measured `scrollWidth/clientWidth` is 1440/1440 and 390/390; browser console errors are 0.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-fullpage-r5/comparison/`.
+- Detailed report: `docs/qa/reports/lyn-005-i3-fullpage-r5/design-qa.md`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R3 Full-site Truthfulness Design QA
+
+- Source visual truth: `/var/folders/rk/rlxc7qzd2xz55_fls_ftnyrm0000gn/T/agenthub-management-reference-desktop-final.png`, `/var/folders/rk/rlxc7qzd2xz55_fls_ftnyrm0000gn/T/agenthub-management-reference-mobile.png`, and `/Users/king/.codex/generated_images/019fd4ac-0aa5-76d3-894c-ed5a3cf62668/exec-4248d543-0ce9-4d0f-81d7-4101858c9b54.png`. The supplied incorrect-content screenshot is used only as regression evidence.
+- Implementation evidence: `docs/qa/images/lyn-005-i3-site-audit-r3/after/01-home-desktop-full.jpg`, `02-home-mobile-full.jpg`, and focused captures `08` through `17`.
+- Viewports and normalization: desktop 1440 × 1000 CSS/output px at DPR 1; mobile 390 × 844 CSS/output px at DPR 1. Source and implementation were resized with contain onto equal-size black panels before side-by-side comparison.
+- State: public homepage default Hero, role asset default focus, stage 1/default flow, scenarios, and initial intent form; additional interactions tested role next, all five stages, intent shortcut/submission, and anonymous auth continuation.
+- Full-view comparisons: `compare-desktop-reference-implementation.jpg`, `compare-mobile-reference-implementation.jpg`, and `compare-user-screenshot-corrected-hero.jpg`.
+- Focused comparison: `compare-role-layout-implementation.jpg`; focused section screenshots cover Hero, assets, flow, scenarios, and intent/footer because copy and UI details are not legible in the full-page image.
+- Typography: strong white Chinese display hierarchy, restrained supporting copy, lime emphasis, and responsive wrapping match the approved dark direction. No reference-site management headline remains.
+- Spacing/layout: Hero → layered assets → sticky five-stage flow → three cinematic scenarios → horizontal intent → flat footer remains in the required order. Desktop and 390px have no horizontal document overflow.
+- Colors/tokens: near-black canvas, fluorescent lime action/state token, restrained separators, and white/gray copy remain consistent across the public page; workspace/auth tokens stay isolated.
+- Image quality: all portrait, atmosphere, scenario, and role assets are real raster files with intentional crops. No inline SVG, CSS/div illustration, or placeholder was added.
+- Copy/content: creator-first Hero, truthful five stages, Demo/example boundaries, real anchors, and auth continuation are present. `800+`, `40K+`, `15K+`, `27K+`, management navigation, pricing, docs, customers, and unsupported operating claims are absent.
+- Comparison history: the supplied regression screenshot was a P1 content failure. The fresh implementation already contained the correct creator-first version; this iteration added exact negative contract coverage and recaptured the full site. Post-fix comparison shows P0 = 0, P1 = 0, P2 = 0.
+- Primary interactions: role previous/next and side focus, all five flow controls, intent suggestion and submission, login/register continuation, and anonymous `/assets/create` redirect.
+- Browser checks: 1440/1440 and 390/390 document/client widths; console errors 0 on every public, auth, workspace, and Agent route captured.
+- Residual P3: reduced-motion media emulation and exhaustive keyboard traversal were not exposed by the selected browser; focused tests and scoped CSS cover those contracts. The 390px Agent build workspace remains dense but contained and was not redesigned because it is outside this public-site regression.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R4 Scoped Typography Design QA
+
+- Source visual truth: `/var/folders/rk/rlxc7qzd2xz55_fls_ftnyrm0000gn/T/agenthub-management-reference-desktop-final.png` and `/var/folders/rk/rlxc7qzd2xz55_fls_ftnyrm0000gn/T/agenthub-management-reference-mobile.png`.
+- Exact before/after evidence: `docs/qa/images/lyn-005-i3-typography-r4/before/` and `docs/qa/images/lyn-005-i3-typography-r4/after/` at 1440 × 1000 and 390 × 844 CSS/output px, DPR 1.
+- Same-canvas comparisons: `compare-reference-after-hero-desktop.jpg`, `compare-reference-after-hero-mobile.jpg`, `compare-before-after-hero-desktop.jpg`, and `compare-before-after-hero-mobile.jpg` in the R4 `after/` directory.
+- Focused evidence: Hero, role assets, sticky flow, intent field, suggestions, button baselines, and desktop/mobile footer captures are stored as `03` through `11` in the R4 `after/` directory.
+- Typography: local-only landing-scoped body and display stacks now separate supporting text from marketing display text. Hero and section headings use 800 rather than 900; desktop/mobile tracking and leading are less compressed; navigation and buttons use 600–700; role/product titles use 720; body copy uses 400–450 with relaxed leading.
+- Spacing/layout: passed. The approved section order and geometry are unchanged, Hero remains two lines, role and stage titles remain contained, textarea and button baselines align, and document/client widths are 1440/1440 and 390/390.
+- Colors/tokens: passed unchanged.
+- Image quality: passed unchanged; no new visual asset was required.
+- Copy/content and interactions: passed unchanged. Creator-first content, carousel, five-stage flow, intent, authentication continuation, focus, and reduced-motion behavior remain intact.
+- Comparison history: the prior Arial-first, weight-900, `-.065em` to `-.075em` display treatment was a P2 typography mismatch. Post-fix comparison clears P0/P1/P2; the complete report is `docs/qa/reports/lyn-005-i3-typography-r4/design-qa.md`.
+- Browser: console errors 0; no horizontal overflow. The development-only React DevTools info and existing Next Image LCP warning are non-error diagnostics.
 
 final result: passed
 
@@ -1541,6 +1797,25 @@ final result: passed
 - Focused source/after comparison: `docs/qa/images/lyn-004-r13-followup/04-feedback-after-focus.png`.
 - Required surfaces: typography, spacing, image/avatar treatment, and copy are unchanged; only the incorrect semantic foreground token changed.
 - Detailed report: `docs/qa/reports/lyn-004-r13-followup-test-chat.md`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R8 PublicLandingPage Cohesion Design QA
+
+- Source visual truth: fresh current-run before captures in `docs/qa/images/lyn-005-i3-cohesion-r8/before/`.
+- Implementation: fresh 1440×1000 and 390×844 after captures in `docs/qa/images/lyn-005-i3-cohesion-r8/after/`.
+- Full-view and focused same-canvas evidence: `docs/qa/images/lyn-005-i3-cohesion-r8/comparison/`.
+- Fixed P1: removed the 72px desktop / 52px mobile role-to-flow dead gap.
+- Fixed P1: expanded the 192px desktop scene strip to about 282px and raised visible supporting copy to 10–11px.
+- Fixed P2: aligned the five-stage title rail and downstream sections to one 1320px content rail; unified subtle boundaries, cinematic shadow, and 48px primary actions.
+- Fixed P2: tucked Hero into the role surface and tightened the mobile intent-to-footer tail without restoring any deleted Hero/role nodes.
+- Role cards remain exactly 280×410 desktop and 212×300 mobile; carousel, stages, intent, and real auth continuation remain operable.
+- Browser: 1440×1000 and 390×844, horizontal overflow 0, console errors 0.
+- Automated gates: lint, typecheck, 93 files / 470 tests, build, and OpenSpec strict 37/37 passed.
+- Detailed report: `docs/qa/reports/lyn-005-i3-cohesion-r8/design-qa.md`.
 - Final findings: P0 = 0, P1 = 0, P2 = 0.
 
 final result: passed
