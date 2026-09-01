@@ -1,3 +1,237 @@
+# LYN-005-I3 R36 Portrait-ratio Hero Wall QA
+
+- Scope: only the `PublicLandingPage` Hero role-wall geometry and equal-axis subject framing. Hero copy/navigation/CTA/proof, twelve unique sources, Role Assets and downstream sections remain unchanged.
+- Root-cause fix: R35's independently authored near-square widths/heights forced 2:3 portraits into large geometric letterboxes. R36 gives every Hero card one width-driven `aspect-ratio: 2 / 3`; slot rules no longer set height.
+- Desktop stage remains 1152 × 863.4 at 1440 × 900. Main is `left 58% / top 15% / width 30%`, a 345.6 × 518.4 exact 2:3 frame, using `/images/login-agent-portrait.png` at equal-axis `.99 / 0 / 0`. Supporting cards use 17.5–18% widths across three upper, three middle and five lower positions.
+- Mobile independently composes seven cards in a 540 × 405 stage. Main is 183.6 × 275.4 (`47.1vw`) at `left 58% / top 14%`; the card remains fully framed without horizontal overflow.
+- Browser proof: desktop 12/12 and mobile 7/7 visible images loaded; overflow 0; console errors 0; CTA mapping unchanged.
+- Transform proof: supporting composed axes are 1.03/1.03, main axes 1.0197/1.0197, and dot product is 0 on both viewports. The counter-skew leaves no subject shear or non-uniform scale.
+- Evidence: `docs/qa/images/lyn-005-i3-hero-portrait-wall-r36/comparison/`; detailed report and metrics: `docs/qa/reports/lyn-005-i3-hero-portrait-wall-r36/`.
+- Gates: focused Vitest 20/20, full Vitest 93 files / 473 tests, lint, typecheck, production build, OpenSpec strict 37/37 and `git diff --check` passed. PID 36889 listens on `*:3002`; local and LAN previews return HTTP 200.
+- P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R35 Login-role Main Card QA
+
+- Scope: only the Hero `main` source/framing plus restoring `bottom-fantasy` to the silver guardian. R34 stage offset, twelve slot geometries, paired transforms, navigation/copy/CTA/proof, Role Assets and downstream sections remain unchanged.
+- Source truth: `public/images/login-agent-portrait.png` (1024 × 1536), the actual login-page role portrait without screenshot text.
+- Main contract: `/images/login-agent-portrait.png`, explicit `object-fit: contain`, `object-position: 50% 50%`, equal-axis `scale(.92)`, offsets `0 / 0`. The visible head begins with approximately 10% top breathing room after contained centering; hair, chin and shoulders remain inside the black frame.
+- Supporting exchange: `bottom-fantasy` again uses `hero-silver-world-guardian-r32.webp` at `1.04 / 0,+1%`; `hero-main-r32.webp` no longer appears in the Hero wall. All twelve Hero sources remain unique.
+- Browser proof: desktop 12/12 and mobile 7/7 visible images loaded; horizontal overflow 0; console errors 0; CTA mapping unchanged.
+- Transform proof: main computed transform is `matrix(.92,0,0,.92,0,0)`; the full desktop wall retains maximum composed axis delta `2.98e-14` and maximum absolute dot `3.19e-7`.
+- Evidence: `docs/qa/images/lyn-005-i3-hero-login-main-r35/comparison/`; detailed report and metrics: `docs/qa/reports/lyn-005-i3-hero-login-main-r35/`.
+- Gates: focused Vitest 20/20, full Vitest 93 files / 473 tests, lint, typecheck, production build, OpenSpec strict 37/37 and `git diff --check` passed. Local and LAN previews return HTTP 200.
+- P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R34 Hero Wall Shift and Main-role Swap QA
+
+- Scope: only the `PublicLandingPage` Hero role-wall stage offset plus the requested `main` / `bottom-fantasy` R32 asset exchange and their equal-axis subject framing. Hero copy/navigation/CTA/proof, twelve slot geometries, paired transforms, Role Assets and downstream sections remain unchanged.
+- Source: the user annotation is preserved at `docs/qa/design-reference/lyn-005-i3-hero-wall-shift-r34/user-annotation.png`; fresh R33 desktop/mobile baselines are under `docs/qa/images/lyn-005-i3-hero-wall-shift-r34/before/`.
+- Desktop stage: `right 0 → 5vw`, exactly 72px at 1440px. The 1152 × 863.40 wall moves x `277 → 205`; the unchanged 454.36 × 498.48 main card moves x `879.25 → 807.25`.
+- Mobile stage: `right -70px → -44px`, a 26px left shift. The main moves x `207.37 → 181.37` without touching copy, CTA or proof geometry.
+- Main role: `hero-silver-world-guardian-r32.webp`, equal-axis `scale(.92)` and `translate(0, 2%)`; full hair, pointed ears, shoulders, gloves and chest detail remain visible. `bottom-fantasy` now uses `hero-main-r32.webp` at `scale(1.12)` / `translate(0, 3%)`. All twelve R32 files remain unique and appear once.
+- Browser proof: desktop 12/12 and mobile 7/7 visible images loaded; horizontal overflow 0; console errors 0; CTA remains `/login?next=%2Fassets%2Fcreate`.
+- Transform proof: maximum composed axis delta `2.98e-14` desktop / `2.22e-15` mobile; maximum absolute dot `3.19e-7` / `8.17e-8`. Existing ±8°/±5° compensation remains mathematically orthogonal.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-hero-wall-shift-r34/comparison/`; detailed audit and metrics: `docs/qa/reports/lyn-005-i3-hero-wall-shift-r34/`.
+- Gates: focused Vitest 20/20, full Vitest 93 files / 473 tests, lint, typecheck, production build, OpenSpec strict 37/37 and `git diff --check` passed. Local and LAN previews return HTTP 200.
+- P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R33 Hero Composition QA
+
+- Scope: only the `PublicLandingPage` Hero role-wall stage, twelve slot geometries, shared planar transform tokens and per-card uniform subject framing. All twelve R32 WebPs, Hero copy/navigation/CTA/proof, Role Assets and downstream sections remain unchanged.
+- Source: the accepted 1449 × 1086 geometry reference preserved at `docs/qa/design-reference/lyn-005-i3-hero-composition-r33/source-reference.png`; the user-supplied R32 finding is preserved beside it as `r32-user-before.png`.
+- Fresh R32 baseline: the stage was 1429 × 900, while the main wrapper was 420.92 × 616.60 at x832.71/y83.20. Supporting cards were separated by large black gaps and tone-specific 1.5°/2°/2.5° rotations.
+- Final stage: `clamp(1024px, 80vw, 1600px)` with `1449 / 1086` aspect ratio, right anchored and vertically centered. At 1440 × 900 it is 1152 × 863.40 at x277/y18.30, with top/right/bottom bleed handled by the Hero clip.
+- Final main wrapper: 454.36 × 498.48 at x879.25/y166.22 (`left 53% / top 18% / width 38% / height 56%`). Five-plus adjacent cards now bracket it across three staggered tracks instead of leaving an isolated black moat.
+- Supporting slots span 17–25% of the stage width and 30–34% height. Their subject scales are equal-axis only (`1.02–1.16`) with translations within x ±1% / y +1–4%; the main remains `1.00 / 0 / -1%`.
+- Transform contract: desktop position `rotateZ(2deg)`, frame/image `skewX(-8deg)` / `skewX(8deg)` with uniform `scale(1.03)`; mobile uses −5°/+5°. All twelve desktop and seven visible mobile composed matrices have equal axes and near-zero dot product (maximum absolute dot under `3.2e-7`).
+- Browser: desktop 12/12 and mobile 7/7 images loaded, horizontal overflow 0, console errors 0, and CTA remains `/login?next=%2Fassets%2Fcreate`. Local and LAN previews return HTTP 200.
+- Two visual passes and same-canvas evidence: `docs/qa/images/lyn-005-i3-hero-composition-r33/comparison/`; measurement, audit and metrics: `docs/qa/reports/lyn-005-i3-hero-composition-r33/`.
+- Gates: focused Vitest 20/20, full Vitest 93 files / 473 tests, lint, typecheck, build, OpenSpec strict 37/37 and `git diff --check` passed. P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R32 Hero Role Refresh QA
+
+- Replaced all twelve Hero role images and the four Hero proof avatars with the user-approved R32 batch; RoleAssetShowcase and downstream sections remain unchanged.
+- New assets: `public/images/agenthub-site/hero-roles-r32/`, twelve independent 1024 × 1536 quality-90 WebPs, 75,186–214,260 bytes each. Legacy assets remain untouched.
+- Final subject framing uses per-card equal-axis scale/translation only: ten cards at `1.00`, robot and exploration companion at `.96`; offsets stay within ±1%. Card geometry, desktop `-9deg/+9deg`, mobile `-6deg/+6deg`, overscan `1.04`, z-order and radius are unchanged.
+- Browser proof: desktop 12/12 and mobile 7/7 displayed images load; console errors and horizontal overflow are zero. Maximum composed axis delta is `1.97e-13` desktop / `1.23e-14` mobile.
+- Evidence: `docs/qa/images/lyn-005-i3-hero-role-refresh-r32/comparison/`; full QA and metrics: `docs/qa/reports/lyn-005-i3-hero-role-refresh-r32/`.
+- Focused Vitest 20/20, lint, typecheck, build, OpenSpec strict and `git diff --check` passed. P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R31 Hero Supporting-card Framing QA
+
+- Fresh R30 source: `docs/qa/images/lyn-005-i3-hero-supporting-framing-r31/before/`; R31 implementation: `after/`; CSS viewports 1440×900 and 390×844.
+- Scope: all eleven Hero supporting cards. The R30 main source/framing, twelve card slots, sizes, z-order, radius, desktop `-9deg/+9deg`, mobile `-6deg/+6deg`, Hero copy/navigation/CTA/proof and downstream page remain unchanged.
+- Framework fill is now fixed at `1.04`; each card owns explicit `subjectScale`, `subjectOffsetX` and `subjectOffsetY`. Supporting sources use contained, centered native canvas plus equal-axis transform; main remains R30 `cover / .92 / 0 / -8%`.
+- Final supporting scales span `.82–.92`, X offsets `-4–0%`, Y offsets `-3–+6%`. Humans read at approximately 70–82% card height; robot, alpaca, hood, headset and anime silhouettes retain their key outlines.
+- Matrix proof: maximum axis delta `1.82e-13` desktop / `1.14e-14` mobile; maximum absolute dot `5.64e-7` / `1.41e-7`. Twelve images load, console errors and overflow are zero.
+- Evidence: `docs/qa/images/lyn-005-i3-hero-supporting-framing-r31/comparison/`; full audit and per-card table: `docs/qa/reports/lyn-005-i3-hero-supporting-framing-r31/`.
+- Focused Vitest 20/20, lint, typecheck, production build, OpenSpec strict and `git diff --check` passed. P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R30 Hero Main-card Framing QA
+
+- Source: `docs/qa/design-reference/lyn-005-i3-hero-main-framing-r30/source-expanded-canvas.png` (`1152 × 1366`). Runtime WebP: `public/images/agenthub-site/hero-main-reference-r30.webp` (`94,370` bytes, Sharp quality 92).
+- Scope: only the Hero central main-card source and main-only crop. All R29 wall geometry, twelve-card structure, background-card slots/images, desktop `-9deg/+9deg`, mobile `-6deg/+6deg`, copy, navigation, CTA, proof and downstream sections are frozen.
+- Final framing: framework compensation stays `scale(1.04)`; the subject layer independently uses uniform `translateY(-8%) scale(.92)`. Visual subject height is approximately 76–78%, headroom approximately 10–12%, with balanced side/lower breathing room and no exposed edge.
+- Natural proportions remain intact: `object-fit: cover`, equal-axis subject scale, no added shear or non-uniform transform. Desktop/mobile overflow and console errors are zero; CTA remains `/login?next=%2Fassets%2Fcreate`.
+- Evidence: `docs/qa/images/lyn-005-i3-hero-main-framing-r30/comparison/`; detailed report: `docs/qa/reports/lyn-005-i3-hero-main-framing-r30/design-qa.md`.
+- Gates: focused Vitest 20/20, lint, typecheck, production build, OpenSpec strict 37/37, and `git diff --check` passed. P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R29 Hero Composition QA
+
+- Source visual truth: `docs/qa/design-reference/lyn-005-i3-hero-composition-r29/user-reference.png` (`2990 × 1468`), compared against fresh 1440×1000/1440×707 desktop and 390×844 mobile captures.
+- Fresh audit: R28's counter-skew architecture was correct, but the `31% × 75% / left55%` main card, `±12deg` frame/image pair, 3.5–4.5° rigid rotation and irregular row starts created one P1 and two P2 composition issues.
+- Final main geometry: `28% × 67% / left59% / top10%`; normalized browser bbox `417.04 × 505.44` at `x834.65/y66.57`, versus R28 `480.31 × 580.06` at `x767.28/y36.59`.
+- Final transform language: desktop frame/image `-9deg/+9deg`, mobile `-6deg/+6deg`; main/default `rotateZ(2deg)`, near `1.5deg`, outer `2.5deg`. Image compensation is uniform `1.04 × existing crop scale`, with 11%/8% overscan.
+- Three-column rhythm: upper row begins at 41/60/80%, middle at 35/48/93%, lower at 31/44/57/73/90%. Supporting cards now expose recognizable subjects without random slivers, while the left copy field remains pure black.
+- Matrix proof: maximum composed axis-length delta is `3.14e-13` desktop / `1.03e-13` mobile; maximum absolute dot is `9.17e-7` / `5.11e-7`. Subjects retain uniform scale plus rigid rotation with no residual shear.
+- Source/before/final comparison: `docs/qa/images/lyn-005-i3-hero-composition-r29/comparison/source-before-final-desktop.png`; detailed audit, QA and metrics: `docs/qa/reports/lyn-005-i3-hero-composition-r29/`.
+- Browser proof: all twelve desktop assets load, mobile retains seven representative cards, CTA/link contract is unchanged, console errors and horizontal overflow are zero. P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R28 Hero Counter-skew QA
+
+- Source visual truth: `docs/qa/design-reference/lyn-005-i3-hero-counter-skew-r28/user-reference.png` (`2990 × 1468`).
+- Scope: only the twelve independent Hero role-card transform layers. Hero copy/navigation/CTA/proof, image sources/crops/slots, R22–R27, downstream sections and product behavior are unchanged.
+- Three-layer contract: `.heroRoleCard` owns position/z-index and rigid `rotateZ` (`4deg`, near `3.5deg`, outer `4.5deg`); `.heroRoleFrame` owns the clipped desktop `skewX(-12deg)` card silhouette; `.heroRoleImage` owns the equal opposite `skewX(12deg)` plus uniform compensation scale. Mobile uses the same hierarchy at `-8deg/+8deg`.
+- The actual raster image is untransformed and remains `100% × 100%` with `object-fit: cover`. No perspective, X/Y 3D rotation, arbitrary matrix, `scaleX` or `scaleY` is used.
+- Browser-computed matrix proof: across all twelve desktop cards, composed axis-length delta is `< 4e-13` and absolute axis dot product is `< 1.2e-6`; the result is uniform scale + rigid rotation with no measurable shear.
+- Visual proof: the source/R27/R28 same-canvas board restores the reference's strong cut-frame silhouette and dense diagonal wall while preserving natural faces, shoulders, robot and alpaca proportions. Desktop/mobile overflow is zero; CTA/navigation remain unchanged; P0/P1/P2 = 0/0/0.
+- Evidence: `docs/qa/images/lyn-005-i3-hero-counter-skew-r28/comparison/`; detailed QA and metrics: `docs/qa/reports/lyn-005-i3-hero-counter-skew-r28/`.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R27 Hero Rigid-plane Tilt QA
+
+- Source visual truth: `docs/qa/design-reference/lyn-005-i3-hero-rigid-tilt-r27/user-reference.png` (`2990 × 1468`). Main-card long edges measure approximately 4.5–4.9° clockwise; background cards cluster around 3.5–5°.
+- Scope: only the Hero card-plane rotation contract and R27 QA evidence. All twelve card slots/sizes/z-indexes, images/crops, Hero copy/CTA/navigation/proof, R22–R26 changes and downstream sections are unchanged.
+- Final angles: main `4deg`, near `3.5deg`, outer `4.5deg`, all pure `rotateZ`. Computed matrices use the canonical orthogonal rotation form with unit axis lengths, zero axis dot product and determinant 1; there is no skew, non-uniform scale or 3D projection.
+- Image contract: every Hero image remains `100% × 100%`, `object-fit: cover`, with only the pre-existing equal-axis `scale(n)` crop. Faces, shoulders, the robot helmet and alpaca head remain naturally proportioned.
+- Browser proof: 1440×1000, same-ratio 1440×707 and 390×844 captures preserve the left black copy area, dominant centered main card, right-wall clipping, seven-card mobile composition and zero horizontal overflow. No visible runtime error overlay appeared.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-hero-rigid-tilt-r27/comparison/`; full metrics/report: `docs/qa/reports/lyn-005-i3-hero-rigid-tilt-r27/`.
+- Comparison history: pass 0 recorded the P1 under-tilted 1° wall; pass 1 applied the measured rigid angles. Required typography, spacing, colors, imagery, copy, responsive and interaction surfaces were checked; P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R26 Use-case Imagery QA
+
+- Source visual truth: `docs/qa/design-reference/lyn-005-i3-use-cases-r26/user-reference.png` (`2880 × 586`) plus the three supplied native generated scenes.
+- Scope: only the three `03 / USE CASES` image mappings, per-image focal positions, focused contract, and R26 QA evidence. Copy, section/card geometry, overlay, radius, layout, navigation, Hero, role assets, intent, routes, authentication, API, dependencies and configuration are unchanged.
+- New assets: `use-case-independent-creator-r26.webp` (`1635 × 962`, 84,034 bytes), `use-case-ip-content-team-r26.webp` (`1638 × 960`, 120,198 bytes), and `use-case-agent-operations-r26.webp` (`1638 × 960`, 79,172 bytes). Sharp WebP quality 90 reduced source PNG weight by 92.73–94.48% without resizing.
+- Crop calibration: existing `object-fit: cover` remains; focal positions are `50% 50%`, `50% 48%`, and `50% 50%`. Desktop cards remain `342.33 × 200`; mobile cards remain `311 × 190`. Artist/display, all three collaborators, both operators, and core screens stay visible above the unchanged copy band.
+- Browser proof: 1440×1000 and 390×844 captures show coherent dark styling, natural subject proportions, loaded sources, zero horizontal overflow, working `#scenarios` navigation, and no visible runtime error overlay.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-use-cases-r26/comparison/`; detailed report: `docs/qa/reports/lyn-005-i3-use-cases-r26/design-qa.md`.
+- Comparison history: pass 0 recorded the softer legacy imagery; pass 1 replaced only image sources/focal points. Required typography, spacing, colors, image quality, copy, responsive and interaction surfaces were checked; P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R25 Hero-role Proportion QA
+
+- Source visual truth: `docs/qa/design-reference/lyn-005-i3-hero-proportion-r25/user-proportion-issue.png` (2994×1448), used as the exact evidence for stretched/sheared Hero subjects.
+- Scope: only the shared Hero role-card plane transform and its contract/QA evidence. All twelve independent images, slot percentages, z-index, tone, image crop/scale, radius, border, Hero copy/CTA/navigation/proof, R22–R24 and downstream sections are unchanged.
+- Root cause: every role image used `object-fit: cover` and a uniform `scale(n)`, but its card ancestor applied `skewX(-12deg) rotateZ(1deg)`. The computed matrix `matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)` has a -0.229977 shear term and non-orthogonal axes, visibly widening faces, shoulders, the robot and alpaca.
+- Fix: the card plane now uses only `rotateZ(1deg)`, computed as `matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)`. Its axes are orthogonal and unit scale; the diagonal slot layout and planar tilt remain without projecting distortion into the raster subjects.
+- Desktop proof: main card CSS ratio remains 0.589572 while its axis-aligned rendered ratio changes 0.810114 → 0.601895; robot CSS ratio remains 0.637566 while its rendered ratio changes 0.857361 → 0.649496. Images remain `cover`, with main scale 1/1 and robot scale 1.05/1.05.
+- Mobile proof: main CSS ratio remains 0.547619 and rendered ratio changes 0.771655 → 0.563149; robot remains 0.591716 and changes 0.815796 → 0.607620. Seven visible mobile cards retain their crop and overlap without document overflow.
+- Browser review: all 12 desktop cards and all 7 visible mobile cards were checked at 1440×1000 and 390×844. Faces, shoulders, robot helmet and alpaca head are natural; main-card centering, hierarchy, radius and dark composition remain intact. Console errors and horizontal overflow are zero; CTA href remains `/login?next=%2Fassets%2Fcreate`.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-hero-proportion-r25/comparison/`; complete metrics: `docs/qa/reports/lyn-005-i3-hero-proportion-r25/transform-metrics.json`; detailed report: `docs/qa/reports/lyn-005-i3-hero-proportion-r25/design-qa.md`.
+- Comparison history: pass 0 recorded the P1 shared shear; pass 1 removed only that shear. Source/after, desktop/mobile before/after and card-wall focus comparisons found P0/P1/P2 = 0/0/0.
+- Gates: focused Vitest 20/20, lint, typecheck, production build (19 pages), `git diff --check`, browser navigation/CTA checks and local preview passed. Console errors and document overflow are zero.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R24 Showcase-copy Overlay QA
+
+- Source visual truth: `docs/qa/design-reference/lyn-005-i3-showcase-overlay-r24/user-issue-reference.png` (2038×1070), used as the precise evidence for the hard opaque copy-board problem.
+- Scope: only the shared role-card information layer in `PublicLandingPage` plus its CSS contract and R24 QA evidence. The five R23 images and copy, card geometry/crop/radius/border, carousel placement/motion/controls, Hero and every downstream section are unchanged.
+- Before desktop: the active 280×410 card used a 156px copy layer (38.05% of card height) with a uniform `rgb(5 6 4 / 88%)` fill starting 253px from the card top, producing a visible horizontal shoulder/garment cut.
+- After desktop: the active copy layer is 150px (36.59%), starts at 259px, and uses a transparent-to-90% dark tonal transition with 16px/20px/14px padding. Shoulder and garment contours continue beneath the label while the full description remains readable.
+- Before mobile: 94px / 31.33% at a 205px start. After mobile: 91px / 30.33% at a 208px start with shorter 20px/42px transition stops and unchanged 212×300 card geometry.
+- Five-role review: 墨衡、知序、沐橙、澄音、拓野 were each focused at 1440×1000 and 390×844. All preserve continuous shoulders/clothing, readable lime label/title/type/desktop description, rounded clipping, and zero document overflow.
+- Interaction/accessibility: all five progress controls update the live current-role label; arrow selection and the shared three-second autoplay contract remain operational. Focus semantics and reduced-motion/hidden pause behavior are unchanged.
+- Comparison history: pass 0 recorded the uniform 88% black P1 obstruction; pass 1 replaced only that surface with the existing workbench-style tonal fade and reduced its vertical footprint. Same-canvas source/before/after, desktop/mobile and five-role comparisons found P0/P1/P2 = 0/0/0.
+- Required fidelity surfaces: fonts/copy/colors/radius/image crop and asset quality are unchanged; spacing changes are limited to the copy layer; no new assets, DOM, dependency, route or product behavior were introduced.
+- Evidence: `docs/qa/images/lyn-005-i3-showcase-overlay-r24/comparison/`; detailed report: `docs/qa/reports/lyn-005-i3-showcase-overlay-r24/design-qa.md`.
+- Gates: focused Vitest 20/20, lint, typecheck, production build (19 pages), `git diff --check`, browser five-role/arrow/three-second autoplay checks and local HTTP 200 passed. Console errors and document overflow are both zero.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R23 Showcase-role Portrait Set QA
+
+- Source visual truth: `docs/qa/design-reference/lyn-005-i3-showcase-roles-r23/reference-close-portrait.png` (658×568) plus the five supplied 1122×1402 independent portrait sources recorded in the R23 report.
+- Scope: only the public landing role-carousel data, its five independent raster assets, the honest boundary copy, related contracts, OpenSpec and QA evidence. Hero, navigation, R22 flow/use-case/intent edits, authenticated surfaces, routes, APIs, card geometry and carousel behavior are unchanged.
+- Five cards: 墨衡 / 叙事策略顾问 / 设定一致性; 知序 / 知识研究顾问 / 事实与来源; 沐橙 / 互动内容主持 / 互动节奏; 澄音 / 用户服务伙伴 / 服务体验; 拓野 / 世界观探索向导 / 世界观探索. Every card is explicitly labelled `品牌示例` and contains the approved complete description.
+- Asset quality: repository-installed Sharp converted the supplied PNGs to lossless 1122×1402 WebP without resizing. Files are 1.15–1.38 MB instead of 1.57–1.93 MB, retain black backgrounds and warm/cool rim light, and show no compression halo or focus loss on visual inspection.
+- Crop calibration: active cards keep their frozen 280×410 desktop and 212×300 mobile frames. Per-role object positions are 49%/50%/51%/50%/50%; all five preserve forehead, chin, hair edge and shoulder balance, with the overlay text remaining readable.
+- Browser evidence: 1440×1000 and 390×844 document overflow 0 and console errors/warnings 0/0. All five progress targets focused successfully; the three-second advance, hover pause, carousel focus-within pause, arrows, side/progress selection and accessible current-role label remain operational. Hidden/reduced-motion pause semantics are unchanged and covered by the shared workbench contracts.
+- Comparison history: fresh before showed mixed legacy/demo portrait styles and one `Demo Asset`; pass 1 installed the coherent close-portrait set and honest capability labels. Same-canvas full-view, reference/focus and five-card contact-sheet inspection found no actionable P0/P1/P2 mismatch, so no visual correction loop was required.
+- Required fidelity surfaces: landing typography, spacing, radii, shadows and lime/black tokens are unchanged; image subject/crop/quality and copy/content match the approved R23 mapping; interaction and responsive layout remain stable.
+- Evidence: `docs/qa/images/lyn-005-i3-showcase-roles-r23/comparison/`; detailed report: `docs/qa/reports/lyn-005-i3-showcase-roles-r23/design-qa.md`.
+- Gates: focused 20/20, full Vitest 93 files / 473 tests, lint, typecheck, production build (19 pages), OpenSpec strict 37/37 and `git diff --check` passed.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R22 Copy and Information-hierarchy QA
+
+- Source truth: the supplied three-page review document plus its seven embedded annotations, preserved under `docs/qa/design-reference/lyn-005-i3-copy-hierarchy-r22/`.
+- Scope: only the `02 / CREATION FLOW`, `03 / USE CASES`, and `04 / START WITH INTENT` copy hierarchy and the intent suggestion-chip shape/focus contract. Hero R18/R21, role assets R20, imagery, stages, routes, authentication, Footer, and all other pages are unchanged.
+- Product-boundary decision: the document's proposed “快速搜索” wording was not copied because the control creates and organizes an Agent intent. The final truthful title is “快速创建、测试与管理 Agent，让每一个角色的运营更简单。”
+- Flow: “一个 Agent，从创建到运营” and “角色、知识、测试、发布、迭代，完整流程统一管理。” render as a stable two-line desktop hierarchy; the five-stage sticky product interaction is unchanged.
+- Use cases: “覆盖 Agent / 全生命周期” replaces the prior poetic title; each cinematic card now exposes its complete number, audience, and one-line value without the former green tag or ellipsis.
+- Intent: the approved title renders as two semantic desktop lines and four readable mobile lines. The three existing suggestions retain click-to-fill behavior and now share an 11px radius plus explicit lime `:focus-visible` feedback.
+- Fresh 1465×802 and 390×844 browser checks: document overflow 0; console errors/warnings 0/0; exact copy present; chip fill, form submit/return, authentication continuation, stage switching, and navigation anchors passed. Reduced motion is covered by the unchanged media-query contract and Vitest because this browser surface does not expose runtime media emulation.
+- Comparison history: pass 1 found P1 flow specificity, P1 clipped scenario meaning, P1 intent expectation-setting, and P2 chip affordance; pass 2 corrected the DOM/copy/clipping/focus contracts; pass 3 restored the established lime emphasis on the flow outcome. Final P0/P1/P2 = 0/0/0.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-copy-hierarchy-r22/comparison/`; detailed audit and completion report: `docs/qa/reports/lyn-005-i3-copy-hierarchy-r22/`.
+- Gates: lint, typecheck, focused 20/20, full Vitest 93 files / 473 tests, production build, OpenSpec strict 37/37, and `git diff --check` passed.
+- The pre-existing unrelated R17 screenshot remains byte-identical at SHA-256 `1fdc85399aca809ede8fb8f2d3db6d7c0010c263f4dece58a8a61367ec6a6512` and was not staged, restored, moved, or overwritten.
+
+final result: passed
+
+---
+
 # LYN-005-I3 R21 Hero CTA and Proof Rhythm QA
 
 - Visual source: `docs/qa/design-reference/lyn-005-i3-hero-cta-r21/user-annotation.png` (2930×1604 @2×, normalized to 1465×802).

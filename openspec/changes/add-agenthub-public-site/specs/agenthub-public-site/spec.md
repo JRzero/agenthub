@@ -123,6 +123,11 @@ The public site SHALL provide a layered role-asset carousel with one focused car
 - **AND** every active, inactive, visible, or transitioning role card clips its frame and image to an 18px desktop or 14px mobile radius, gives the content overlay the same lower corners, and introduces no square image edge, overflow artifact, or active-state halo
 - **AND** section height, carousel geometry, controls, progress, autoplay, keyboard operation, and reduced-motion behavior remain unchanged
 
+#### Scenario: Role exhibition presents five consistent brand examples
+- **WHEN** the layered role-asset carousel renders or changes focus
+- **THEN** it contains exactly 墨衡 / 叙事策略顾问, 知序 / 知识研究顾问, 沐橙 / 互动内容主持, 澄音 / 用户服务伙伴, and 拓野 / 世界观探索向导 with their approved complete descriptions and capability-focus labels
+- **AND** each card uses its independent supplied close-portrait raster, identifies itself as `品牌示例`, avoids live-status or operating-data claims, preserves readable head-and-shoulder crops at desktop and mobile widths, and keeps the existing carousel interaction and pause semantics
+
 ### Requirement: Reference-mapped public page composition
 The public site SHALL follow the approved live reference's full-page order and large-scale spatial model while replacing every claim, status, role, and destination with truthful AgentHub content.
 
@@ -164,3 +169,20 @@ The public site SHALL use local system sans-serif body and display stacks scoped
 #### Scenario: Public typography responds across viewports
 - **WHEN** the page renders at 1440 × 1000 or 390 × 844
 - **THEN** Chinese display text uses a natural 800-or-lighter visual weight with restrained negative tracking, body text remains readable with relaxed leading, and headings, cards, buttons, and footer copy remain unclipped without horizontal document overflow
+
+### Requirement: Lifecycle copy remains direct, complete, and truthful
+The public site SHALL use concise lifecycle language from the reviewed R22 document while keeping the creation-intent surface aligned with its implemented behavior.
+
+#### Scenario: Visitor understands the full creation flow
+- **WHEN** the visitor reaches the five-stage product flow
+- **THEN** the heading reads exactly `一个 Agent，从创建到运营` with desktop semantic lines `一个 Agent，` and `从创建到运营`, the subtitle reads `角色、知识、测试、发布、迭代，完整流程统一管理。`, and all five existing stage controls and Demo product states remain operable
+
+#### Scenario: Visitor scans complete audience values
+- **WHEN** the three use-case cards render at desktop or mobile width
+- **THEN** the section heading reads exactly `覆盖 Agent 全生命周期` and its subtitle reads `从角色创建、内容协作到测试与运营，为不同团队提供统一的 Agent 管理与协作能力。`
+- **AND** the cards expose `01 独立创作者 / 从灵感到 Agent，一站完成`, `02 IP / 内容团队 / 多人协作，共同完善 Agent`, and `03 Agent 运营团队 / 持续测试、发布与运营` without the former green tags, ellipsis, or hidden overflow
+
+#### Scenario: Visitor starts from a truthful intent surface
+- **WHEN** the initial creation-intent form renders
+- **THEN** its heading reads exactly `快速创建、测试与管理 Agent，让每一个角色的运营更简单。` with two semantic desktop lines, avoids claiming search behavior, and keeps the existing label, placeholder, validation, submission, session-only state, login continuation, and invitation continuation
+- **AND** each of the three intent shortcuts uses the same 11px rounded shape with visible hover and focus-visible feedback while preserving click-to-fill behavior and mobile horizontal reachability

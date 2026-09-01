@@ -79,36 +79,49 @@
 .heroPortraits::after { position: absolute; z-index: 8; inset: 0 auto 0 0; width: 34%; background: #000; box-shadow: 74px 0 90px #000; content: ""; }
 .heroRoleStage {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 50%;
+  right: 5vw;
+  width: clamp(1024px, 80vw, 1600px);
+  height: auto;
+  aspect-ratio: 1449 / 1086;
+  transform: translateY(-50%);
 }
 .heroRoleCard {
   position: absolute;
+  aspect-ratio: 2 / 3;
+  overflow: visible;
+  transform: rotateZ(2deg);
+  transform-origin: center;
+}
+.heroRoleFrame {
+  position: absolute;
+  inset: 0;
   overflow: hidden;
   border: 1px solid rgb(255 255 255 / 16%);
   border-radius: 18px;
   background: #030407;
   box-shadow: -18px 26px 48px rgb(0 0 0 / 72%);
-  transform: skewX(-12deg) rotateZ(1deg);
+  transform: skewX(-8deg);
   transform-origin: center;
 }
-.heroRoleCard img { object-fit: cover; }
+.heroRoleImage { position: absolute; inset: 0 -10%; background: #000; transform: skewX(8deg) scale(1.03); transform-origin: center; }
+.heroRoleImage img { width: 100%; height: 100%; object-fit: contain; transform: translate(var(--hero-subject-offset-x), var(--hero-subject-offset-y)) scale(var(--hero-subject-scale)); transform-origin: center; }
+.heroRoleCard[data-hero-role-main="true"] .heroRoleImage img { object-fit: contain; }
 .heroRoleCard[data-tone="main"] { filter: brightness(1); }
-.heroRoleCard[data-tone="near"] { filter: brightness(.82); }
-.heroRoleCard[data-tone="outer"] { filter: brightness(.62); }
-.heroRoleCard[data-hero-role-slot="top-strategist"] { top: -8%; left: 39%; width: 18%; height: 25%; }
-.heroRoleCard[data-hero-role-slot="top-anime"] { top: -8%; left: 59%; width: 18%; height: 25%; }
-.heroRoleCard[data-hero-role-slot="top-support"] { top: -8%; left: 80%; width: 18%; height: 26%; }
-.heroRoleCard[data-hero-role-slot="mid-expert"] { top: 21%; left: 31.7%; width: 16%; height: 31%; }
-.heroRoleCard[data-hero-role-slot="mid-fantasy"] { top: 21%; left: 45.7%; width: 16%; height: 35%; }
-.heroRoleCard[data-hero-role-slot="mid-right-partial"] { top: 22%; left: 93%; width: 16%; height: 35%; }
-.heroRoleCard[data-hero-role-slot="bottom-robot"] { top: 63%; left: 26.5%; width: 17%; height: 38%; }
-.heroRoleCard[data-hero-role-slot="bottom-companion"] { top: 63%; left: 40.5%; width: 16%; height: 39%; }
-.heroRoleCard[data-hero-role-slot="bottom-operator"] { top: 88%; left: 53.5%; width: 22%; height: 31%; }
-.heroRoleCard[data-hero-role-slot="bottom-fantasy"] { top: 83%; left: 71.5%; width: 22%; height: 33%; }
-.heroRoleCard[data-hero-role-slot="right-mid-fantasy"] { top: 65%; left: 89%; width: 18%; height: 33%; }
-.heroRoleCard[data-hero-role-slot="main"] { top: 7%; left: 55%; width: 31%; height: 75%; }
+.heroRoleCard[data-tone="near"] { filter: brightness(.84); }
+.heroRoleCard[data-tone="outer"] { filter: brightness(.66); }
+.heroRoleCard[data-hero-role-slot="top-strategist"] { top: -18%; left: 33%; width: 18%; }
+.heroRoleCard[data-hero-role-slot="top-anime"] { top: -11%; left: 56%; width: 18%; }
+.heroRoleCard[data-hero-role-slot="top-support"] { top: -4%; left: 79%; width: 18%; }
+.heroRoleCard[data-hero-role-slot="mid-expert"] { top: 21%; left: 29%; width: 17.5%; }
+.heroRoleCard[data-hero-role-slot="mid-fantasy"] { top: 25%; left: 44%; width: 17.5%; }
+.heroRoleCard[data-hero-role-slot="mid-right-partial"] { top: 27%; left: 88%; width: 17.5%; }
+.heroRoleCard[data-hero-role-slot="bottom-robot"] { top: 65%; left: 23%; width: 17.5%; }
+.heroRoleCard[data-hero-role-slot="bottom-companion"] { top: 68%; left: 39%; width: 17.5%; }
+.heroRoleCard[data-hero-role-slot="bottom-operator"] { top: 70%; left: 55%; width: 17.5%; }
+.heroRoleCard[data-hero-role-slot="bottom-fantasy"] { top: 73%; left: 71%; width: 17.5%; }
+.heroRoleCard[data-hero-role-slot="right-mid-fantasy"] { top: 66%; left: 87%; width: 17.5%; }
+.heroRoleCard[data-hero-role-slot="main"] { top: 15%; left: 58%; width: 30%; }
 
 .kicker { margin: 0 0 18px; color: var(--lime); font-size: 11px; font-weight: 700; letter-spacing: .18em; }
 .assetSection { position: relative; z-index: 1; display: grid; grid-template-columns: 310px minmax(0, 1fr); gap: 34px; min-height: 590px; margin-top: -20px; padding: 84px 0 64px var(--page-gutter); overflow: hidden; border-top: 1px solid var(--section-line); background: #0a0b08; }
@@ -136,7 +149,7 @@
 .assetCard[data-visible="false"] { visibility: hidden; pointer-events: none; }
 .sideSelect { position: absolute; inset: 0; z-index: 5; border: 0; border-radius: inherit; background: transparent; cursor: pointer; }
 .sideSelect:focus-visible { outline-offset: -5px !important; }
-.assetCardCopy { position: absolute; z-index: 4; inset: auto 0 0; min-height: 122px; overflow: hidden; border-radius: 0 0 18px 18px; padding: 18px 20px; background: rgb(5 6 4 / 88%); }
+.assetCardCopy { position: absolute; z-index: 4; inset: auto 0 0; min-height: 116px; overflow: hidden; border-radius: 0 0 18px 18px; padding: 16px 20px 14px; background: linear-gradient(to bottom, rgb(5 6 4 / 0%) 0, rgb(5 6 4 / 72%) 30px, rgb(5 6 4 / 88%) 66px, rgb(5 6 4 / 90%) 100%); text-shadow: 0 1px 12px rgb(0 0 0 / 90%); }
 .assetCardCopy span { color: var(--lime); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .assetCardCopy h3 { margin: 6px 0 1px; font-size: 24px; font-weight: 720; letter-spacing: -.025em; }
 .assetCardCopy p { margin: 0; color: #c8cbc0; font-size: 12px; font-weight: 450; }
@@ -151,8 +164,9 @@
 .flowSection { position: relative; height: 460vh; min-height: 3300px; margin-top: 0; overflow: visible; border-top: 1px solid var(--section-line); background: #030403; }
 .flowSticky { position: sticky; top: 0; height: 100vh; min-height: 720px; padding: 54px var(--page-gutter) 42px; overflow: hidden; background: #030403; }
 .flowHeading { position: absolute; z-index: 3; top: 8%; left: var(--page-gutter); width: min(29%, 360px); }
-.flowHeading h2 { font-size: clamp(40px, 4.5vw, 64px); line-height: .99; }
+.flowHeading h2 { display: flex; flex-direction: column; gap: .06em; font-size: clamp(40px, 4.2vw, 60px); line-height: 1.03; }
 .flowHeading h2 em { color: var(--lime); font-style: normal; }
+.flowTitleLine { display: block; white-space: nowrap; }
 .flowHeading > p:last-child { max-width: 300px; margin-top: 18px; font-size: 12px; line-height: 1.7; }
 .flowGrid { display: grid; grid-template-columns: 34% 66%; align-items: center; height: 100%; padding-top: 64px; }
 .stepNav { position: relative; align-self: end; margin-bottom: 1.5%; }
@@ -215,16 +229,16 @@
 .scenarioHeading { align-self: center; }
 .scenarioHeading .kicker { margin-bottom: 10px; font-size: 10px; }
 .scenarioHeading h2 { max-width: 230px; font-size: 28px; line-height: 1.22; letter-spacing: -.025em; }
+.scenarioTitleLine { display: block; white-space: nowrap; }
 .scenarioHeading > p:last-child { max-width: 230px; margin: 12px 0 0; padding: 0; font-size: 11px; line-height: 1.65; }
 .scenarioList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0; }
 .scenarioItem { position: relative; min-height: 200px; overflow: hidden; border-radius: 10px; background: #0d0f0b; box-shadow: 0 18px 46px rgb(0 0 0 / 30%); }
 .scenarioItem img { z-index: 0; object-fit: cover; filter: brightness(.48) saturate(.55); transition: transform 700ms ease, filter 360ms ease; }
 .scenarioItem:hover img { transform: scale(1.035); filter: brightness(.63) saturate(.7); }
-.scenarioCopy { position: absolute; z-index: 2; inset: auto 0 0; display: grid; grid-template-columns: 30px 1fr; min-height: 82px; padding: 14px 16px; background: rgb(5 6 4 / 86%); }
-.scenarioCopy > span { grid-row: 1 / span 3; color: var(--lime); font-size: 10px; }
-.scenarioCopy p { margin: 0; color: var(--lime); font-size: 9px; letter-spacing: .1em; }
-.scenarioCopy h3 { margin: 3px 0 2px; font-size: 17px; font-weight: 720; letter-spacing: -.015em; }
-.scenarioCopy p:last-child { overflow: hidden; color: #b2b5aa; font-size: 10px; letter-spacing: 0; line-height: 1.5; white-space: nowrap; text-overflow: ellipsis; }
+.scenarioCopy { position: absolute; z-index: 2; inset: auto 0 0; display: grid; grid-template-columns: 30px minmax(0, 1fr); min-height: 82px; align-items: end; padding: 14px 16px; background: rgb(5 6 4 / 86%); }
+.scenarioCopy > span { align-self: start; padding-top: 3px; color: var(--lime); font-size: 10px; }
+.scenarioCopy h3 { margin: 0 0 5px; font-size: 17px; font-weight: 720; letter-spacing: -.015em; }
+.scenarioCopy p { margin: 0; color: #b2b5aa; font-size: 11px; letter-spacing: 0; line-height: 1.5; white-space: normal; }
 
 .intentSection { position: relative; display: block; min-height: 500px; isolation: isolate; padding: 82px var(--page-gutter) 42px; overflow: hidden; border-top: 1px solid var(--section-line); background: #080a07; text-align: center; }
 .intentAtmosphere { z-index: -2; object-fit: cover; opacity: .58; transform: scaleX(-1); }
@@ -241,8 +255,9 @@
 .intentControl textarea::placeholder { color: #696d63; }
 .intentControl button { position: absolute; top: 50%; right: 10px; display: grid; width: 50px; height: 50px; margin: 0; place-items: center; border: 0; border-radius: 50%; background: var(--lime); color: #090a07; cursor: pointer; transform: translateY(-50%); }
 .intentSuggestions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 26px; }
-.intentSuggestions button { border: 1px solid #33392f; padding: 7px 10px; background: transparent; color: #92978c; font-size: 10px; cursor: pointer; }
+.intentSuggestions button { border: 1px solid #33392f; border-radius: 11px; padding: 7px 10px; background: transparent; color: #92978c; font-size: 10px; cursor: pointer; transition: border-color 180ms ease, color 180ms ease, background-color 180ms ease; }
 .intentSuggestions button:hover { border-color: var(--lime); color: var(--lime); }
+.intentSuggestions button:focus-visible { border-color: var(--lime); outline: 2px solid var(--lime); outline-offset: 2px; color: var(--lime); }
 .intentSummary { display: flex; min-height: 232px; flex-direction: column; padding: 28px; border: 1px solid rgb(255 255 255 / 18%); background: rgb(7 8 6 / 90%); text-align: left; }
 .summaryLabel { display: flex; align-items: center; gap: 7px; margin: 0; color: var(--lime); font-size: 11px; font-weight: 700; }
 .intentSummary blockquote { margin: 18px 0; font-size: 22px; font-weight: 650; line-height: 1.55; }
@@ -300,9 +315,18 @@
     height: auto;
   }
   .heroPortraits::after { width: 18%; box-shadow: 42px 0 56px #000; }
-  .heroRoleStage { inset: auto -120px auto auto; top: 508px; width: 600px; height: 450px; transform: none; }
-  .heroRoleCard { display: none; border-radius: 12px; box-shadow: -9px 14px 28px rgb(0 0 0 / 76%); }
+  .heroRoleStage { top: 430px; right: -44px; width: 540px; height: auto; aspect-ratio: 1449 / 1086; transform: none; }
+  .heroRoleCard { display: none; }
   .heroRoleCard[data-mobile="true"] { display: block; }
+  .heroRoleFrame { border-radius: 12px; box-shadow: -9px 14px 28px rgb(0 0 0 / 76%); transform: skewX(-5deg); }
+  .heroRoleImage { inset: 0 -7%; transform: skewX(5deg) scale(1.03); }
+  .heroRoleCard[data-hero-role-slot="top-anime"] { top: -8%; left: 54%; width: 23%; }
+  .heroRoleCard[data-hero-role-slot="mid-expert"] { top: 20%; left: 28%; width: 22%; }
+  .heroRoleCard[data-hero-role-slot="mid-fantasy"] { top: 25%; left: 45%; width: 22%; }
+  .heroRoleCard[data-hero-role-slot="bottom-robot"] { top: 65%; left: 26%; width: 22%; }
+  .heroRoleCard[data-hero-role-slot="bottom-companion"] { top: 67%; left: 45%; width: 22%; }
+  .heroRoleCard[data-hero-role-slot="bottom-fantasy"] { top: 66%; left: 82%; width: 22%; }
+  .heroRoleCard[data-hero-role-slot="main"] { top: 14%; left: 58%; width: 34%; }
 
   .assetSection { display: block; min-height: 680px; margin-top: 0; padding: 64px 16px 52px; }
   .assetIntro { min-height: 322px; max-width: none; }
@@ -318,7 +342,7 @@
   .assetCard[data-slot="1"] { --slot-x: 121px; --slot-y: 16px; --slot-scale: .8; }
   .assetCard[data-slot="-2"] { --slot-x: -198px; --slot-y: 34px; --slot-scale: .62; opacity: .55; }
   .assetCard[data-slot="2"] { --slot-x: 198px; --slot-y: 34px; --slot-scale: .62; opacity: .55; }
-  .assetCardCopy { min-height: 92px; border-radius: 0 0 14px 14px; padding: 12px 14px; }
+  .assetCardCopy { min-height: 84px; border-radius: 0 0 14px 14px; padding: 10px 14px 11px; background: linear-gradient(to bottom, rgb(5 6 4 / 0%) 0, rgb(5 6 4 / 72%) 20px, rgb(5 6 4 / 88%) 42px, rgb(5 6 4 / 90%) 100%); }
   .assetCardCopy h3 { margin-top: 3px; font-size: 20px; }
   .assetCardCopy p { font-size: 10px; }
   .assetCardCopy small { display: none !important; }
@@ -328,7 +352,8 @@
   .flowSection { height: auto; min-height: 0; margin-top: 0; }
   .flowSticky { position: relative; height: auto; min-height: 0; padding: 64px 16px; overflow: hidden; }
   .flowHeading { position: relative; top: auto; left: auto; width: auto; margin-bottom: 42px; }
-  .flowHeading h2 { font-size: 44px; }
+  .flowHeading h2 { font-size: 44px; line-height: 1.08; }
+  .flowTitleLine { white-space: normal; }
   .flowHeading > p:last-child { max-width: 350px; }
   .flowGrid { display: flex; flex-direction: column-reverse; height: auto; padding: 0; gap: 42px; }
   .productScene { width: 100%; height: auto; padding: 0; }
@@ -356,15 +381,15 @@
 
   .scenarioSection { display: block; min-height: 0; padding: 72px var(--page-gutter) 66px; }
   .scenarioHeading { display: block; }
-  .scenarioHeading h2 { font-size: 23px; line-height: 1.28; }
+  .scenarioHeading h2 { font-size: 30px; line-height: 1.2; }
+  .scenarioTitleLine { white-space: normal; }
   .scenarioHeading > p:last-child { margin-top: 12px; font-size: 11px; }
   .scenarioList { display: block; margin-top: 32px; }
   .scenarioItem { min-height: 190px; margin-top: 14px; }
   .scenarioCopy { grid-template-columns: 30px 1fr; min-height: 82px; padding: 14px; }
   .scenarioCopy h3 { font-size: 17px; }
-  .scenarioCopy p:last-child { white-space: normal; }
 
-  .intentSection { display: block; min-height: 480px; padding: 72px var(--page-gutter) 40px; }
+  .intentSection { display: block; min-height: 560px; padding: 72px var(--page-gutter) 40px; }
   .intentIntro { margin-bottom: 0; }
   .intentIntro .kicker { margin-bottom: 28px; }
   .intentIntro h2 { max-width: 322px; gap: .12em; font-size: 38px; line-height: 1.2; }

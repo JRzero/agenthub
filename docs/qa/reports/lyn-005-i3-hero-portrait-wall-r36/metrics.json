@@ -1,0 +1,47 @@
+{
+  "viewportDesktop": "1440x900",
+  "viewportMobile": "390x844",
+  "stageDesktop": {
+    "x": 205,
+    "y": 18.3,
+    "width": 1152,
+    "height": 863.4,
+    "css": "right: 5vw; width: clamp(1024px, 80vw, 1600px); aspect-ratio: 1449 / 1086"
+  },
+  "mainDesktop": {
+    "css": "top: 15%; left: 58%; width: 30%; aspect-ratio: 2 / 3",
+    "frameWidth": 345.6,
+    "frameHeight": 518.4,
+    "renderedBoundingRect": [864.2, 141.9, 363.5, 530.1],
+    "subjectScale": 0.99,
+    "source": "/images/login-agent-portrait.png"
+  },
+  "mainMobile": {
+    "css": "top: 14%; left: 58%; width: 34%; aspect-ratio: 2 / 3",
+    "frameWidth": 183.6,
+    "frameHeight": 275.4,
+    "renderedBoundingRect": [191.4, 483.5, 193.1, 281.6],
+    "viewportWidthRatio": 0.471
+  },
+  "supportingDesktop": {
+    "widthRangePercent": [17.5, 18],
+    "frameAspectRatioRange": [0.6634, 0.6667],
+    "subjectScale": 1,
+    "subjectOffsets": [0, 0]
+  },
+  "transformProof": {
+    "desktopSupportingAxes": [1.03, 1.03],
+    "desktopMainAxes": [1.0197, 1.0197],
+    "mobileSupportingAxes": [1.03, 1.03],
+    "mobileMainAxes": [1.0197, 1.0197],
+    "maximumAxisDotProduct": 0
+  },
+  "runtime": {
+    "desktopImagesLoaded": "12/12",
+    "mobileVisibleImagesLoaded": "7/7",
+    "desktopHorizontalOverflow": 0,
+    "mobileHorizontalOverflow": 0,
+    "desktopConsoleErrors": 0,
+    "mobileConsoleErrors": 0
+  }
+}

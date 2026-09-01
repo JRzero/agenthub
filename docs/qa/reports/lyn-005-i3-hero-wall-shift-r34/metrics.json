@@ -1,0 +1,37 @@
+{
+  "viewport": {
+    "desktop": "1440x900",
+    "mobile": "390x844"
+  },
+  "desktop": {
+    "stageBefore": { "x": 277, "y": 18.3, "width": 1152, "height": 863.4, "right": 1429 },
+    "stageAfter": { "x": 205, "y": 18.3, "width": 1152, "height": 863.4, "right": 1357 },
+    "stageShiftPx": -72,
+    "stageShiftVw": -5,
+    "mainBefore": { "x": 879.25, "y": 166.22, "width": 454.36, "height": 498.48 },
+    "mainAfter": { "x": 807.25, "y": 166.22, "width": 454.36, "height": 498.48 },
+    "loadedImages": "12/12",
+    "horizontalOverflowPx": 0,
+    "maxAxisDelta": 2.975e-14,
+    "maxAbsDot": 3.188e-7
+  },
+  "mobile": {
+    "stageBefore": { "x": -91, "y": 480, "width": 540, "height": 404.72, "right": 449 },
+    "stageAfter": { "x": -117, "y": 480, "width": 540, "height": 404.72, "right": 423 },
+    "stageShiftPx": -26,
+    "mainBefore": { "x": 207.37, "y": 549.15, "width": 224.06, "height": 242.13 },
+    "mainAfter": { "x": 181.37, "y": 549.15, "width": 224.06, "height": 242.13 },
+    "loadedImages": "7/7",
+    "horizontalOverflowPx": 0,
+    "maxAxisDelta": 2.22e-15,
+    "maxAbsDot": 8.165e-8
+  },
+  "assetSwap": {
+    "main": { "src": "/images/agenthub-site/hero-roles-r32/hero-silver-world-guardian-r32.webp", "subjectScale": 0.92, "subjectOffsetX": "0%", "subjectOffsetY": "2%" },
+    "bottom-fantasy": { "src": "/images/agenthub-site/hero-roles-r32/hero-main-r32.webp", "subjectScale": 1.12, "subjectOffsetX": "0%", "subjectOffsetY": "3%" }
+  },
+  "p0": 0,
+  "p1": 0,
+  "p2": 0,
+  "finalResult": "passed"
+}

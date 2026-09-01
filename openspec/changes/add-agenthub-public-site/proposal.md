@@ -16,6 +16,8 @@ AgentHub currently sends the public root route directly into the authenticated w
 - Keep the creation-intent input and submit action inside one semantic visual capsule: the wrapper owns the surface and focus state, the textarea remains transparent with safe text padding, and the circular submit button is centered inside the border at desktop and mobile widths.
 - Clarify the role-asset exhibition with the exact `让角色管理更清晰、更高效。` heading and one consistent rounded clipping contract for active, inactive, image, content, and selectable card layers without changing carousel geometry or behavior.
 - Enlarge only the Hero `进入工作台` handoff and lower its continuous status/data proof group, preserving the supplied annotation's CTA emphasis without adding an icon, changing its real login continuation, or moving any frozen Hero or downstream composition.
+- Apply the R22 document review as a scoped copy-hierarchy pass: name the complete create-to-operate flow directly, reduce each use-case card to one complete value sentence without truncation, and clarify the bottom surface as creation/testing/management rather than unsupported search while preserving every established interaction and route.
+- Replace the role-asset exhibition's mixed legacy/demo portraits with five supplied, visually consistent close-portrait brand examples, complete role descriptions and honest capability-focus labels while preserving the established carousel geometry and workbench behavior.
 
 ## Capabilities
 

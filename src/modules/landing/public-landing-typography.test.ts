@@ -41,10 +41,24 @@ describe("AgentHub public landing typography", () => {
     expect(styles).not.toContain(".heroPortraitFar");
     expect(styles).not.toContain(".heroAtmosphere");
     expect(styles).toMatch(/\.heroPortraits \{[\s\S]*inset: 0;[\s\S]*overflow: hidden;[\s\S]*pointer-events: none;/);
-    expect(styles).toMatch(/\.heroRoleStage \{[^}]*inset: 0;[^}]*width: 100%;[^}]*height: 100%;/);
-    expect(styles).toMatch(/\.heroRoleCard \{[^}]*transform: skewX\(-12deg\) rotateZ\(1deg\);/);
-    expect(styles).toMatch(/\.heroRoleCard\[data-hero-role-slot="main"\] \{[^}]*top: 7%;[^}]*left: 55%;[^}]*width: 31%;[^}]*height: 75%;/);
-    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.heroRoleStage \{[^}]*top: 508px;[^}]*width: 600px;[^}]*height: 450px;[^}]*transform: none;/);
+    expect(styles).toMatch(/\.heroRoleStage \{[^}]*top: 50%;[^}]*right: 5vw;[^}]*width: clamp\(1024px, 80vw, 1600px\);[^}]*aspect-ratio: 1449 \/ 1086;[^}]*transform: translateY\(-50%\);/);
+    expect(styles).toMatch(/\.heroRoleCard \{[^}]*aspect-ratio: 2 \/ 3;[^}]*transform: rotateZ\(2deg\);/);
+    expect(styles).toMatch(/\.heroRoleCard\[data-tone="near"\] \{[^}]*filter: brightness\(\.84\);/);
+    expect(styles).toMatch(/\.heroRoleCard\[data-tone="outer"\] \{[^}]*filter: brightness\(\.66\);/);
+    expect(styles).not.toMatch(/\.heroRoleCard\[data-tone="(?:near|outer)"\][^}]*transform:/);
+    expect(styles).not.toMatch(/\.heroRoleCard \{[^}]*skew/);
+    expect(styles).not.toMatch(/\.heroRoleCard[^}]*\{[^}]*(?:perspective|rotateX|rotateY|scaleX|scaleY|matrix)\(/);
+    expect(styles).toMatch(/\.heroRoleFrame \{[^}]*overflow: hidden;[^}]*border-radius: 18px;[^}]*transform: skewX\(-8deg\);/);
+    expect(styles).toMatch(/\.heroRoleImage \{[^}]*inset: 0 -10%;[^}]*background: #000;[^}]*transform: skewX\(8deg\) scale\(1\.03\);/);
+    expect(styles).toMatch(/\.heroRoleImage img \{[^}]*width: 100%;[^}]*height: 100%;[^}]*object-fit: contain;[^}]*transform: translate\(var\(--hero-subject-offset-x\), var\(--hero-subject-offset-y\)\) scale\(var\(--hero-subject-scale\)\);/);
+    expect(styles).toMatch(/\.heroRoleCard\[data-hero-role-main="true"\] \.heroRoleImage img \{[^}]*object-fit: contain;/);
+    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.heroRoleFrame \{[^}]*transform: skewX\(-5deg\);[^}]*\}[\s\S]*\.heroRoleImage \{[^}]*transform: skewX\(5deg\) scale\(1\.03\);/);
+    expect(styles).not.toContain("--hero-image-scale");
+    expect(styles).not.toMatch(/\.heroRole(?:Card|Frame|Image)[^}]*\{[^}]*(?:perspective|rotateX|rotateY|scaleX|scaleY|matrix)\(/);
+    expect(styles).toMatch(/\.heroRoleCard\[data-hero-role-slot="main"\] \{[^}]*top: 15%;[^}]*left: 58%;[^}]*width: 30%;/);
+    expect(styles).not.toMatch(/\.heroRoleCard\[data-hero-role-slot="[^"]+"\] \{[^}]*height:/);
+    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.heroRoleStage \{[^}]*top: 430px;[^}]*right: -44px;[^}]*width: 540px;[^}]*aspect-ratio: 1449 \/ 1086;[^}]*transform: none;/);
+    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.heroRoleCard\[data-hero-role-slot="main"\] \{[^}]*top: 14%;[^}]*left: 58%;[^}]*width: 34%;/);
     expect(styles).not.toContain(".heroPortraitCollage");
     expect(styles).not.toContain(".heroPortraitPlane");
     expect(styles).not.toContain(".heroPortraitCard");
@@ -62,11 +76,13 @@ describe("AgentHub public landing typography", () => {
     expect(styles).toMatch(/\.assetCard img \{[^}]*border-radius: inherit;[^}]*object-fit: cover;/);
     expect(styles).toMatch(/\.sideSelect \{[^}]*border-radius: inherit;/);
     expect(styles).toMatch(/\.assetCardCopy \{[^}]*overflow: hidden;[^}]*border-radius: 0 0 18px 18px;/);
+    expect(styles).toMatch(/\.assetCardCopy \{[^}]*min-height: 116px;[^}]*padding: 16px 20px 14px;[^}]*linear-gradient\(to bottom, rgb\(5 6 4 \/ 0%\) 0,[^}]*rgb\(5 6 4 \/ 90%\) 100%\);[^}]*text-shadow: 0 1px 12px rgb\(0 0 0 \/ 90%\);/);
+    expect(styles).not.toMatch(/\.assetCardCopy \{[^}]*background: rgb\(5 6 4 \/ 88%\);/);
     expect(styles).toMatch(/\.assetTitleLine \{[^}]*display: block;[^}]*white-space: nowrap;/);
     expect(styles).not.toContain(".assetCurrent");
     expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.assetCarousel \{[^}]*min-height: 350px;/);
     expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.assetCard \{[^}]*width: min\(212px, calc\(100vw - 134px\)\);[^}]*height: 300px;[^}]*border-radius: 14px;/);
-    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.assetCardCopy \{[^}]*border-radius: 0 0 14px 14px;/);
+    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.assetCardCopy \{[^}]*min-height: 84px;[^}]*border-radius: 0 0 14px 14px;[^}]*padding: 10px 14px 11px;[^}]*linear-gradient\(to bottom, rgb\(5 6 4 \/ 0%\) 0,[^}]*rgb\(5 6 4 \/ 90%\) 100%\);/);
   });
 
   it("uses one page rhythm without restoring deleted hero content", () => {
@@ -76,7 +92,7 @@ describe("AgentHub public landing typography", () => {
     expect(styles).toMatch(/\.flowSection \{[^}]*margin-top: 0;[^}]*border-top: 1px solid var\(--section-line\);/);
     expect(styles).toMatch(/\.flowHeading \{[^}]*left: var\(--page-gutter\);/);
     expect(styles).toMatch(/\.heroCta, \.primaryButton \{[^}]*min-height: 48px;/);
-    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.intentSection \{[^}]*min-height: 480px;[^}]*padding: 72px var\(--page-gutter\) 40px;/);
+    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.intentSection \{[^}]*min-height: 560px;[^}]*padding: 72px var\(--page-gutter\) 40px;/);
     expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.intentIntro h2 \{[^}]*max-width: 322px;[^}]*gap: \.12em;[^}]*line-height: 1\.2;/);
     expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.intentPanel \{[^}]*margin-top: 48px;/);
     expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.intentSuggestions \{[^}]*margin-top: 26px;/);
@@ -101,5 +117,16 @@ describe("AgentHub public landing typography", () => {
     expect(styles).toMatch(/\.intentControl button \{[^}]*top: 50%;[^}]*right: 10px;[^}]*width: 50px;[^}]*height: 50px;[^}]*transform: translateY\(-50%\);/);
     expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.intentControl \{[^}]*height: 58px;[^}]*min-height: 58px;[^}]*\}[\s\S]*\.intentControl button \{[^}]*right: 8px;[^}]*width: 46px;[^}]*height: 46px;/);
     expect(styles).not.toMatch(/\.intentControl button \{[^}]*bottom:/);
+  });
+
+  it("uses the R22 copy hierarchy without clipped scenario values", () => {
+    expect(styles).toMatch(/\.flowHeading h2 \{[^}]*display: flex;[^}]*flex-direction: column;[^}]*gap: \.06em;[^}]*line-height: 1\.03;/);
+    expect(styles).toMatch(/\.flowTitleLine \{[^}]*display: block;[^}]*white-space: nowrap;/);
+    expect(styles).toMatch(/\.scenarioTitleLine \{[^}]*display: block;[^}]*white-space: nowrap;/);
+    expect(styles).toMatch(/\.scenarioCopy \{[^}]*grid-template-columns: 30px minmax\(0, 1fr\);[^}]*align-items: end;/);
+    expect(styles).toMatch(/\.scenarioCopy p \{[^}]*font-size: 11px;[^}]*white-space: normal;/);
+    expect(styles).not.toContain("text-overflow: ellipsis");
+    expect(styles).toMatch(/\.intentSuggestions button \{[^}]*border-radius: 11px;[^}]*transition: border-color 180ms ease, color 180ms ease, background-color 180ms ease;/);
+    expect(styles).toMatch(/\.intentSuggestions button:focus-visible \{[^}]*outline: 2px solid var\(--lime\);[^}]*outline-offset: 2px;/);
   });
 });

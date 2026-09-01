@@ -1,0 +1,98 @@
+[
+  {
+    "name": "main",
+    "source": "exec-197c7e99-6305-45b9-a971-89db06f99ebf.png",
+    "output": "public/images/agenthub-site/hero-roles-r32/hero-main-r32.webp",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 90930
+  },
+  {
+    "name": "system-strategist",
+    "source": "exec-9c56d8b8-5812-4491-8342-087f15926031.png",
+    "output": "public/images/agenthub-site/hero-roles-r32/hero-system-strategist-r32.webp",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 77174
+  },
+  {
+    "name": "game-content-host",
+    "source": "exec-34e60d1f-4e09-46bf-b398-37f8b47ec119.png",
+    "output": "public/images/agenthub-site/hero-roles-r32/hero-game-content-host-r32.webp",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 108664
+  },
+  {
+    "name": "service-experience-partner",
+    "source": "exec-6bda3dd8-5f7e-4b30-878f-cb5c23fb5e8e.png",
+    "output": "public/images/agenthub-site/hero-roles-r32/hero-service-experience-partner-r32.webp",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 75186
+  },
+  {
+    "name": "senior-research-advisor",
+    "source": "exec-0583a9b4-7d49-440d-96b1-cd7519efc752.png",
+    "output": "public/images/agenthub-site/hero-roles-r32/hero-senior-research-advisor-r32.webp",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 91832
+  },
+  {
+    "name": "fantasy-storyteller",
+    "source": "exec-0ea15693-60b8-495a-9b64-45c1a7da12c7.png",
+    "output": "public/images/agenthub-site/hero-roles-r32/hero-fantasy-storyteller-r32.webp",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 214260
+  },
+  {
+    "name": "game-system-architect",
+    "source": "exec-e5edd380-6e29-4c4f-87da-c065e6bdb637.png",
+    "output": "public/images/agenthub-site/hero-roles-r32/hero-game-system-architect-r32.webp",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 77928
+  },
+  {
+    "name": "robot-tester",
+    "source": "exec-49f0948c-64f8-4f93-978c-9e9e2f824170.png",
+    "output": "public/images/agenthub-site/hero-roles-r32/hero-robot-tester-r32.webp",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 85356
+  },
+  {
+    "name": "exploration-companion",
+    "source": "exec-badfb084-3dbc-4602-98de-6689ed2933cb.png",
+    "output": "public/images/agenthub-site/hero-roles-r32/hero-exploration-companion-r32.webp",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 153182
+  },
+  {
+    "name": "operations-analyst",
+    "source": "exec-6ab3ae4f-96d8-4017-b487-6c633148897f.png",
+    "output": "public/images/agenthub-site/hero-roles-r32/hero-operations-analyst-r32.webp",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 96474
+  },
+  {
+    "name": "silver-world-guardian",
+    "source": "exec-99107c8e-926f-4225-9aa9-db81db39dca0.png",
+    "output": "public/images/agenthub-site/hero-roles-r32/hero-silver-world-guardian-r32.webp",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 206616
+  },
+  {
+    "name": "digital-content-curator",
+    "source": "exec-63707d02-4bf9-408e-ad42-3f3b20e73e74.png",
+    "output": "public/images/agenthub-site/hero-roles-r32/hero-digital-content-curator-r32.webp",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 112618
+  }
+]

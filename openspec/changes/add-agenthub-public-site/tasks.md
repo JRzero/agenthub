@@ -164,3 +164,15 @@
 - [x] 25.1 Open the supplied annotation, capture fresh 1465×802 and 390×844 baselines, and measure CTA width, height, font, padding, CTA-to-status gap, status-to-stats gap, frozen Hero anchors, overflow, and destination before editing.
 - [x] 25.2 Enlarge only the existing Hero workbench CTA and lower the continuous status/data proof group through the CTA-to-status gap while preserving the real login continuation, interaction states, copy, character wall, Hero height, and every downstream section.
 - [x] 25.3 Extend focused geometry contracts, capture desktop/mobile before/after and CTA-proof same-canvas evidence, verify hover/focus/keyboard/destination/overflow/console, run all gates, and clear P0/P1/P2 findings.
+
+## 26. LYN-005-I3 R22 Copy and Information-hierarchy Revision
+
+- [x] 26.1 Render and inspect all three pages and seven embedded screenshots from the supplied review document, record the pre-existing unrelated R17 screenshot hash, and capture fresh 1465×802 plus 390×844 before evidence.
+- [x] 26.2 Replace only the flow, use-case, and initial intent copy hierarchy; remove scenario tags/ellipsis and add one rounded intent-shortcut focus contract while freezing Hero, role assets, images, routes, stages, authentication, and footer.
+- [x] 26.3 Extend DOM/CSS/interaction contracts, capture desktop/mobile after and same-canvas document comparisons, run all gates, verify local/LAN preview and the untouched R17 screenshot hash, and clear all P0/P1/P2 findings.
+
+## 27. LYN-005-I3 R23 Showcase-role Portrait Set
+
+- [x] 27.1 Inspect the supplied portrait reference and all five pre-generated source rasters, record source dimensions/hashes, and capture fresh 1440×1000 plus 390×844 before evidence without disturbing the existing R22 working tree.
+- [x] 27.2 Losslessly encode and install five semantic WebP assets; replace only the showcase role names, positions, complete descriptions, capability-focus labels and honest `品牌示例` boundary while preserving carousel geometry and behavior.
+- [x] 27.3 Extend role-data and carousel contracts, focus all five cards at desktop/mobile widths, create same-canvas evidence, run relevant/full gates, verify preview and dirty-state preservation, and clear all P0/P1/P2 findings.

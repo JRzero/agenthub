@@ -100,28 +100,92 @@ describe("AgentHub public landing page", () => {
     expect(container.querySelector('#top a[href="/login?next=%2Fassets%2Fcreate"]')?.textContent).toBe("进入工作台");
     expect(container.querySelector("#top")?.textContent).toContain("05 个阶段");
     expect(container.querySelectorAll("#top dl div")).toHaveLength(3);
-    expect(Array.from(container.querySelectorAll("#intent-title > span")).map((line) => line.textContent)).toEqual(["从一句话开始，", "让它走进真实世界。"]);
+    expect(Array.from(container.querySelectorAll("#flow-title > span")).map((line) => line.textContent)).toEqual(["一个 Agent，", "从创建到运营"]);
+    expect(container.querySelector("#product")?.textContent).toContain("角色、知识、测试、发布、迭代，完整流程统一管理。");
+    expect(Array.from(container.querySelectorAll("#scenario-title > span")).map((line) => line.textContent)).toEqual(["覆盖 Agent", "全生命周期"]);
+    expect(container.querySelector("#scenarios")?.textContent).toContain("从角色创建、内容协作到测试与运营，为不同团队提供统一的 Agent 管理与协作能力。");
+    expect(Array.from(container.querySelectorAll("#scenarios article")).map((card) => card.textContent)).toEqual([
+      "01独立创作者从灵感到 Agent，一站完成",
+      "02IP / 内容团队多人协作，共同完善 Agent",
+      "03Agent 运营团队持续测试、发布与运营",
+    ]);
+    expect(Array.from(container.querySelectorAll<HTMLImageElement>("#scenarios article img")).map((image) => [image.getAttribute("src"), image.style.objectPosition])).toEqual([
+      ["/images/agenthub-site/use-case-independent-creator-r26.webp", "50% 50%"],
+      ["/images/agenthub-site/use-case-ip-content-team-r26.webp", "50% 48%"],
+      ["/images/agenthub-site/use-case-agent-operations-r26.webp", "50% 50%"],
+    ]);
+    expect(container.querySelector('#scenarios img[src="/images/agenthub-site/independent-creator-v4.png"]')).toBeNull();
+    expect(container.querySelector('#scenarios img[src="/images/agenthub-site/hero-creator-v4.png"]')).toBeNull();
+    expect(container.querySelector('#scenarios img[src="/images/agenthub-site/operations-creator-v4.png"]')).toBeNull();
+    expect(Array.from(container.querySelectorAll("#intent-title > span")).map((line) => line.textContent)).toEqual(["快速创建、测试与管理 Agent，", "让每一个角色的运营更简单。"]);
+    expect(container.textContent).not.toContain("从一个想法到持续生长");
+    expect(container.textContent).not.toContain("让创作走进真实场景");
+    expect(container.textContent).not.toContain("从一句话开始，让它走进真实世界。");
+    expect(container.querySelector("#scenarios")?.textContent).not.toContain("角色设定");
+    expect(container.querySelector("#scenarios")?.textContent).not.toContain("知识协作");
+    expect(container.querySelectorAll("#scenarios article > div > p")).toHaveLength(0);
     expect(container.textContent).not.toContain("先描述你想创造的 Agent，我们会在本次浏览器会话中整理这份创作意图。");
     expect(container.textContent).not.toContain("仅暂存在本次浏览器会话，不会提交到服务器");
     expect(container.querySelector("#create")?.textContent).not.toMatch(/\d+\/240/);
     expect(container.querySelector('#top [aria-label="Agent 创作路径"]')).toBeNull();
     expect(container.querySelectorAll("#top [data-hero-role-card]")).toHaveLength(12);
+    expect(container.querySelectorAll("#top [data-hero-role-frame]")).toHaveLength(12);
+    expect(container.querySelectorAll("#top [data-hero-role-image]")).toHaveLength(12);
     expect(container.querySelectorAll("#top [data-hero-role-card] img")).toHaveLength(12);
+    const heroFraming = Object.fromEntries(Array.from(container.querySelectorAll<HTMLElement>("#top [data-hero-role-card]")).map((card) => {
+      const layer = card.querySelector<HTMLDivElement>("[data-hero-role-image]");
+      return [card.dataset.heroRoleSlot, [layer?.style.getPropertyValue("--hero-subject-scale"), layer?.style.getPropertyValue("--hero-subject-offset-x"), layer?.style.getPropertyValue("--hero-subject-offset-y")]];
+    }));
+    expect(heroFraming).toEqual({
+      "top-strategist": ["1.000", "0%", "0%"],
+      "top-anime": ["1.000", "0%", "0%"],
+      "top-support": ["1.000", "0%", "0%"],
+      "mid-expert": ["1.000", "0%", "0%"],
+      "mid-fantasy": ["1.000", "0%", "0%"],
+      "mid-right-partial": ["1.000", "0%", "0%"],
+      "bottom-robot": ["1.000", "0%", "0%"],
+      "bottom-companion": ["1.000", "0%", "0%"],
+      "bottom-operator": ["1.000", "0%", "0%"],
+      "bottom-fantasy": ["1.000", "0%", "0%"],
+      "right-mid-fantasy": ["1.000", "0%", "0%"],
+      main: ["0.990", "0%", "0%"],
+    });
+    expect(container.querySelector("#top [style*='--hero-image-scale']")).toBeNull();
+    expect(Array.from(container.querySelectorAll<HTMLImageElement>("#top [data-hero-role-card] img")).every((image) => image.style.transform === "")).toBe(true);
     expect(container.querySelector('#top [data-hero-role-main="true"]')).not.toBeNull();
     expect(container.querySelector('#top img[src="/images/agenthub-site/hero-role-collage-r12.png"]')).toBeNull();
     const heroSources = Array.from(container.querySelectorAll<HTMLImageElement>("#top [data-hero-role-card] img")).map((image) => image.getAttribute("src"));
-    expect(heroSources.every((source) => source?.startsWith("/images/agenthub-site/") && source.endsWith(".png"))).toBe(true);
+    expect(heroSources.every((source) => source === "/images/login-agent-portrait.png" || (source?.startsWith("/images/agenthub-site/hero-roles-r32/") && source.endsWith("-r32.webp")))).toBe(true);
     expect(new Set(heroSources).size).toBe(12);
-    expect(heroSources).toContain("/images/agenthub-site/hero-rounded-fantasy-r17.png");
-    expect(heroSources).toContain("/images/agenthub-site/hero-alpaca-companion-r17.png");
-    expect(heroSources).toContain("/images/agenthub-site/hero-headset-operator-r17.png");
-    expect(heroSources).toContain("/images/agenthub-site/hero-senior-scientist-r17.png");
-    expect(heroSources).toContain("/images/agenthub-site/hero-silver-fantasy-r17.png");
-    expect(heroSources).toContain("/images/agenthub-site/hero-young-operator-r17.png");
+    expect(heroSources).toEqual([
+      "/images/agenthub-site/hero-roles-r32/hero-system-strategist-r32.webp",
+      "/images/agenthub-site/hero-roles-r32/hero-game-content-host-r32.webp",
+      "/images/agenthub-site/hero-roles-r32/hero-service-experience-partner-r32.webp",
+      "/images/agenthub-site/hero-roles-r32/hero-senior-research-advisor-r32.webp",
+      "/images/agenthub-site/hero-roles-r32/hero-fantasy-storyteller-r32.webp",
+      "/images/agenthub-site/hero-roles-r32/hero-game-system-architect-r32.webp",
+      "/images/agenthub-site/hero-roles-r32/hero-robot-tester-r32.webp",
+      "/images/agenthub-site/hero-roles-r32/hero-exploration-companion-r32.webp",
+      "/images/agenthub-site/hero-roles-r32/hero-operations-analyst-r32.webp",
+      "/images/agenthub-site/hero-roles-r32/hero-silver-world-guardian-r32.webp",
+      "/images/agenthub-site/hero-roles-r32/hero-digital-content-curator-r32.webp",
+      "/images/login-agent-portrait.png",
+    ]);
     const heroMainImage = container.querySelector<HTMLImageElement>('#top [data-hero-role-main="true"] img');
-    expect(heroMainImage?.getAttribute("src")).toBe("/images/agenthub-site/hero-main-reference-r18.png");
+    const heroMainImageLayer = container.querySelector<HTMLDivElement>('#top [data-hero-role-main="true"] [data-hero-role-image]');
+    expect(heroMainImage?.getAttribute("src")).toBe("/images/login-agent-portrait.png");
     expect(heroMainImage?.style.objectPosition).toBe("50% 50%");
-    expect(heroMainImage?.style.transform).toBe("scale(1)");
+    expect(heroMainImage?.style.transform).toBe("");
+    expect(heroMainImageLayer?.style.getPropertyValue("--hero-subject-scale")).toBe("0.990");
+    expect(heroMainImageLayer?.style.getPropertyValue("--hero-subject-offset-x")).toBe("0%");
+    expect(heroMainImageLayer?.style.getPropertyValue("--hero-subject-offset-y")).toBe("0%");
+    expect(heroSources).not.toContain("/images/agenthub-site/hero-roles-r32/hero-main-r32.webp");
+    expect(Array.from(container.querySelectorAll<HTMLImageElement>("#top [aria-label='示例角色与真实创作阶段'] img")).map((image) => image.getAttribute("src"))).toEqual([
+      "/images/agenthub-site/hero-roles-r32/hero-system-strategist-r32.webp",
+      "/images/agenthub-site/hero-roles-r32/hero-game-content-host-r32.webp",
+      "/images/agenthub-site/hero-roles-r32/hero-robot-tester-r32.webp",
+      "/images/agenthub-site/hero-roles-r32/hero-exploration-companion-r32.webp",
+    ]);
     expect(heroSources).not.toContain("/images/agenthub-site/role-creative-director-demo.png");
     expect(container.querySelectorAll("#top [data-wall-slot]")).toHaveLength(0);
     expect(container.querySelector('#top [data-wall-plane="perspective-stage"]')).toBeNull();
@@ -132,11 +196,33 @@ describe("AgentHub public landing page", () => {
     expect(container.textContent).not.toContain("Agent 市场");
     expect(container.textContent).not.toContain("客户案例");
     expect(container.textContent).not.toContain("40K");
-    expect(container.querySelector("#assets")?.textContent).toContain("Demo Asset");
+    expect(container.querySelector("#assets")?.textContent).toContain("品牌示例");
+    expect(container.querySelector("#assets")?.textContent).not.toContain("Demo Asset");
     expect(container.querySelector("#assets-title")?.textContent).toBe("让角色管理更清晰、更高效。");
     expect(Array.from(container.querySelectorAll("#assets-title > span")).map((line) => line.textContent)).toEqual(["让角色管理", "更清晰、更高效。"]);
     expect(container.querySelector("#assets")?.textContent).not.toContain("每一个角色，都在这里继续生长。");
     expect(container.querySelectorAll("#assets article")).toHaveLength(5);
+    expect(Array.from(container.querySelectorAll("#assets article")).map((card) => card.textContent)).toEqual([
+      "品牌示例 · 设定一致性墨衡叙事策略顾问梳理复杂设定与情节脉络，让角色在长期创作中保持一致。",
+      "品牌示例 · 事实与来源知序知识研究顾问整合资料、校验事实与出处，为每次回答建立可靠的知识依据。",
+      "品牌示例 · 互动节奏沐橙互动内容主持把品牌内容转化为自然、有节奏的互动，让每次对话更有参与感。",
+      "品牌示例 · 服务体验澄音用户服务伙伴识别需求与情绪，在清晰解决问题的同时保持稳定、友好的沟通体验。",
+      "品牌示例 · 世界观探索拓野世界观探索向导围绕设定设计线索、任务与探索路径，持续拓展可沉浸的角色世界。",
+    ]);
+    expect(Array.from(container.querySelectorAll("#assets article img")).map((image) => image.getAttribute("alt"))).toEqual([
+      "墨衡，叙事策略顾问，品牌示例",
+      "知序，知识研究顾问，品牌示例",
+      "沐橙，互动内容主持，品牌示例",
+      "澄音，用户服务伙伴，品牌示例",
+      "拓野，世界观探索向导，品牌示例",
+    ]);
+    expect(Array.from(container.querySelectorAll("#assets article img")).map((image) => image.getAttribute("src"))).toEqual([
+      "/images/agenthub-site/showcase-roles/showcase-moheng-narrative-strategist.webp",
+      "/images/agenthub-site/showcase-roles/showcase-zhixu-knowledge-researcher.webp",
+      "/images/agenthub-site/showcase-roles/showcase-mucheng-interaction-host.webp",
+      "/images/agenthub-site/showcase-roles/showcase-chengyin-service-partner.webp",
+      "/images/agenthub-site/showcase-roles/showcase-tuoye-world-guide.webp",
+    ]);
     expect(container.querySelector('#assets p[aria-live="polite"]')).toBeNull();
     expect(container.querySelector('#assets [aria-live="polite"]')?.tagName).toBe("SPAN");
     expect(Array.from(container.querySelectorAll("main > section")).map((section) => section.id)).toEqual(["top", "assets", "product", "scenarios", "create"]);
@@ -183,7 +269,7 @@ describe("AgentHub public landing page", () => {
       root = createRoot(container);
       await renderLanding();
       await act(async () => vi.advanceTimersByTime(5000));
-      expect(container.querySelector('#assets [aria-live="polite"]')?.getAttribute("aria-label")).toContain("林月");
+      expect(container.querySelector('#assets [aria-live="polite"]')?.getAttribute("aria-label")).toContain("墨衡");
     } finally {
       vi.useRealTimers();
     }
