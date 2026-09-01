@@ -101,13 +101,12 @@ describe("AgentHub public landing typography", () => {
     expect(styles).not.toContain(".assetCurrent");
   });
 
-  it("keeps the enlarged Hero CTA and proof rhythm scoped to R21", () => {
+  it("keeps the enlarged Hero CTA with one concise proof rail", () => {
     expect(styles).toMatch(/\.heroCta \{[^}]*min-width: 148px;[^}]*min-height: 52px;[^}]*margin-top: 22px;[^}]*padding: 0 26px;[^}]*font-size: 14px;/);
-    expect(styles).toMatch(/\.heroStatus \{[^}]*margin-top: 38px;/);
-    expect(styles).toMatch(/\.heroStats \{[^}]*margin: 29px 0 0;/);
+    expect(styles).toMatch(/\.heroStatus \{[^}]*margin-top: 32px;/);
+    expect(styles).not.toContain(".heroStats");
     expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.heroCta \{[^}]*min-width: 126px;[^}]*min-height: 48px;[^}]*margin-top: 20px;[^}]*padding: 0 22px;[^}]*font-size: 13px;/);
-    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.heroStatus \{[^}]*margin-top: 25px;/);
-    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.heroStats \{[^}]*margin-top: 20px;/);
+    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.heroStatus \{[^}]*margin-top: 24px;/);
   });
 
   it("keeps the intent submit button inside one bordered capsule", () => {

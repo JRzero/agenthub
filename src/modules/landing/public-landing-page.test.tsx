@@ -88,7 +88,7 @@ describe("AgentHub public landing page", () => {
     vi.restoreAllMocks();
   });
 
-  it("renders the approved R17 Hero and truthful AgentHub capability boundaries", async () => {
+  it("renders the approved Hero with one concise proof rail and no demo wording", async () => {
     await renderLanding();
     expect(container.querySelector("h1")?.textContent).toBe("管理每一个 AI 角色让能力持续进化");
     expect(container.querySelector("#product")?.textContent).toContain("对话测试");
@@ -99,7 +99,9 @@ describe("AgentHub public landing page", () => {
     expect(container.querySelector("#top")?.textContent).toContain("进入工作台");
     expect(container.querySelector('#top a[href="/login?next=%2Fassets%2Fcreate"]')?.textContent).toBe("进入工作台");
     expect(container.querySelector("#top")?.textContent).toContain("05 个阶段");
-    expect(container.querySelectorAll("#top dl div")).toHaveLength(3);
+    expect(container.querySelector("#top")?.textContent).toContain("覆盖角色设定到持续迭代");
+    expect(container.querySelector("#top dl")).toBeNull();
+    expect(container.querySelector('[aria-label="AgentHub 能力边界"]')).toBeNull();
     expect(Array.from(container.querySelectorAll("#flow-title > span")).map((line) => line.textContent)).toEqual(["一个 Agent，", "从创建到运营"]);
     expect(container.querySelector("#product")?.textContent).toContain("角色、知识、测试、发布、迭代，完整流程统一管理。");
     expect(Array.from(container.querySelectorAll("#scenario-title > span")).map((line) => line.textContent)).toEqual(["覆盖 Agent", "全生命周期"]);
@@ -148,7 +150,7 @@ describe("AgentHub public landing page", () => {
       "bottom-operator": ["1.000", "0%", "0%"],
       "bottom-fantasy": ["1.000", "0%", "0%"],
       "right-mid-fantasy": ["1.000", "0%", "0%"],
-      main: ["0.990", "0%", "0%"],
+      main: ["0.990", "-8%", "0%"],
     });
     expect(container.querySelector("#top [style*='--hero-image-scale']")).toBeNull();
     expect(Array.from(container.querySelectorAll<HTMLImageElement>("#top [data-hero-role-card] img")).every((image) => image.style.transform === "")).toBe(true);
@@ -177,7 +179,7 @@ describe("AgentHub public landing page", () => {
     expect(heroMainImage?.style.objectPosition).toBe("50% 50%");
     expect(heroMainImage?.style.transform).toBe("");
     expect(heroMainImageLayer?.style.getPropertyValue("--hero-subject-scale")).toBe("0.990");
-    expect(heroMainImageLayer?.style.getPropertyValue("--hero-subject-offset-x")).toBe("0%");
+    expect(heroMainImageLayer?.style.getPropertyValue("--hero-subject-offset-x")).toBe("-8%");
     expect(heroMainImageLayer?.style.getPropertyValue("--hero-subject-offset-y")).toBe("0%");
     expect(heroSources).not.toContain("/images/agenthub-site/hero-roles-r32/hero-main-r32.webp");
     expect(Array.from(container.querySelectorAll<HTMLImageElement>("#top [aria-label='示例角色与真实创作阶段'] img")).map((image) => image.getAttribute("src"))).toEqual([
@@ -190,7 +192,8 @@ describe("AgentHub public landing page", () => {
     expect(container.querySelectorAll("#top [data-wall-slot]")).toHaveLength(0);
     expect(container.querySelector('#top [data-wall-plane="perspective-stage"]')).toBeNull();
     expect(container.querySelectorAll('[aria-label="五步创作流程"] button')).toHaveLength(5);
-    expect(container.querySelector("#product")?.textContent).toContain("产品界面示意 · DEMO");
+    expect(container.querySelector("#product")?.textContent).toContain("产品界面示意");
+    expect(container.textContent).not.toMatch(/demo/i);
     expect(container.textContent).not.toContain("先整理创作意图，生成与保存前需登录并完成邀请码验证。");
     expect(container.textContent).not.toContain("Living World");
     expect(container.textContent).not.toContain("Agent 市场");
@@ -283,6 +286,13 @@ describe("AgentHub public landing page", () => {
     expect(knowledge.getAttribute("aria-current")).toBe("step");
     expect(container.querySelector("#flow-product-panel")?.textContent).toContain("把真实能力接进来");
     expect(container.querySelector("#flow-product-panel")?.textContent).toContain("世界观与角色设定");
+    expect(container.querySelector("#flow-product-panel")?.textContent).toContain("示例资源");
+    expect(container.querySelector("#flow-product-panel")?.textContent).not.toMatch(/demo/i);
+
+    const runtime = findStageButton(container, "发布运行");
+    await act(async () => runtime.click());
+    expect(container.querySelector("#flow-product-panel")?.textContent).toContain("v1.0 · 示例");
+    expect(container.querySelector("#flow-product-panel")?.textContent).not.toMatch(/demo/i);
   });
 
   it("keeps only the latest product stage active during rapid selection", async () => {

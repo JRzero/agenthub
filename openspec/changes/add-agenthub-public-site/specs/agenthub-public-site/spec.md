@@ -145,11 +145,11 @@ The public site SHALL follow the approved live reference's full-page order and l
 
 #### Scenario: Visitor reads product-stage data
 - **WHEN** any of the five product stages is active
-- **THEN** the product window identifies itself as a demo/static representation and does not display fabricated asset counts, runtime instances, conversation totals, satisfaction scores, growth claims, or unverified live success
+- **THEN** the product window identifies itself as a product-interface illustration and does not display fabricated asset counts, runtime instances, conversation totals, satisfaction scores, growth claims, or unverified live success
 
 #### Scenario: Reference-aligned Hero chrome stays truthful
 - **WHEN** the public page renders any navigation, Hero, product stage, scenario, intent, or footer content
-- **THEN** the R17 Hero may use the approved reference-aligned management labels and density, but every navigation item resolves to an existing AgentHub anchor or authentication route, unverified reference metrics are replaced by explicit stage/demo/live boundaries, and pricing, documentation, fabricated customers, and unsupported operating claims remain absent
+- **THEN** the R17 Hero may use the approved reference-aligned management labels and density, but every navigation item resolves to an existing AgentHub anchor or authentication route, unverified reference metrics are replaced by one truthful five-stage proof rail, public-facing copy contains no `demo` label, and pricing, documentation, fabricated customers, and unsupported operating claims remain absent
 
 #### Scenario: Whole-page rhythm follows the live recapture
 - **WHEN** the public page renders at 1440 × 1000 or 390 × 844
@@ -175,7 +175,7 @@ The public site SHALL use concise lifecycle language from the reviewed R22 docum
 
 #### Scenario: Visitor understands the full creation flow
 - **WHEN** the visitor reaches the five-stage product flow
-- **THEN** the heading reads exactly `一个 Agent，从创建到运营` with desktop semantic lines `一个 Agent，` and `从创建到运营`, the subtitle reads `角色、知识、测试、发布、迭代，完整流程统一管理。`, and all five existing stage controls and Demo product states remain operable
+- **THEN** the heading reads exactly `一个 Agent，从创建到运营` with desktop semantic lines `一个 Agent，` and `从创建到运营`, the subtitle reads `角色、知识、测试、发布、迭代，完整流程统一管理。`, and all five existing stage controls and illustrative product states remain operable
 
 #### Scenario: Visitor scans complete audience values
 - **WHEN** the three use-case cards render at desktop or mobile width

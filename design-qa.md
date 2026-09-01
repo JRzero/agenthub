@@ -1,3 +1,33 @@
+# LYN-005-I3 R38 Hero Main-role Centering QA
+
+- Scope: only the `PublicLandingPage` Hero `main` subject framing. The R36/R37 stage, twelve card boxes, desktop/mobile wall composition, tilt, radius, z-order, Hero copy/navigation/CTA/status and every downstream section remain frozen.
+- Optical correction: the login-page portrait keeps `subjectScale: .99` and `subjectOffsetY: 0`; its horizontal subject offset changes `0% → -8%` so the face, hair and upper body sit on the main card's visual centerline instead of preserving the source image's login-copy clearance.
+- Geometry proof: desktop stage/card maximum bounding-box delta is `0px`; mobile stage/card maximum delta is `0px`. Main card remains `363.47 × 530.14` at `x864.22/y141.94` on 1440×900 and `193.09 × 281.63` at `x191.45/y483.54` on 390×844.
+- Transform proof: desktop subject matrix is `matrix(.99,0,0,.99,-32.985,0)` and mobile is `matrix(.99,0,0,.99,-16.5613,0)`. Both axes remain equal and orthogonal; mobile composed-axis lengths are `1.0197001764 / 1.0197001764` with dot product `-6.16e-8`.
+- Browser proof: hair, chin and shoulders remain intact; the right-side black field blends into the card; desktop loads 12/12 Hero images and mobile loads 7/7 visible images; console errors and horizontal overflow are zero.
+- Evidence: `docs/qa/images/lyn-005-i3-hero-main-centering-r38/comparison/`; detailed report and measurements: `docs/qa/reports/lyn-005-i3-hero-main-centering-r38/`.
+- Gates: focused Vitest 20/20, full Vitest 93 files / 473 tests, lint, typecheck, production build, OpenSpec strict 37/37 and `git diff --check` passed. PID 54270 listens on `*:3002`; local and LAN previews return HTTP 200.
+- P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
+# LYN-005-I3 R37 Hero Proof Cleanup QA
+
+- Scope: only the `PublicLandingPage` Hero proof hierarchy plus public-facing terminology in its existing product illustration. R36 role-wall geometry, twelve cards, Hero copy/navigation/CTA, Role Assets and all other sections remain frozen.
+- DOM/CSS result: removed the complete `AgentHub 能力边界` definition list and every `.heroStats` rule. The sole proof rail remains `05 个阶段 / 覆盖角色设定到持续迭代`.
+- Rhythm: desktop CTA-to-status gap changes 38px → 32px; mobile changes 25px → 24px. CTA size, position and `/login?next=%2Fassets%2Fcreate` destination remain unchanged.
+- Terminology: the product window reads `产品界面示意`; knowledge resources use `示例资源`; the version reads `v1.0 · 示例`. Browser and DOM contracts confirm the rendered public landing contains no `demo` in any casing.
+- Freeze proof: desktop and mobile role-stage/card bounding boxes are identical before and after; desktop keeps 12/12 images loaded and mobile retains its seven visible-card composition. Horizontal overflow and console errors are zero.
+- Evidence: `docs/qa/images/lyn-005-i3-hero-proof-cleanup-r37/comparison/`; source annotation: `docs/qa/design-reference/lyn-005-i3-hero-proof-cleanup-r37/user-annotation.png`; detailed report: `docs/qa/reports/lyn-005-i3-hero-proof-cleanup-r37/`.
+- Gates: focused Vitest 20/20, full Vitest 93 files / 473 tests, lint, typecheck, production build, OpenSpec strict 37/37 and `git diff --check` passed.
+- P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
 # LYN-005-I3 R36 Portrait-ratio Hero Wall QA
 
 - Scope: only the `PublicLandingPage` Hero role-wall geometry and equal-axis subject framing. Hero copy/navigation/CTA/proof, twelve unique sources, Role Assets and downstream sections remain unchanged.

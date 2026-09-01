@@ -176,3 +176,9 @@
 - [x] 27.1 Inspect the supplied portrait reference and all five pre-generated source rasters, record source dimensions/hashes, and capture fresh 1440×1000 plus 390×844 before evidence without disturbing the existing R22 working tree.
 - [x] 27.2 Losslessly encode and install five semantic WebP assets; replace only the showcase role names, positions, complete descriptions, capability-focus labels and honest `品牌示例` boundary while preserving carousel geometry and behavior.
 - [x] 27.3 Extend role-data and carousel contracts, focus all five cards at desktop/mobile widths, create same-canvas evidence, run relevant/full gates, verify preview and dirty-state preservation, and clear all P0/P1/P2 findings.
+
+## 28. LYN-005-I3 R37 Hero Proof Cleanup
+
+- [x] 28.1 Capture the annotated duplicate statistics row at 1440×900 and 390×844 and freeze the R36 twelve-card wall geometry as a before baseline.
+- [x] 28.2 Remove the Hero capability-boundary definition list from DOM/CSS, retain one compact five-stage status rail, and replace all public landing `demo` wording with neutral example/interface language.
+- [x] 28.3 Extend DOM/CSS copy contracts, create same-viewport before/after evidence, verify the frozen wall, CTA, console, overflow and local/LAN preview, and clear all P0/P1/P2 findings.
