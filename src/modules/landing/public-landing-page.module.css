@@ -41,8 +41,9 @@
 .header .brandMark { width: 26px; height: 26px; }
 .nav { display: flex; align-items: center; justify-content: center; gap: 32px; white-space: nowrap; }
 .nav a, .loginLink { color: #969a91; font-size: 12px; font-weight: 600; text-decoration: none; transition: color 180ms ease; }
-.nav a:hover, .loginLink:hover { color: var(--lime); }
+.nav a:hover { color: var(--lime); }
 .loginLink { justify-self: end; display: inline-flex; min-width: 94px; min-height: 40px; align-items: center; justify-content: center; border-radius: 9px; background: var(--lime); color: #070806; font-weight: 720; }
+.loginLink:hover, .loginLink:focus-visible, .loginLink:active { color: #070806; }
 
 .hero { position: relative; z-index: 2; width: 100%; height: 100svh; min-height: 734px; isolation: isolate; overflow: hidden; border-radius: 0 0 14px 14px; background: #000; }
 .heroCopy { position: relative; z-index: 10; width: 540px; margin-left: clamp(96px, 9.9vw, 190px); padding-top: 171px; }
@@ -54,6 +55,8 @@
 .heroCta, .primaryButton { display: inline-flex; align-items: center; justify-content: center; gap: 22px; min-height: 48px; margin-top: 24px; padding: 0 24px; border-radius: 9px; background: var(--lime); color: #050604; font-size: 13px; font-weight: 700; letter-spacing: -.01em; text-decoration: none; transition: background 180ms ease, transform 180ms ease; }
 .heroCta { min-width: 148px; min-height: 52px; margin-top: 22px; padding: 0 26px; font-size: 14px; }
 .heroCta:hover, .primaryButton:hover { background: #dbff65; transform: translateY(-2px); }
+.heroCta:hover, .heroCta:focus-visible, .heroCta:active,
+.primaryButton:hover, .primaryButton:focus-visible, .primaryButton:active { color: #050604; }
 .heroCta svg, .primaryButton svg { width: 18px; height: 18px; }
 .heroStatus { display: flex; align-items: center; gap: 11px; margin-top: 32px; color: var(--ink); }
 .heroAvatars { display: flex; padding-left: 1px; }

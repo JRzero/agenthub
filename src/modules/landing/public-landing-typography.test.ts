@@ -109,6 +109,13 @@ describe("AgentHub public landing typography", () => {
     expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.heroStatus \{[^}]*margin-top: 24px;/);
   });
 
+  it("keeps fluorescent primary-action labels dark in every interaction state", () => {
+    expect(styles).toMatch(/\.nav a:hover \{ color: var\(--lime\); \}/);
+    expect(styles).not.toContain(".nav a:hover, .loginLink:hover");
+    expect(styles).toMatch(/\.loginLink:hover, \.loginLink:focus-visible, \.loginLink:active \{ color: #070806; \}/);
+    expect(styles).toMatch(/\.heroCta:hover, \.heroCta:focus-visible, \.heroCta:active,[\s\S]*\.primaryButton:hover, \.primaryButton:focus-visible, \.primaryButton:active \{ color: #050604; \}/);
+  });
+
   it("keeps the intent submit button inside one bordered capsule", () => {
     expect(styles).toMatch(/\.intentControl \{[^}]*height: 64px;[^}]*border: 1px solid rgb\(255 255 255 \/ 24%\);[^}]*border-radius: 34px;[^}]*background: rgb\(7 8 6 \/ 82%\);/);
     expect(styles).toMatch(/\.intentControl:focus-within \{[^}]*border-color: rgb\(199 255 24 \/ 72%\);[^}]*box-shadow: 0 0 0 3px rgb\(199 255 24 \/ 12%\);/);

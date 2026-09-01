@@ -1,3 +1,16 @@
+# LYN-005-I3 R39 Fluorescent CTA State QA
+
+- Root cause: `.nav a:hover, .loginLink:hover` applied the same fluorescent lime to the header login label and its filled lime background, making `登录平台` disappear on pointer hover.
+- Fix: ordinary navigation keeps its lime hover, while `.loginLink` explicitly keeps `#070806` in hover/focus-visible/active. `.heroCta` and `.primaryButton` similarly keep `#050604` across those states without changing their existing background, motion, size, radius, or route.
+- Browser proof: the 94×40 login action changes from lime-on-lime before to `rgb(7,8,6)` on `rgb(199,255,24)` after; the Hero CTA hover remains `rgb(5,6,4)` on `rgb(219,255,101)`. Both continue to `/login?next=%2Fassets%2Fcreate`.
+- Responsive proof: `scrollWidth 1429 ≤ 1440` desktop and `379 ≤ 390` mobile; console errors are zero. All page geometry, imagery, copy, and downstream sections remain unchanged.
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-cta-hover-r39/comparison/`; detailed report: `docs/qa/reports/lyn-005-i3-cta-hover-r39/design-qa.md`.
+- Gates: focused Vitest 21/21, lint, typecheck, production build, OpenSpec strict 37/37, and `git diff --check` passed. P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
 # LYN-005-I3 R38 Hero Main-role Centering QA
 
 - Scope: only the `PublicLandingPage` Hero `main` subject framing. The R36/R37 stage, twelve card boxes, desktop/mobile wall composition, tilt, radius, z-order, Hero copy/navigation/CTA/status and every downstream section remain frozen.
