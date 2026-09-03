@@ -124,6 +124,17 @@ describe("AgentHub public landing typography", () => {
     expect(styles).not.toMatch(/\.stepButton, \.stepButtonActive \{[^}]*opacity: \.(?:34|38);/);
   });
 
+  it("uses a dense 30/70 creation-flow stage with a readable mobile stack", () => {
+    expect(styles).toMatch(/\.flowGrid \{[^}]*grid-template-columns: 30% 70%;/);
+    expect(styles).toMatch(/\.productWindow \{[^}]*width: min\(980px, 100%\);[^}]*height: min\(704px, calc\(100vh - 98px\)\);[^}]*min-height: 610px;/);
+    expect(styles).toMatch(/\.flowSummaryGrid \{[^}]*grid-template-columns: repeat\(4, minmax\(0, 1fr\)\);/);
+    expect(styles).toMatch(/\.flowWorkItems \{[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);/);
+    expect(styles).toMatch(/\.flowRecordTable > div \{[^}]*grid-template-columns: \.7fr 1\.45fr \.65fr;/);
+    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.productWindow \{[^}]*height: auto;[^}]*min-height: 0;/);
+    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.flowSummaryGrid \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.flowWorkItems \{ grid-template-columns: 1fr; \}/);
+  });
+
   it("extends compact landing controls to practical hit areas without resizing their visuals", () => {
     expect(styles).toMatch(/\.loginLink::after \{[^}]*inset: -2px 0;/);
     expect(styles).toMatch(/\.assetProgress button::before \{[^}]*inset: -12px 0;/);

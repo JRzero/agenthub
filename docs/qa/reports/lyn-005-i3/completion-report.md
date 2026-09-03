@@ -9,6 +9,18 @@
 
 final result: passed
 
+---
+
+# LYN-005-I3 R41 Creation Flow addendum
+
+- Expanded only the right-hand Creation Flow product stage from a sparse single fragment into a stable AgentHub workbench hierarchy: title/status, four-field summary, five-stage progress, three stage-specific work cards, and three recent example records.
+- All five existing stage controls remain clickable and distinct; sticky scroll selection, manual-selection hold, mobile behavior, focus semantics, and reduced-motion behavior are unchanged.
+- The content remains truthful: no unsupported operating metrics or backend success is claimed, and no `demo` wording was introduced.
+- Evidence and report: `docs/qa/design-reference/lyn-005-i3-creation-flow-rich-r41/`, `docs/qa/images/lyn-005-i3-creation-flow-rich-r41/`, and `docs/qa/reports/lyn-005-i3-creation-flow-rich-r41/`.
+- Gates: focused 25/25, full 93 files / 478 tests, lint, typecheck, build, OpenSpec strict 37/37, and `git diff --check` passed.
+
+final result: passed
+
 # LYN-005-I3 R20 role-asset title and rounded-card addendum
 
 - Replaced only the role-asset intro heading with `让角色管理更清晰、更高效。`; desktop uses explicit `让角色管理` / `更清晰、更高效。` spans.

@@ -51,6 +51,111 @@ const productStates: Array<{ id: ProductState; number: string; label: string; ey
   { id: "iterate", number: "05", label: "持续迭代", eyebrow: "ITERATE", title: "把反馈带回下一轮", description: "从测试与版本记录中整理改进方向，继续调整角色、能力和对话表现。" },
 ];
 
+type FlowPanelDefinition = {
+  progress: number;
+  summary: Array<{ label: string; value: string }>;
+  cards: Array<{ icon: typeof UserFocus; eyebrow: string; title: string; body: string; meta: string }>;
+  records: Array<{ item: string; detail: string; status: string }>;
+};
+
+const flowPanelDefinitions: Record<ProductState, FlowPanelDefinition> = {
+  identity: {
+    progress: 20,
+    summary: [
+      { label: "流程位置", value: "1 / 5" },
+      { label: "配置状态", value: "草稿待确认" },
+      { label: "下一动作", value: "补充行为边界" },
+      { label: "保存边界", value: "登录后保存" },
+    ],
+    cards: [
+      { icon: UserFocus, eyebrow: "角色核心", title: "定位与表达", body: "叙事顾问；表达克制、准确，优先梳理复杂设定。", meta: "示例工作项" },
+      { icon: Stack, eyebrow: "行为边界", title: "先确认，再行动", body: "不虚构来源，不代替创作者执行未经确认的发布决定。", meta: "待补充一项" },
+      { icon: ChatCircleText, eyebrow: "对话线索", title: "保持同一角色", body: "用角色动机、冲突与结果组织回答，避免脱离既定语气。", meta: "可继续编辑" },
+    ],
+    records: [
+      { item: "角色定位", detail: "叙事顾问与核心受众", status: "已整理" },
+      { item: "表达方式", detail: "克制、准确、结构清晰", status: "待确认" },
+      { item: "行为边界", detail: "来源与发布决策约束", status: "待补充" },
+    ],
+  },
+  knowledge: {
+    progress: 40,
+    summary: [
+      { label: "流程位置", value: "2 / 5" },
+      { label: "资源范围", value: "2 类示例资源" },
+      { label: "能力状态", value: "1 项可配置" },
+      { label: "校验状态", value: "待核对来源" },
+    ],
+    cards: [
+      { icon: BookOpenText, eyebrow: "知识资源", title: "世界观与角色设定", body: "把长期设定与人物关系整理为可维护的知识来源。", meta: "示例资源" },
+      { icon: Stack, eyebrow: "研究材料", title: "采访与资料索引", body: "保留资料类别与来源提示，便于创作者继续核对。", meta: "示例资源" },
+      { icon: Code, eyebrow: "技能连接", title: "内容结构技能", body: "将复杂材料整理为主题、冲突与结果的表达结构。", meta: "可配置" },
+    ],
+    records: [
+      { item: "设定资料", detail: "世界观、人物关系与长期约束", status: "已归类" },
+      { item: "研究材料", detail: "采访与外部资料索引", status: "待校验" },
+      { item: "结构技能", detail: "内容组织与表达提示", status: "可配置" },
+    ],
+  },
+  test: {
+    progress: 60,
+    summary: [
+      { label: "流程位置", value: "3 / 5" },
+      { label: "测试场景", value: "3 个示例场景" },
+      { label: "当前结果", value: "继续调整" },
+      { label: "回流位置", value: "构建工作区" },
+    ],
+    cards: [
+      { icon: ChatCircleText, eyebrow: "场景测试", title: "复杂设定讲解", body: "检查回答是否先给出核心判断，再逐层展开背景。", meta: "已完成" },
+      { icon: UserFocus, eyebrow: "角色一致性", title: "语气与边界", body: "核对回答是否保持既定语气，并明确无法确认的来源。", meta: "发现一项偏差" },
+      { icon: Code, eyebrow: "调整入口", title: "返回构建继续打磨", body: "把测试中发现的问题带回角色、知识或技能配置。", meta: "下一动作" },
+    ],
+    records: [
+      { item: "首次问答", detail: "复杂设定的核心判断", status: "通过" },
+      { item: "追问检查", detail: "来源提示与不确定性表达", status: "待调整" },
+      { item: "角色语气", detail: "连续对话中的表达一致性", status: "通过" },
+    ],
+  },
+  runtime: {
+    progress: 80,
+    summary: [
+      { label: "流程位置", value: "4 / 5" },
+      { label: "候选版本", value: "v1.0 · 示例" },
+      { label: "发布状态", value: "尚未发布" },
+      { label: "操作边界", value: "登录后确认" },
+    ],
+    cards: [
+      { icon: RocketLaunch, eyebrow: "版本确认", title: "检查候选版本", body: "确认角色、知识与测试结果均来自同一份 Agent Asset。", meta: "示例版本" },
+      { icon: Stack, eyebrow: "发行目标", title: "选择现有发布流程", body: "发行目标与权限需在登录后的真实工作区继续确认。", meta: "待选择" },
+      { icon: Check, eyebrow: "发布边界", title: "明确状态再继续", body: "官网只展示流程结构，不将示例状态伪装为线上发布成功。", meta: "尚未发布" },
+    ],
+    records: [
+      { item: "版本内容", detail: "角色、知识与测试结果", status: "待确认" },
+      { item: "发行目标", detail: "现有渠道与应用边界", status: "待选择" },
+      { item: "发布操作", detail: "进入登录工作区后继续", status: "未执行" },
+    ],
+  },
+  iterate: {
+    progress: 100,
+    summary: [
+      { label: "流程位置", value: "5 / 5" },
+      { label: "参考版本", value: "v1.0 · 示例" },
+      { label: "改进方向", value: "3 项待整理" },
+      { label: "提交状态", value: "尚未提交" },
+    ],
+    cards: [
+      { icon: UserFocus, eyebrow: "角色调整", title: "让边界更清晰", body: "把测试暴露出的角色偏差整理为下一轮设定修改。", meta: "本轮调整" },
+      { icon: BookOpenText, eyebrow: "能力补充", title: "补齐研究材料来源", body: "更新知识资源时继续保留来源提示与校验状态。", meta: "待整理" },
+      { icon: ChatCircleText, eyebrow: "回归检查", title: "回到对话测试", body: "再次覆盖关键场景，确认新调整没有破坏既有表现。", meta: "下一步" },
+    ],
+    records: [
+      { item: "角色边界", detail: "收敛未经确认的行动表达", status: "待调整" },
+      { item: "研究来源", detail: "补充资料出处与核对状态", status: "待整理" },
+      { item: "回归测试", detail: "覆盖既有三类示例场景", status: "未开始" },
+    ],
+  },
+};
+
 const showcaseRoles: ShowcaseRole[] = [
   { id: 88, name: "墨衡", type: "叙事策略顾问", description: "梳理复杂设定与情节脉络，让角色在长期创作中保持一致。", image: "/images/agenthub-site/showcase-roles/showcase-moheng-narrative-strategist.webp", imagePosition: "49% 50%", boundary: "品牌示例", focus: "设定一致性" },
   { id: 71, name: "知序", type: "知识研究顾问", description: "整合资料、校验事实与出处，为每次回答建立可靠的知识依据。", image: "/images/agenthub-site/showcase-roles/showcase-zhixu-knowledge-researcher.webp", imagePosition: "50% 50%", boundary: "品牌示例", focus: "事实与来源" },
@@ -205,13 +310,20 @@ function RoleAssetShowcase() {
 }
 
 function ProductStatePanel({ state }: { state: ProductState }) {
-  if (state === "identity") return <div className={styles.identityPanel}><UserFocus size={34} weight="duotone" aria-hidden="true" /><div><b>角色核心</b><p>克制、准确、擅长把复杂素材整理成可讲述的故事。</p></div><div><b>行为边界</b><p>不虚构来源；不替代创作者做未经确认的发布决定。</p></div></div>;
-  if (state === "knowledge") return <div className={styles.resourcePanel}><ResourceRow icon={BookOpenText} name="世界观与角色设定" status="示例资源" /><ResourceRow icon={Stack} name="采访与研究材料" status="示例资源" /><ResourceRow icon={Code} name="内容结构技能" status="可配置" /></div>;
-  if (state === "runtime") return <div className={styles.runtimePanel}><RocketLaunch size={36} weight="duotone" aria-hidden="true" /><div><span>示例版本</span><strong>v1.0 · 示例</strong></div><div><span>发行边界</span><strong className={styles.liveText}>按现有发行流程继续</strong></div></div>;
-  if (state === "iterate") return <div className={styles.iteratePanel}><div><span>本轮调整</span><b>角色边界更清晰</b></div><div><span>能力补充</span><b>补齐研究材料来源</b></div><div><span>下一步</span><b>回到对话测试</b></div></div>;
-  return <div className={styles.chatPanel}><div className={styles.promptBubble}>如何让一段复杂设定更容易理解？</div><div className={styles.answerBubble}><span className={styles.avatar}>墨</span><p>先明确读者需要带走的核心判断，再用角色动机、冲突和结果组织材料。我们可以逐段检查。</p></div><div className={styles.chatInput}>输入测试问题… <PaperPlaneTilt aria-hidden="true" /></div></div>;
-}
-
-function ResourceRow({ icon: Icon, name, status }: { icon: typeof BookOpenText; name: string; status: string }) {
-  return <div><Icon weight="duotone" aria-hidden="true" /><span><b>{name}</b><small><Check aria-hidden="true" /> {status}</small></span></div>;
+  const panel = flowPanelDefinitions[state];
+  return <div className={styles.flowPanel} aria-label={`${productStates.find((item) => item.id === state)?.label ?? "当前阶段"}结构示意`}>
+    <section className={styles.flowSummary} aria-label="当前阶段示意摘要">
+      <div className={styles.flowSummaryGrid}>{panel.summary.map((item) => <dl key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></dl>)}</div>
+      <div className={styles.flowProgress}><span>五阶段流程进度</span><div aria-hidden="true"><i style={{ width: `${panel.progress}%` }} /></div><b>{panel.summary[0]?.value}</b></div>
+    </section>
+    <section className={styles.flowWorkItems} aria-label="当前阶段工作项">
+      {panel.cards.map((card) => { const Icon = card.icon; return <article key={card.title} data-flow-card><div className={styles.flowCardTop}><Icon weight="duotone" aria-hidden="true" /><span>{card.eyebrow}</span></div><h4>{card.title}</h4><p>{card.body}</p><small>{card.meta}</small></article>; })}
+    </section>
+    <section className={styles.flowRecords} aria-label="近期示例记录">
+      <div className={styles.flowRecordsTitle}><span>近期记录</span><small>仅展示当前阶段的中性示例状态</small></div>
+      <div className={styles.flowRecordTable} role="table" aria-label="当前阶段近期记录">
+        {panel.records.map((record) => <div key={record.item} role="row"><span role="cell">{record.item}</span><span role="cell">{record.detail}</span><strong role="cell"><Check aria-hidden="true" />{record.status}</strong></div>)}
+      </div>
+    </section>
+  </div>;
 }

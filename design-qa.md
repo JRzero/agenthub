@@ -12,6 +12,22 @@ final result: passed
 
 ---
 
+# LYN-005-I3 R41 Creation Flow Product-stage Enrichment
+
+- Scope: only the public landing `02 / CREATION FLOW` stage, focused contracts, and QA evidence.
+- Source: `docs/qa/design-reference/lyn-005-i3-creation-flow-rich-r41/source-management-flow.png`.
+- Baseline: `docs/qa/images/lyn-005-i3-creation-flow-rich-r41/before/`.
+- Implementation: desktop `30% / 70%` narrative/workbench split; four-field stage summary, deterministic five-step progress, three differentiated work cards, and three recent example records for every state.
+- Truth boundary: all non-live content is explicitly example, draft, pending, configurable, not published, or not submitted; no `demo` text or unsupported metric was introduced.
+- Responsive and accessibility: mobile uses a two-column summary plus one-column cards, native buttons retain `aria-current`/`aria-controls`, reduced-motion behavior is unchanged, and page-level horizontal overflow is zero.
+- Gates: focused 25/25, full 93 files / 478 tests, lint, typecheck, build, OpenSpec strict 37/37, and diff check passed.
+- Detailed report: `docs/qa/reports/lyn-005-i3-creation-flow-rich-r41/design-qa.md`.
+- Final findings: P0 = 0, P1 = 0, P2 = 0.
+
+final result: passed
+
+---
+
 # LYN-005-I3 R39 Fluorescent CTA State QA
 
 - Root cause: `.nav a:hover, .loginLink:hover` applied the same fluorescent lime to the header login label and its filled lime background, making `登录平台` disappear on pointer hover.

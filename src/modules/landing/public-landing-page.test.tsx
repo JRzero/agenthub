@@ -296,6 +296,30 @@ describe("AgentHub public landing page", () => {
     expect(container.querySelector("#flow-product-panel")?.textContent).not.toMatch(/demo/i);
   });
 
+  it("renders a differentiated, truthful workbench structure for every creation stage", async () => {
+    await renderLanding();
+    const stages = [
+      ["角色设定", "定位与表达", "草稿待确认"],
+      ["知识与技能", "采访与资料索引", "待核对来源"],
+      ["对话测试", "复杂设定讲解", "继续调整"],
+      ["发布运行", "选择现有发布流程", "尚未发布"],
+      ["持续迭代", "回归检查", "尚未提交"],
+    ] as const;
+
+    for (const [label, cardTitle, summaryValue] of stages) {
+      await act(async () => findStageButton(container, label).click());
+      const panel = container.querySelector<HTMLElement>("#flow-product-panel [data-state]")!;
+      expect(panel).not.toBeNull();
+      expect(panel.textContent).toContain(cardTitle);
+      expect(panel.textContent).toContain(summaryValue);
+      expect(panel.querySelectorAll('[aria-label="当前阶段示意摘要"] dl')).toHaveLength(4);
+      expect(panel.querySelectorAll("[data-flow-card]")).toHaveLength(3);
+      expect(panel.querySelectorAll('[aria-label="当前阶段近期记录"] [role="row"]')).toHaveLength(3);
+      expect(panel.textContent).toContain("仅展示当前阶段的中性示例状态");
+      expect(panel.textContent).not.toMatch(/demo/i);
+    }
+  });
+
   it("keeps only the latest product stage active during rapid selection", async () => {
     await renderLanding();
 

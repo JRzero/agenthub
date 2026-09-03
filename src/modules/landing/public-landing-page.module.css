@@ -167,7 +167,7 @@
 .flowHeading h2 em { color: var(--lime); font-style: normal; }
 .flowTitleLine { display: block; white-space: nowrap; }
 .flowHeading > p:last-child { max-width: 300px; margin-top: 18px; font-size: 12px; line-height: 1.7; }
-.flowGrid { display: grid; grid-template-columns: 34% 66%; align-items: center; height: 100%; padding-top: 64px; }
+.flowGrid { display: grid; grid-template-columns: 30% 70%; align-items: center; height: 100%; padding-top: 40px; }
 .stepNav { position: relative; align-self: end; margin-bottom: 1.5%; }
 .stepNav::before { position: absolute; top: 25px; bottom: 25px; left: 19px; width: 1px; background: rgb(199 255 24 / 22%); content: ""; }
 .stepButton, .stepButtonActive { position: relative; display: grid; grid-template-columns: 40px 1fr; gap: 18px; align-items: start; width: 100%; padding: 11px 0; border: 0; background: transparent; color: #7e8378; text-align: left; cursor: pointer; opacity: .8; transition: opacity 300ms ease, transform 300ms ease; }
@@ -178,13 +178,13 @@
 .stepButtonActive { opacity: 1; transform: translateX(8px); }
 .stepButton:hover, .stepButton:focus-visible { opacity: 1; }
 .stepButtonActive i { border-color: var(--lime); background: var(--lime); color: #070806; }
-.productScene { position: relative; display: flex; align-items: center; justify-content: center; height: 100%; padding-left: 26px; }
-.productWindow { width: min(760px, 100%); height: 520px; overflow: hidden; border: 1px solid #252b23; border-radius: 24px; background: #090b09; box-shadow: 0 34px 82px rgb(0 0 0 / 74%); }
-.windowBar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 58px; padding: 0 20px; border-bottom: 1px solid #1f241e; background: #0d100d; color: #73776d; font-size: 10px; }
+.productScene { position: relative; display: flex; align-items: center; justify-content: flex-end; height: 100%; padding-left: 14px; }
+.productWindow { width: min(980px, 100%); height: min(704px, calc(100vh - 98px)); min-height: 610px; overflow: hidden; border: 1px solid #252b23; border-radius: 24px; background: #090b09; box-shadow: 0 34px 82px rgb(0 0 0 / 74%); }
+.windowBar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 54px; padding: 0 18px; border-bottom: 1px solid #1f241e; background: #0d100d; color: #73776d; font-size: 10px; }
 .miniBrand { display: flex; align-items: center; gap: 8px; color: var(--ink); font-weight: 700; }
 .windowStatus { justify-self: end; color: var(--lime); }
-.productBody { display: grid; grid-template-columns: 142px minmax(0, 1fr); height: calc(100% - 58px); }
-.productRail { display: flex; flex-direction: column; gap: 7px; padding: 24px 12px; border-right: 1px solid #1f241e; color: #73786e; font-size: 11px; }
+.productBody { display: grid; grid-template-columns: 154px minmax(0, 1fr); height: calc(100% - 54px); }
+.productRail { display: flex; flex-direction: column; gap: 7px; padding: 22px 12px; border-right: 1px solid #1f241e; color: #73786e; font-size: 11px; }
 .productRail > span { padding: 10px 12px; }
 .productRail .railActive { background: rgb(199 255 24 / 10%); color: var(--lime); }
 .agentIdentity { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; padding-bottom: 18px; border-bottom: 1px solid #1f241e; }
@@ -192,37 +192,40 @@
 .agentIdentity span:last-child { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
 .agentIdentity b { color: var(--ink); font-size: 11px; }
 .agentIdentity small { color: #777b70; font-size: 8px; }
-.productContent { min-width: 0; padding: 38px 40px; }
+.productContent { min-width: 0; overflow: auto; padding: 24px 28px 26px; scrollbar-color: #30362d transparent; scrollbar-width: thin; }
 .productStageTop { display: flex; align-items: center; justify-content: space-between; }
 .productStageTop p { margin: 0; color: var(--lime); font-size: 9px; font-weight: 700; letter-spacing: .14em; }
 .productStageTop span { padding: 5px 8px; background: rgb(199 255 24 / 10%); color: var(--lime); font-size: 9px; }
-.productContent h3 { margin: 18px 0 0; font-size: clamp(28px, 3vw, 42px); font-weight: 720; letter-spacing: -.035em; }
-.productContent > p { max-width: 570px; margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
-.identityPanel, .resourcePanel, .runtimePanel, .chatPanel, .iteratePanel { margin-top: 26px; }
-.identityPanel { display: grid; grid-template-columns: auto 1fr 1fr; gap: 12px; }
-.identityPanel > svg { color: var(--lime); }
-.identityPanel > div, .resourcePanel > div, .runtimePanel > div, .iteratePanel > div { padding: 15px; border: 1px solid #222820; background: #10130f; }
-.identityPanel b, .resourcePanel b { font-size: 11px; }
-.identityPanel p { margin: 7px 0 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
-.resourcePanel { display: grid; gap: 8px; }
-.resourcePanel > div { display: flex; align-items: center; gap: 13px; }
-.resourcePanel svg { color: var(--lime); }
-.resourcePanel span { display: flex; flex-direction: column; gap: 5px; }
-.resourcePanel small { display: flex; align-items: center; gap: 4px; color: #7f8477; font-size: 9px; }
-.runtimePanel { display: grid; grid-template-columns: auto 1fr 1fr; gap: 10px; align-items: stretch; }
-.runtimePanel > svg { align-self: center; color: var(--lime); }
-.runtimePanel div { display: flex; flex-direction: column; gap: 8px; }
-.runtimePanel span, .iteratePanel span { color: var(--muted); font-size: 9px; }
-.runtimePanel strong, .iteratePanel b { font-size: 11px; }
-.liveText { color: var(--lime) !important; }
-.chatPanel { max-width: 620px; }
-.promptBubble { width: 72%; margin-left: auto; padding: 12px 15px; background: #262a20; font-size: 11px; }
-.answerBubble { display: flex; align-items: flex-start; gap: 10px; margin-top: 11px; }
-.answerBubble p { margin: 0; padding: 12px 15px; background: rgb(199 255 24 / 11%); color: #d8dbd1; font-size: 11px; line-height: 1.55; }
-.chatInput { display: flex; justify-content: space-between; margin-top: 17px; padding: 12px 14px; border: 1px solid #252b23; color: #73776d; font-size: 10px; }
-.chatInput svg { color: var(--lime); }
-.iteratePanel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
-.iteratePanel div { display: flex; min-height: 94px; flex-direction: column; gap: 13px; }
+.productContent h3 { margin: 12px 0 0; font-size: clamp(27px, 2.45vw, 36px); font-weight: 720; letter-spacing: -.035em; }
+.productContent > p { max-width: 650px; margin: 8px 0 0; color: var(--muted); font-size: 11px; line-height: 1.62; }
+.flowPanel { display: grid; gap: 12px; margin-top: 18px; }
+.flowSummary { overflow: hidden; border: 1px solid #222820; border-radius: 13px; background: #0d100d; }
+.flowSummaryGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.flowSummary dl { min-width: 0; margin: 0; padding: 12px 13px 11px; border-right: 1px solid #222820; }
+.flowSummary dl:last-child { border-right: 0; }
+.flowSummary dt { overflow: hidden; color: #71766c; font-size: 8px; letter-spacing: .07em; white-space: nowrap; }
+.flowSummary dd { overflow: hidden; margin: 5px 0 0; color: #e7e9e1; font-size: 10px; font-weight: 650; white-space: nowrap; }
+.flowProgress { display: grid; grid-template-columns: auto minmax(110px, 1fr) auto; gap: 12px; align-items: center; padding: 10px 13px; border-top: 1px solid #222820; color: #777c72; font-size: 8px; }
+.flowProgress > div { height: 3px; overflow: hidden; border-radius: 3px; background: #242921; }
+.flowProgress i { display: block; height: 100%; border-radius: inherit; background: var(--lime); transition: width 360ms ease; }
+.flowProgress b { color: var(--lime); font-size: 9px; font-weight: 700; }
+.flowWorkItems { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.flowWorkItems article { position: relative; display: flex; min-width: 0; min-height: 142px; flex-direction: column; padding: 13px; overflow: hidden; border: 1px solid #222820; border-radius: 12px; background: #10130f; }
+.flowCardTop { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.flowCardTop svg { flex: 0 0 auto; color: var(--lime); font-size: 19px; }
+.flowCardTop span { overflow: hidden; color: #747a70; font-size: 8px; letter-spacing: .08em; white-space: nowrap; }
+.flowWorkItems h4 { margin: 18px 0 0; color: #f0f1ec; font-size: 12px; line-height: 1.35; }
+.flowWorkItems p { margin: 7px 0 12px; color: #969b91; font-size: 9px; line-height: 1.55; }
+.flowWorkItems small { margin-top: auto; color: var(--lime); font-size: 8px; }
+.flowRecords { overflow: hidden; border: 1px solid #222820; border-radius: 12px; background: #0c0f0c; }
+.flowRecordsTitle { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 10px 13px; border-bottom: 1px solid #222820; }
+.flowRecordsTitle span { color: #e8eae2; font-size: 10px; font-weight: 680; }
+.flowRecordsTitle small { color: #686e64; font-size: 8px; }
+.flowRecordTable > div { display: grid; grid-template-columns: .7fr 1.45fr .65fr; gap: 10px; align-items: center; min-height: 34px; padding: 7px 13px; border-bottom: 1px solid #1c211b; color: #9aa095; font-size: 8px; }
+.flowRecordTable > div:last-child { border-bottom: 0; }
+.flowRecordTable span:first-child { color: #d6d9d0; font-weight: 620; }
+.flowRecordTable strong { display: inline-flex; align-items: center; justify-self: end; gap: 4px; color: var(--lime); font-size: 8px; font-weight: 600; }
+.flowRecordTable svg { font-size: 11px; }
 .flowCount { position: absolute; right: 1%; bottom: 2%; color: var(--lime); font-size: 12px; font-weight: 700; }
 
 .scenarioSection { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 32px; min-height: 280px; padding: 38px var(--page-gutter) 42px; border-top: 1px solid var(--section-line); border-bottom: 1px solid var(--section-line); background: #080a07; }
@@ -289,7 +292,7 @@
   .assetCard[data-slot="-2"] { --slot-x: -290px; }
   .assetCard[data-slot="2"] { --slot-x: 290px; }
   .productBody { grid-template-columns: 118px minmax(0, 1fr); }
-  .productContent { padding: 34px 28px; }
+  .productContent { padding: 24px 22px; }
 }
 
 @media (max-width: 780px) {
@@ -359,22 +362,27 @@
   .flowHeading > p:last-child { max-width: 350px; }
   .flowGrid { display: flex; flex-direction: column-reverse; height: auto; padding: 0; gap: 42px; }
   .productScene { width: 100%; height: auto; padding: 0; }
-  .productWindow { height: 510px; border-radius: 18px; }
+  .productWindow { height: auto; min-height: 0; border-radius: 18px; }
   .windowBar { grid-template-columns: 1fr auto; height: 52px; padding: 0 12px; }
   .windowBar > span:nth-child(2) { display: none; }
-  .productBody { display: block; height: calc(100% - 52px); }
+  .productBody { display: block; height: auto; }
   .productRail { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; padding: 0; border-right: 0; border-bottom: 1px solid #1f241e; }
   .productRail .agentIdentity { display: none; }
   .productRail > span { padding: 12px 4px; text-align: center; }
-  .productContent { min-height: 400px; padding: 26px 18px; }
+  .productContent { min-height: 0; overflow: visible; padding: 24px 16px 18px; }
   .productContent h3 { font-size: 30px; }
-  .identityPanel { grid-template-columns: 1fr; }
-  .identityPanel > svg { display: none; }
-  .runtimePanel { grid-template-columns: 1fr 1fr; }
-  .runtimePanel > svg { display: none; }
-  .iteratePanel { grid-template-columns: 1fr; }
-  .iteratePanel div { min-height: 58px; }
-  .promptBubble { width: 88%; }
+  .productContent > p { font-size: 10px; }
+  .flowPanel { gap: 10px; margin-top: 16px; }
+  .flowSummaryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .flowSummary dl { border-bottom: 1px solid #222820; }
+  .flowSummary dl:nth-child(2) { border-right: 0; }
+  .flowSummary dl:nth-child(n + 3) { border-bottom: 0; }
+  .flowProgress { grid-template-columns: auto minmax(80px, 1fr) auto; gap: 9px; }
+  .flowWorkItems { grid-template-columns: 1fr; }
+  .flowWorkItems article { min-height: 0; padding: 14px; }
+  .flowWorkItems h4 { margin-top: 14px; }
+  .flowRecordsTitle { align-items: flex-start; flex-direction: column; gap: 3px; }
+  .flowRecordTable > div { grid-template-columns: .85fr 1.45fr .72fr; gap: 7px; padding-inline: 11px; }
   .flowCount { display: none; }
   .stepNav { width: 100%; margin: 0; }
   .stepButton { opacity: .8; }
