@@ -1,3 +1,17 @@
+# LYN-005-I3 R40 Landing Readability And Target-size QA
+
+- Fresh 1440 × 1000 and 390 × 844 audit found two scoped risks: inactive creation steps at opacity `.34/.38`, and compact controls below the preferred 44px target height.
+- Inactive steps now use `.8` opacity at both breakpoints, yielding approximately 11.83:1 title and 4.69:1 description contrast while the active step remains fully emphasized.
+- Transparent component-owned hit layers provide 44–45px effective targets for the header login action, role progress controls, intent examples, and footer links without resizing their visible surfaces.
+- R39 is still present in the current branch. The public test environment serves the older CSS and needs a separate test deployment; no redundant local rewrite was made.
+- Fresh final browser tabs: 0 console errors/warnings; no horizontal overflow at either viewport; reduced-motion contract preserved.
+- Evidence: `docs/qa/images/lyn-005-i3-accessibility-r40/`; audit and detailed QA: `docs/qa/reports/lyn-005-i3-accessibility-r40/`.
+- Gates: focused Vitest 23/23, lint, typecheck, build, OpenSpec strict 37/37, and `git diff --check` passed. P0/P1/P2 = 0/0/0.
+
+final result: passed
+
+---
+
 # LYN-005-I3 R39 Fluorescent CTA State QA
 
 - Root cause: `.nav a:hover, .loginLink:hover` applied the same fluorescent lime to the header login label and its filled lime background, making `登录平台` disappear on pointer hover.

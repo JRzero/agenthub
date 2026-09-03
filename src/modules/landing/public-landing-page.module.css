@@ -42,7 +42,8 @@
 .nav { display: flex; align-items: center; justify-content: center; gap: 32px; white-space: nowrap; }
 .nav a, .loginLink { color: #969a91; font-size: 12px; font-weight: 600; text-decoration: none; transition: color 180ms ease; }
 .nav a:hover { color: var(--lime); }
-.loginLink { justify-self: end; display: inline-flex; min-width: 94px; min-height: 40px; align-items: center; justify-content: center; border-radius: 9px; background: var(--lime); color: #070806; font-weight: 720; }
+.loginLink { position: relative; justify-self: end; display: inline-flex; min-width: 94px; min-height: 40px; align-items: center; justify-content: center; border-radius: 9px; background: var(--lime); color: #070806; font-weight: 720; }
+.loginLink::after { position: absolute; inset: -2px 0; content: ""; }
 .loginLink:hover, .loginLink:focus-visible, .loginLink:active { color: #070806; }
 
 .hero { position: relative; z-index: 2; width: 100%; height: 100svh; min-height: 734px; isolation: isolate; overflow: hidden; border-radius: 0 0 14px 14px; background: #000; }
@@ -153,7 +154,8 @@
 .assetCardCopy small { display: none; margin-top: 8px; color: var(--muted); font-size: 10px; line-height: 1.5; }
 .assetCard[data-slot="0"] .assetCardCopy small { display: block; }
 .assetProgress { position: absolute; z-index: 70; right: 5.5%; bottom: 0; display: flex; gap: 7px; }
-.assetProgress button { width: 44px; height: 20px; padding: 8px 0; border: 0; background: transparent; cursor: pointer; }
+.assetProgress button { position: relative; width: 44px; height: 20px; padding: 8px 0; border: 0; background: transparent; cursor: pointer; }
+.assetProgress button::before { position: absolute; inset: -12px 0; content: ""; }
 .assetProgress span { display: block; height: 2px; background: #393d34; }
 .assetProgress button[aria-current="true"] span { background: var(--lime); }
 
@@ -168,12 +170,13 @@
 .flowGrid { display: grid; grid-template-columns: 34% 66%; align-items: center; height: 100%; padding-top: 64px; }
 .stepNav { position: relative; align-self: end; margin-bottom: 1.5%; }
 .stepNav::before { position: absolute; top: 25px; bottom: 25px; left: 19px; width: 1px; background: rgb(199 255 24 / 22%); content: ""; }
-.stepButton, .stepButtonActive { position: relative; display: grid; grid-template-columns: 40px 1fr; gap: 18px; align-items: start; width: 100%; padding: 11px 0; border: 0; background: transparent; color: #7e8378; text-align: left; cursor: pointer; opacity: .34; transition: opacity 300ms ease, transform 300ms ease; }
+.stepButton, .stepButtonActive { position: relative; display: grid; grid-template-columns: 40px 1fr; gap: 18px; align-items: start; width: 100%; padding: 11px 0; border: 0; background: transparent; color: #7e8378; text-align: left; cursor: pointer; opacity: .8; transition: opacity 300ms ease, transform 300ms ease; }
 .stepButton i, .stepButtonActive i { position: relative; z-index: 1; display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid #363b33; border-radius: 50%; background: #030403; color: #767b70; font-size: 10px; font-style: normal; }
 .stepButton span, .stepButtonActive span { display: flex; min-width: 0; flex-direction: column; gap: 4px; padding-top: 3px; }
 .stepButton strong, .stepButtonActive strong { color: var(--ink); font-size: 15px; }
 .stepButton small, .stepButtonActive small { max-width: 280px; color: var(--muted); font-size: 10px; line-height: 1.5; }
 .stepButtonActive { opacity: 1; transform: translateX(8px); }
+.stepButton:hover, .stepButton:focus-visible { opacity: 1; }
 .stepButtonActive i { border-color: var(--lime); background: var(--lime); color: #070806; }
 .productScene { position: relative; display: flex; align-items: center; justify-content: center; height: 100%; padding-left: 26px; }
 .productWindow { width: min(760px, 100%); height: 520px; overflow: hidden; border: 1px solid #252b23; border-radius: 24px; background: #090b09; box-shadow: 0 34px 82px rgb(0 0 0 / 74%); }
@@ -252,7 +255,8 @@
 .intentControl textarea::placeholder { color: #696d63; }
 .intentControl button { position: absolute; top: 50%; right: 10px; display: grid; width: 50px; height: 50px; margin: 0; place-items: center; border: 0; border-radius: 50%; background: var(--lime); color: #090a07; cursor: pointer; transform: translateY(-50%); }
 .intentSuggestions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 26px; }
-.intentSuggestions button { border: 1px solid #33392f; border-radius: 11px; padding: 7px 10px; background: transparent; color: #92978c; font-size: 10px; cursor: pointer; transition: border-color 180ms ease, color 180ms ease, background-color 180ms ease; }
+.intentSuggestions button { position: relative; border: 1px solid #33392f; border-radius: 11px; padding: 7px 10px; background: transparent; color: #92978c; font-size: 10px; cursor: pointer; transition: border-color 180ms ease, color 180ms ease, background-color 180ms ease; }
+.intentSuggestions button::before { position: absolute; inset: -7px 0; content: ""; }
 .intentSuggestions button:hover { border-color: var(--lime); color: var(--lime); }
 .intentSuggestions button:focus-visible { border-color: var(--lime); outline: 2px solid var(--lime); outline-offset: 2px; color: var(--lime); }
 .intentSummary { display: flex; min-height: 232px; flex-direction: column; padding: 28px; border: 1px solid rgb(255 255 255 / 18%); background: rgb(7 8 6 / 90%); text-align: left; }
@@ -267,7 +271,10 @@
 .editIntent { align-self: flex-start; margin-top: 13px; border: 0; border-bottom: 1px solid #7b7f74; padding: 0 0 4px; background: transparent; color: #8e9287; font-size: 10px; cursor: pointer; }
 .footer { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 30px; min-height: 70px; padding: 0 var(--page-gutter); border-top: 1px solid rgb(255 255 255 / 12%); background: #050604; }
 .footer nav { display: flex; gap: 24px; }
+.footer a { position: relative; }
 .footer nav a { color: #85897e; font-size: 11px; text-decoration: none; }
+.footer nav a::after { position: absolute; inset: -14px 0; content: ""; }
+.footer > .brand::after { position: absolute; inset: -10px 0; content: ""; }
 .footer > span { justify-self: end; color: #5e6259; font-size: 10px; }
 
 @media (max-width: 1120px) {
@@ -340,8 +347,9 @@
   .assetCardCopy h3 { margin-top: 3px; font-size: 20px; }
   .assetCardCopy p { font-size: 10px; }
   .assetCardCopy small { display: none !important; }
-  .assetProgress { right: 16px; bottom: 0; left: 16px; justify-content: center; }
+  .assetProgress { right: 16px; bottom: 0; left: 16px; justify-content: center; gap: 10px; }
   .assetProgress button { width: 34px; }
+  .assetProgress button::before { right: -5px; left: -5px; }
 
   .flowSection { height: auto; min-height: 0; margin-top: 0; }
   .flowSticky { position: relative; height: auto; min-height: 0; padding: 64px 16px; overflow: hidden; }
@@ -369,7 +377,7 @@
   .promptBubble { width: 88%; }
   .flowCount { display: none; }
   .stepNav { width: 100%; margin: 0; }
-  .stepButton, .stepButtonActive { opacity: .38; }
+  .stepButton { opacity: .8; }
   .stepButtonActive { opacity: 1; transform: none; }
   .stepButton small, .stepButtonActive small { max-width: none; font-size: 10px; }
 

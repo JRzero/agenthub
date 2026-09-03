@@ -116,6 +116,23 @@ describe("AgentHub public landing typography", () => {
     expect(styles).toMatch(/\.heroCta:hover, \.heroCta:focus-visible, \.heroCta:active,[\s\S]*\.primaryButton:hover, \.primaryButton:focus-visible, \.primaryButton:active \{ color: #050604; \}/);
   });
 
+  it("keeps inactive creation steps readable without flattening the active hierarchy", () => {
+    expect(styles).toMatch(/\.stepButton, \.stepButtonActive \{[^}]*opacity: \.8;/);
+    expect(styles).toMatch(/\.stepButtonActive \{ opacity: 1;/);
+    expect(styles).toMatch(/\.stepButton:hover, \.stepButton:focus-visible \{ opacity: 1; \}/);
+    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.stepButton \{ opacity: \.8; \}/);
+    expect(styles).not.toMatch(/\.stepButton, \.stepButtonActive \{[^}]*opacity: \.(?:34|38);/);
+  });
+
+  it("extends compact landing controls to practical hit areas without resizing their visuals", () => {
+    expect(styles).toMatch(/\.loginLink::after \{[^}]*inset: -2px 0;/);
+    expect(styles).toMatch(/\.assetProgress button::before \{[^}]*inset: -12px 0;/);
+    expect(styles).toMatch(/\.intentSuggestions button::before \{[^}]*inset: -7px 0;/);
+    expect(styles).toMatch(/\.footer nav a::after \{[^}]*inset: -14px 0;/);
+    expect(styles).toMatch(/\.footer > \.brand::after \{[^}]*inset: -10px 0;/);
+    expect(styles).toMatch(/@media \(max-width: 780px\)[\s\S]*\.assetProgress \{[^}]*gap: 10px;[^}]*\}[\s\S]*\.assetProgress button::before \{[^}]*right: -5px;[^}]*left: -5px;/);
+  });
+
   it("keeps the intent submit button inside one bordered capsule", () => {
     expect(styles).toMatch(/\.intentControl \{[^}]*height: 64px;[^}]*border: 1px solid rgb\(255 255 255 \/ 24%\);[^}]*border-radius: 34px;[^}]*background: rgb\(7 8 6 \/ 82%\);/);
     expect(styles).toMatch(/\.intentControl:focus-within \{[^}]*border-color: rgb\(199 255 24 \/ 72%\);[^}]*box-shadow: 0 0 0 3px rgb\(199 255 24 \/ 12%\);/);

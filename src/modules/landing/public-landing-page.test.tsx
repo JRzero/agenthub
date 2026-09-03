@@ -4,7 +4,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/image", () => ({
-  default: ({ fill: _fill, priority: _priority, sizes: _sizes, unoptimized: _unoptimized, ...props }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean; priority?: boolean; unoptimized?: boolean }) => <img {...props} />,
+  default: ({ fill: _fill, priority: _priority, sizes: _sizes, unoptimized: _unoptimized, ...props }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean; priority?: boolean; unoptimized?: boolean }) => <img data-priority={_priority ? "true" : undefined} {...props} />,
 }));
 vi.mock("next/link", () => ({
   default: ({ children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => <a {...props}>{children}</a>,
@@ -205,6 +205,7 @@ describe("AgentHub public landing page", () => {
     expect(Array.from(container.querySelectorAll("#assets-title > span")).map((line) => line.textContent)).toEqual(["让角色管理", "更清晰、更高效。"]);
     expect(container.querySelector("#assets")?.textContent).not.toContain("每一个角色，都在这里继续生长。");
     expect(container.querySelectorAll("#assets article")).toHaveLength(5);
+    expect(Array.from(container.querySelectorAll<HTMLImageElement>("#assets article img")).filter((image) => image.dataset.priority === "true")).toHaveLength(1);
     expect(Array.from(container.querySelectorAll("#assets article")).map((card) => card.textContent)).toEqual([
       "品牌示例 · 设定一致性墨衡叙事策略顾问梳理复杂设定与情节脉络，让角色在长期创作中保持一致。",
       "品牌示例 · 事实与来源知序知识研究顾问整合资料、校验事实与出处，为每次回答建立可靠的知识依据。",
