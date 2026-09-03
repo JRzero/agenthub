@@ -20,6 +20,10 @@ The public landing Creation Flow now matches the supplied management-flow refere
 - `src/modules/landing/public-landing-typography.test.ts`
 - `docs/qa/design-reference/lyn-005-i3-creation-flow-rich-r41/source-management-flow.png`
 - `docs/qa/images/lyn-005-i3-creation-flow-rich-r41/before/`
+- `docs/qa/images/lyn-005-i3-creation-flow-rich-r41/after/`
+- `docs/qa/images/lyn-005-i3-creation-flow-rich-r41/comparison/source-vs-final-desktop.png`
+- `docs/qa/images/lyn-005-i3-creation-flow-rich-r41/comparison/source-vs-final-desktop-focus.png`
+- `docs/qa/images/lyn-005-i3-creation-flow-rich-r41/comparison/mobile-before-after.png`
 - `docs/qa/reports/lyn-005-i3-creation-flow-rich-r41/`
 - `design-qa.md`
 
@@ -29,4 +33,4 @@ Hero, role assets, use cases, intent creation, footer, routing, authentication, 
 
 ## Verification
 
-Focused tests 25/25, full suite 478/478, lint, typecheck, build, OpenSpec strict 37/37, and diff check passed. In-app browser verification covered all five stage controls, desktop/mobile layout, zero horizontal overflow, fresh-console errors, and the real login/navigation boundaries. No deployment or push was performed.
+Focused tests 25/25, full suite 478/478, lint, typecheck, build, OpenSpec strict 37/37, and diff check passed. The final saved-evidence correction reran the focused 25-test contract and diff check without changing business implementation. In-app browser verification covered all five stage controls, desktop/mobile layout, zero horizontal overflow, fresh-console errors, and the real login/navigation boundaries. Final saved captures use CSS viewports 1280 × 720 and 390 × 844 (bitmap content 1269 × 714 and 379 × 820), and all full/focus/mobile comparison canvases were opened and reviewed. No deployment or push was performed.

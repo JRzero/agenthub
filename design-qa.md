@@ -17,6 +17,9 @@ final result: passed
 - Scope: only the public landing `02 / CREATION FLOW` stage, focused contracts, and QA evidence.
 - Source: `docs/qa/design-reference/lyn-005-i3-creation-flow-rich-r41/source-management-flow.png`.
 - Baseline: `docs/qa/images/lyn-005-i3-creation-flow-rich-r41/before/`.
+- Final implementation screenshots: `docs/qa/images/lyn-005-i3-creation-flow-rich-r41/after/desktop-1280x720-iterate.png` (CSS 1280 × 720; pixels 1269 × 714; state 05) and `after/mobile-390x844-identity.png` / `after/mobile-390x844-flow-lower.png` (CSS 390 × 844; pixels 379 × 820; state 01 at top/lower scroll positions).
+- Same-canvas evidence: `docs/qa/images/lyn-005-i3-creation-flow-rich-r41/comparison/source-vs-final-desktop.png`, `source-vs-final-desktop-focus.png`, and `mobile-before-after.png`; every source/final/before canvas and raw final capture was opened and visually checked.
+- Comparison history: the initial source/R40 audit exposed a P1 sparse stage; implementation and responsive passes resolved hierarchy/clipping; the final saved-evidence pass confirmed typography, spacing, colors, icon treatment, truthful copy, focus/motion behavior, console state, and zero overflow with P0/P1/P2 = 0.
 - Implementation: desktop `30% / 70%` narrative/workbench split; four-field stage summary, deterministic five-step progress, three differentiated work cards, and three recent example records for every state.
 - Truth boundary: all non-live content is explicitly example, draft, pending, configurable, not published, or not submitted; no `demo` text or unsupported metric was introduced.
 - Responsive and accessibility: mobile uses a two-column summary plus one-column cards, native buttons retain `aria-current`/`aria-controls`, reduced-motion behavior is unchanged, and page-level horizontal overflow is zero.
