@@ -1,0 +1,37 @@
+{
+  "source": {
+    "path": "public/images/login-agent-portrait.png",
+    "nativeWidth": 1024,
+    "nativeHeight": 1536
+  },
+  "main": {
+    "src": "/images/login-agent-portrait.png",
+    "objectFit": "contain",
+    "objectPosition": "50% 50%",
+    "subjectScale": 0.92,
+    "subjectOffsetX": "0%",
+    "subjectOffsetY": "0%",
+    "desktopRect": { "x": 807.25, "y": 166.22, "width": 454.36, "height": 498.48 },
+    "mobileRect": { "x": 181.37, "y": 549.15, "width": 224.06, "height": 242.13 }
+  },
+  "bottomFantasy": {
+    "src": "/images/agenthub-site/hero-roles-r32/hero-silver-world-guardian-r32.webp",
+    "subjectScale": 1.04,
+    "subjectOffsetX": "0%",
+    "subjectOffsetY": "1%"
+  },
+  "browser": {
+    "desktopLoaded": "12/12",
+    "mobileLoaded": "7/7",
+    "uniqueSources": 12,
+    "desktopOverflowPx": 0,
+    "mobileOverflowPx": 0,
+    "consoleErrors": 0,
+    "maxAxisDelta": 2.9753977059954195e-14,
+    "maxAbsDot": 3.18772750307339e-7
+  },
+  "p0": 0,
+  "p1": 0,
+  "p2": 0,
+  "finalResult": "passed"
+}

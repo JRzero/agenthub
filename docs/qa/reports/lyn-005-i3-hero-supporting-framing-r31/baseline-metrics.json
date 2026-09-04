@@ -1,0 +1,678 @@
+{
+  "desktop": [
+    {
+      "frameTransform": "matrix(1, 0, -0.158384, 1, 0, 0)",
+      "id": "top-strategist",
+      "imageRect": {
+        "height": 255.7513427734375,
+        "width": 347.094970703125,
+        "x": 540.9447021484375,
+        "y": -78.37566375732422
+      },
+      "layerTransform": "matrix(1.082, 0, 0.171372, 1.082, 0, 0)",
+      "main": false,
+      "mobile": false,
+      "natural": {
+        "height": 576,
+        "width": 460
+      },
+      "objectPosition": "50% 22%",
+      "positionTransform": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+      "rect": {
+        "height": 236.00558471679688,
+        "width": 266.788330078125,
+        "x": 581.0980224609375,
+        "y": -68.5027847290039
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Frole-strategist-demo.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.158384, 1, 0, 0)",
+      "id": "top-anime",
+      "imageRect": {
+        "height": 250.0220947265625,
+        "width": 343.091552734375,
+        "x": 814.4620361328125,
+        "y": -75.51104736328125
+      },
+      "layerTransform": "matrix(1.082, 0, 0.171372, 1.082, 0, 0)",
+      "main": false,
+      "mobile": true,
+      "natural": {
+        "height": 576,
+        "width": 460
+      },
+      "objectPosition": "50% 18%",
+      "positionTransform": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+      "rect": {
+        "height": 231.65609741210935,
+        "width": 263.02044677734375,
+        "x": 854.4976196289062,
+        "y": -66.32804870605469
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Frole-gamehost-demo.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.158384, 1, 0, 0)",
+      "id": "top-support",
+      "imageRect": {
+        "height": 264.55816650390625,
+        "width": 349.69287109375,
+        "x": 1096.958251953125,
+        "y": -78.27908325195312
+      },
+      "layerTransform": "matrix(1.102, 0, 0.17454, 1.102, 0, 0)",
+      "main": false,
+      "mobile": false,
+      "natural": {
+        "height": 655,
+        "width": 436
+      },
+      "objectPosition": "50% 18%",
+      "positionTransform": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+      "rect": {
+        "height": 240.65301513671875,
+        "width": 263.256103515625,
+        "x": 1140.1766357421875,
+        "y": -66.32650756835938
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-headset-operator-r17.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.158384, 1, 0, 0)",
+      "id": "mid-expert",
+      "imageRect": {
+        "height": 318.2532958984375,
+        "width": 317.7021789550781,
+        "x": 455.6137390136719,
+        "y": 178.37335205078125
+      },
+      "layerTransform": "matrix(1.102, 0, 0.17454, 1.102, 0, 0)",
+      "main": false,
+      "mobile": true,
+      "natural": {
+        "height": 655,
+        "width": 436
+      },
+      "objectPosition": "50% 18%",
+      "positionTransform": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+      "rect": {
+        "height": 288.707275390625,
+        "width": 240.58499145507812,
+        "x": 494.1723327636719,
+        "y": 193.1463623046875
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-senior-scientist-r17.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.158384, 1, 0, 0)",
+      "id": "mid-fantasy",
+      "imageRect": {
+        "height": 342.8687438964844,
+        "width": 313.34228515625,
+        "x": 643.559326171875,
+        "y": 179.56564331054688
+      },
+      "layerTransform": "matrix(1.102, 0, 0.17454, 1.102, 0, 0)",
+      "main": false,
+      "mobile": true,
+      "natural": {
+        "height": 655,
+        "width": 436
+      },
+      "objectPosition": "50% 22%",
+      "positionTransform": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+      "rect": {
+        "height": 311.88006591796875,
+        "width": 236.5645751953125,
+        "x": 681.9481811523438,
+        "y": 195.0599670410156
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-rounded-fantasy-r17.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.158384, 1, 0, 0)",
+      "id": "mid-right-partial",
+      "imageRect": {
+        "height": 378.3475341796875,
+        "width": 337.6942138671875,
+        "x": 1274.4381103515625,
+        "y": 166.32623291015625
+      },
+      "layerTransform": "matrix(1.165, 0, 0.184518, 1.165, 0, 0)",
+      "main": false,
+      "mobile": false,
+      "natural": {
+        "height": 614,
+        "width": 460
+      },
+      "objectPosition": "50% 20%",
+      "positionTransform": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+      "rect": {
+        "height": 324.6729736328125,
+        "width": 242.1552734375,
+        "x": 1322.20751953125,
+        "y": 193.1634979248047
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-game-architect-r9.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.158384, 1, 0, 0)",
+      "id": "bottom-robot",
+      "imageRect": {
+        "height": 369.730224609375,
+        "width": 330.3229064941406,
+        "x": 399.2877502441406,
+        "y": 548.6348876953125
+      },
+      "layerTransform": "matrix(1.092, 0, 0.172956, 1.092, 0, 0)",
+      "main": false,
+      "mobile": true,
+      "natural": {
+        "height": 614,
+        "width": 460
+      },
+      "objectPosition": "50% 16%",
+      "positionTransform": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+      "rect": {
+        "height": 339.2449951171875,
+        "width": 251.5633544921875,
+        "x": 438.66754150390625,
+        "y": 563.8775024414062
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-robot-tester-r9.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.158384, 1, 0, 0)",
+      "id": "bottom-companion",
+      "imageRect": {
+        "height": 379.055908203125,
+        "width": 311.5279541015625,
+        "x": 587.3102416992188,
+        "y": 548.4720458984375
+      },
+      "layerTransform": "matrix(1.092, 0, 0.172956, 1.092, 0, 0)",
+      "main": false,
+      "mobile": true,
+      "natural": {
+        "height": 655,
+        "width": 436
+      },
+      "objectPosition": "50% 18%",
+      "positionTransform": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+      "rect": {
+        "height": 347.86767578125,
+        "width": 237.5069580078125,
+        "x": 624.3207397460938,
+        "y": 564.066162109375
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-alpaca-companion-r17.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.158384, 1, 0, 0)",
+      "id": "bottom-operator",
+      "imageRect": {
+        "height": 316.59228515625,
+        "width": 406.183349609375,
+        "x": 761.4747314453125,
+        "y": 764.203857421875
+      },
+      "layerTransform": "matrix(1.082, 0, 0.171372, 1.082, 0, 0)",
+      "main": false,
+      "mobile": false,
+      "natural": {
+        "height": 655,
+        "width": 436
+      },
+      "objectPosition": "50% 16%",
+      "positionTransform": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+      "rect": {
+        "height": 291.823974609375,
+        "width": 311.97015380859375,
+        "x": 808.5813598632812,
+        "y": 776.5880126953125
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-young-operator-r17.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.158384, 1, 0, 0)",
+      "id": "bottom-fantasy",
+      "imageRect": {
+        "height": 342.26141357421875,
+        "width": 414.556640625,
+        "x": 985.9287109375,
+        "y": 724.3693237304688
+      },
+      "layerTransform": "matrix(1.102, 0, 0.17454, 1.102, 0, 0)",
+      "main": false,
+      "mobile": true,
+      "natural": {
+        "height": 655,
+        "width": 436
+      },
+      "objectPosition": "50% 18%",
+      "positionTransform": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+      "rect": {
+        "height": 309.806884765625,
+        "width": 312.75537109375,
+        "x": 1036.829345703125,
+        "y": 740.5965576171875
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-silver-fantasy-r17.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.158384, 1, 0, 0)",
+      "id": "right-mid-fantasy",
+      "imageRect": {
+        "height": 346.2215576171875,
+        "width": 363.774169921875,
+        "x": 1232.8160400390625,
+        "y": 551.3892211914062
+      },
+      "layerTransform": "matrix(1.123, 0, 0.177866, 1.123, 0, 0)",
+      "main": false,
+      "mobile": false,
+      "natural": {
+        "height": 614,
+        "width": 460
+      },
+      "objectPosition": "50% 18%",
+      "positionTransform": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+      "rect": {
+        "height": 307.93701171875,
+        "width": 269.928955078125,
+        "x": 1279.7386474609375,
+        "y": 570.531494140625
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-anime-curator-r9.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.158384, 1, 0, 0)",
+      "id": "main",
+      "imageRect": {
+        "height": 590.9047241210938,
+        "width": 484.4986572265625,
+        "x": 802.6636962890625,
+        "y": 46.07490158081055
+      },
+      "layerTransform": "matrix(1.04, 0, 0.16472, 1.04, 0, 0)",
+      "main": true,
+      "mobile": true,
+      "natural": {
+        "height": 546,
+        "width": 460
+      },
+      "objectPosition": "50% 50%",
+      "positionTransform": "matrix(0.999391, 0.0348995, -0.0348995, 0.999391, 0, 0)",
+      "rect": {
+        "height": 616.5965576171875,
+        "width": 420.9177856445313,
+        "x": 832.7090454101562,
+        "y": 83.20172119140625
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-main-reference-r30.webp&w=3840&q=75",
+      "subjectTransform": "matrix(0.92, 0, 0, 0.92, 0, -48.08)",
+      "visible": true
+    }
+  ],
+  "mobile": [
+    {
+      "frameTransform": "none",
+      "id": "top-strategist",
+      "imageRect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "layerTransform": "none",
+      "main": false,
+      "mobile": false,
+      "natural": {
+        "height": 224,
+        "width": 179
+      },
+      "objectPosition": "50% 22%",
+      "positionTransform": "none",
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Frole-strategist-demo.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": false
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.105104, 1, 0, 0)",
+      "id": "top-anime",
+      "imageRect": {
+        "height": 123.00247192382812,
+        "width": 136.11944580078125,
+        "x": 244.94027709960935,
+        "y": 471.2487487792969
+      },
+      "layerTransform": "matrix(1.082, 0, 0.113723, 1.082, 0, 0)",
+      "main": false,
+      "mobile": true,
+      "natural": {
+        "height": 224,
+        "width": 179
+      },
+      "objectPosition": "50% 18%",
+      "positionTransform": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+      "rect": {
+        "height": 115.28857421875,
+        "width": 110.90789794921876,
+        "x": 257.5460510253906,
+        "y": 475.105712890625
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Frole-gamehost-demo.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "none",
+      "id": "top-support",
+      "imageRect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "layerTransform": "none",
+      "main": false,
+      "mobile": false,
+      "natural": {
+        "height": 269,
+        "width": 179
+      },
+      "objectPosition": "50% 18%",
+      "positionTransform": "none",
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-headset-operator-r17.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": false
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.105104, 1, 0, 0)",
+      "id": "mid-expert",
+      "imageRect": {
+        "height": 156.62176513671875,
+        "width": 126.6475067138672,
+        "x": 93.67625427246094,
+        "y": 598.4391479492188
+      },
+      "layerTransform": "matrix(1.102, 0, 0.115825, 1.102, 0, 0)",
+      "main": false,
+      "mobile": true,
+      "natural": {
+        "height": 269,
+        "width": 179
+      },
+      "objectPosition": "50% 18%",
+      "positionTransform": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+      "rect": {
+        "height": 143.5546875,
+        "width": 101.9935302734375,
+        "x": 106.00323486328124,
+        "y": 604.97265625
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-senior-scientist-r17.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.105104, 1, 0, 0)",
+      "id": "mid-fantasy",
+      "imageRect": {
+        "height": 169.490234375,
+        "width": 124.4671630859375,
+        "x": 172.76641845703125,
+        "y": 598.7548828125
+      },
+      "layerTransform": "matrix(1.102, 0, 0.115825, 1.102, 0, 0)",
+      "main": false,
+      "mobile": true,
+      "natural": {
+        "height": 269,
+        "width": 179
+      },
+      "objectPosition": "50% 22%",
+      "positionTransform": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+      "rect": {
+        "height": 155.4605712890625,
+        "width": 99.97216796875,
+        "x": 185.013916015625,
+        "y": 605.7697143554688
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-rounded-fantasy-r17.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "none",
+      "id": "mid-right-partial",
+      "imageRect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "layerTransform": "none",
+      "main": false,
+      "mobile": false,
+      "natural": {
+        "height": 238,
+        "width": 179
+      },
+      "objectPosition": "50% 20%",
+      "positionTransform": "none",
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-game-architect-r9.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": false
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.105104, 1, 0, 0)",
+      "id": "bottom-robot",
+      "imageRect": {
+        "height": 182.8883056640625,
+        "width": 131.33087158203125,
+        "x": 70.33456420898438,
+        "y": 783.3058471679688
+      },
+      "layerTransform": "matrix(1.092, 0, 0.114774, 1.092, 0, 0)",
+      "main": false,
+      "mobile": true,
+      "natural": {
+        "height": 238,
+        "width": 179
+      },
+      "objectPosition": "50% 16%",
+      "positionTransform": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+      "rect": {
+        "height": 169.113037109375,
+        "width": 106.32350158691406,
+        "x": 82.83824157714844,
+        "y": 790.1934814453125
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-robot-tester-r9.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.105104, 1, 0, 0)",
+      "id": "bottom-companion",
+      "imageRect": {
+        "height": 187.6014404296875,
+        "width": 123.85223388671876,
+        "x": 149.07388305664062,
+        "y": 783.1992797851562
+      },
+      "layerTransform": "matrix(1.092, 0, 0.114774, 1.092, 0, 0)",
+      "main": false,
+      "mobile": true,
+      "natural": {
+        "height": 269,
+        "width": 179
+      },
+      "objectPosition": "50% 18%",
+      "positionTransform": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+      "rect": {
+        "height": 173.454345703125,
+        "width": 100.443359375,
+        "x": 160.7783203125,
+        "y": 790.2728271484375
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-alpaca-companion-r17.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "none",
+      "id": "bottom-operator",
+      "imageRect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "layerTransform": "none",
+      "main": false,
+      "mobile": false,
+      "natural": {
+        "height": 269,
+        "width": 179
+      },
+      "objectPosition": "50% 16%",
+      "positionTransform": "none",
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-young-operator-r17.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": false
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.105104, 1, 0, 0)",
+      "id": "bottom-fantasy",
+      "imageRect": {
+        "height": 168.2030029296875,
+        "width": 165.3897705078125,
+        "x": 317.30511474609375,
+        "y": 871.6485595703125
+      },
+      "layerTransform": "matrix(1.102, 0, 0.115825, 1.102, 0, 0)",
+      "main": false,
+      "mobile": true,
+      "natural": {
+        "height": 269,
+        "width": 179
+      },
+      "objectPosition": "50% 18%",
+      "positionTransform": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+      "rect": {
+        "height": 153.854736328125,
+        "width": 132.3575439453125,
+        "x": 333.82122802734375,
+        "y": 878.8226318359375
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-silver-fantasy-r17.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": true
+    },
+    {
+      "frameTransform": "none",
+      "id": "right-mid-fantasy",
+      "imageRect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "layerTransform": "none",
+      "main": false,
+      "mobile": false,
+      "natural": {
+        "height": 238,
+        "width": 179
+      },
+      "objectPosition": "50% 18%",
+      "positionTransform": "none",
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-anime-curator-r9.png&w=3840&q=75",
+      "subjectTransform": "none",
+      "visible": false
+    },
+    {
+      "frameTransform": "matrix(1, 0, -0.105104, 1, 0, 0)",
+      "id": "main",
+      "imageRect": {
+        "height": 292.81646728515625,
+        "width": 194.11749267578125,
+        "x": 240.8109130859375,
+        "y": 532.4385375976562
+      },
+      "layerTransform": "matrix(1.04, 0, 0.109308, 1.04, 0, 0)",
+      "main": true,
+      "mobile": true,
+      "natural": {
+        "height": 213,
+        "width": 179
+      },
+      "objectPosition": "50% 50%",
+      "positionTransform": "matrix(0.999391, 0.0348995, -0.0348995, 0.999391, 0, 0)",
+      "rect": {
+        "height": 307.179443359375,
+        "width": 178.41983032226562,
+        "x": 247.79006958007812,
+        "y": 550.1602783203125
+      },
+      "src": "/_next/image?url=%2Fimages%2Fagenthub-site%2Fhero-main-reference-r30.webp&w=3840&q=75",
+      "subjectTransform": "matrix(0.92, 0, 0, 0.92, 0, -23.96)",
+      "visible": true
+    }
+  ]
+}

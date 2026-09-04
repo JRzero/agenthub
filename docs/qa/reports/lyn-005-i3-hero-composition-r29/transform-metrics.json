@@ -1,0 +1,794 @@
+{
+  "desktop": {
+    "cards": [
+      {
+        "frameMatrix": "matrix(1, 0, -0.158384, 1, 0, 0)",
+        "imageMatrix": "matrix(1.082, 0, 0.171372, 1.082, 0, 0)",
+        "imageScaleToken": "1.082",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 576,
+          "width": 460
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 184,
+          "width": 257
+        },
+        "positionMatrix": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+        "rect": {
+          "bottom": 137.6475372314453,
+          "height": 194.54507446289065,
+          "right": 846.9812622070312,
+          "width": 264.9781494140625,
+          "x": 582.0031127929688,
+          "y": -56.89753723144531
+        },
+        "slot": "top-strategist",
+        "tone": "outer",
+        "composed": {
+          "a": 1.080969936,
+          "b": 0.0471961908,
+          "c": -0.04719567928742399,
+          "d": 1.0809699583331327,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.0819997610729284,
+        "axisY": 1.0819997610730494,
+        "axisDelta": 1.2101430968414206e-13,
+        "dot": 5.539837553414362e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.158384, 1, 0, 0)",
+        "imageMatrix": "matrix(1.082, 0, 0.171372, 1.082, 0, 0)",
+        "imageScaleToken": "1.082",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 576,
+          "width": 460
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 184,
+          "width": 257
+        },
+        "positionMatrix": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+        "rect": {
+          "bottom": 135.4601593017578,
+          "height": 190.1703186035156,
+          "right": 1116.974853515625,
+          "width": 261.93408203125,
+          "x": 855.040771484375,
+          "y": -54.71015930175781
+        },
+        "slot": "top-anime",
+        "tone": "near",
+        "composed": {
+          "a": 1.0816288740000002,
+          "b": 0.0283234058,
+          "c": -0.02832289397561602,
+          "d": 1.0816288874025728,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.0819996471286948,
+        "axisY": 1.0819996471288156,
+        "axisDelta": 1.2079226507921703e-13,
+        "dot": 5.539836386327102e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.158384, 1, 0, 0)",
+        "imageMatrix": "matrix(1.102, 0, 0.17454, 1.102, 0, 0)",
+        "imageScaleToken": "1.102",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 691,
+          "width": 460
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 191,
+          "width": 257
+        },
+        "positionMatrix": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+        "rect": {
+          "bottom": 142.79484939575195,
+          "height": 197.50375366210935,
+          "right": 1402.8677978515625,
+          "width": 262.126220703125,
+          "x": 1140.7415771484375,
+          "y": -54.70890426635742
+        },
+        "slot": "top-support",
+        "tone": "near",
+        "composed": {
+          "a": 1.1016220140000001,
+          "b": 0.0288469438,
+          "c": -0.02884611208537602,
+          "d": 1.101622035779181,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.1019996406061199,
+        "axisY": 1.1019996406064339,
+        "axisDelta": 3.1397107136399427e-13,
+        "dot": 9.168634019507405e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.158384, 1, 0, 0)",
+        "imageMatrix": "matrix(1.102, 0, 0.17454, 1.102, 0, 0)",
+        "imageScaleToken": "1.102",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 691,
+          "width": 460
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 228,
+          "width": 229
+        },
+        "positionMatrix": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+        "rect": {
+          "bottom": 393.8937683105469,
+          "height": 237.2953338623047,
+          "right": 733.635009765625,
+          "width": 238.34033203125,
+          "x": 495.294677734375,
+          "y": 156.5984344482422
+        },
+        "slot": "mid-expert",
+        "tone": "outer",
+        "composed": {
+          "a": 1.100950896,
+          "b": 0.048068578800000004,
+          "c": -0.04806774759206403,
+          "d": 1.100950932291341,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.1019997566565316,
+        "axisY": 1.1019997566568456,
+        "axisDelta": 3.1397107136399427e-13,
+        "dot": 9.1686359504628e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.158384, 1, 0, 0)",
+        "imageMatrix": "matrix(1.102, 0, 0.17454, 1.102, 0, 0)",
+        "imageScaleToken": "1.102",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 691,
+          "width": 460
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 250,
+          "width": 229
+        },
+        "positionMatrix": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+        "rect": {
+          "bottom": 413.98095703125,
+          "height": 255.45408630371097,
+          "right": 917.7739868164062,
+          "width": 235.0870361328125,
+          "x": 682.6869506835938,
+          "y": 158.52687072753906
+        },
+        "slot": "mid-fantasy",
+        "tone": "near",
+        "composed": {
+          "a": 1.1016220140000001,
+          "b": 0.0288469438,
+          "c": -0.02884611208537602,
+          "d": 1.101622035779181,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.1019996406061199,
+        "axisY": 1.1019996406064339,
+        "axisDelta": 3.1397107136399427e-13,
+        "dot": 9.168634019507405e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.158384, 1, 0, 0)",
+        "imageMatrix": "matrix(1.165, 0, 0.184518, 1.165, 0, 0)",
+        "imageScaleToken": "1.165",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 614,
+          "width": 460
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 257,
+          "width": 229
+        },
+        "positionMatrix": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+        "rect": {
+          "bottom": 423.2391815185547,
+          "height": 266.62677001953125,
+          "right": 1563.0955810546875,
+          "width": 239.620849609375,
+          "x": 1323.4747314453125,
+          "y": 156.61241149902344
+        },
+        "slot": "mid-right-partial",
+        "tone": "outer",
+        "composed": {
+          "a": 1.16389092,
+          "b": 0.050816601,
+          "c": -0.05081596160928001,
+          "d": 1.1638909479164161,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.1649997427448813,
+        "axisY": 1.1649997427450571,
+        "axisDelta": 1.758593271006248e-13,
+        "dot": 7.455996707123047e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.158384, 1, 0, 0)",
+        "imageMatrix": "matrix(1.092, 0, 0.172956, 1.092, 0, 0)",
+        "imageScaleToken": "1.092",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 614,
+          "width": 460
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 272,
+          "width": 243
+        },
+        "positionMatrix": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+        "rect": {
+          "bottom": 737.125244140625,
+          "height": 277.84423828125,
+          "right": 689.427001953125,
+          "width": 249.95553588867188,
+          "x": 439.4714660644531,
+          "y": 459.281005859375
+        },
+        "slot": "bottom-robot",
+        "tone": "near",
+        "composed": {
+          "a": 1.0916254440000002,
+          "b": 0.0285851748,
+          "c": -0.028584503030496006,
+          "d": 1.091625461590877,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.0919996438674073,
+        "axisY": 1.0919996438676138,
+        "axisDelta": 2.0650148258027912e-13,
+        "dot": 7.338235213510957e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.158384, 1, 0, 0)",
+        "imageMatrix": "matrix(1.092, 0, 0.172956, 1.092, 0, 0)",
+        "imageScaleToken": "1.092",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 692,
+          "width": 460
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 279,
+          "width": 229
+        },
+        "positionMatrix": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+        "rect": {
+          "bottom": 744.2727661132812,
+          "height": 284.8033752441406,
+          "right": 861.0020141601562,
+          "width": 235.8555908203125,
+          "x": 625.1464233398438,
+          "y": 459.4693908691406
+        },
+        "slot": "bottom-companion",
+        "tone": "near",
+        "composed": {
+          "a": 1.0916254440000002,
+          "b": 0.0285851748,
+          "c": -0.028584503030496006,
+          "d": 1.091625461590877,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.0919996438674073,
+        "axisY": 1.0919996438676138,
+        "axisDelta": 2.0650148258027912e-13,
+        "dot": 7.338235213510957e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.158384, 1, 0, 0)",
+        "imageMatrix": "matrix(1.082, 0, 0.171372, 1.082, 0, 0)",
+        "imageScaleToken": "1.082",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 691,
+          "width": 460
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 228,
+          "width": 300
+        },
+        "positionMatrix": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+        "rect": {
+          "bottom": 872.5537109375,
+          "height": 240.412109375,
+          "right": 1119.4290771484375,
+          "width": 309.72540283203125,
+          "x": 809.7036743164062,
+          "y": 632.1416015625
+        },
+        "slot": "bottom-operator",
+        "tone": "outer",
+        "composed": {
+          "a": 1.080969936,
+          "b": 0.0471961908,
+          "c": -0.04719567928742399,
+          "d": 1.0809699583331327,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.0819997610729284,
+        "axisY": 1.0819997610730494,
+        "axisDelta": 1.2101430968414206e-13,
+        "dot": 5.539837553414362e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.158384, 1, 0, 0)",
+        "imageMatrix": "matrix(1.102, 0, 0.17454, 1.102, 0, 0)",
+        "imageScaleToken": "1.102",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 691,
+          "width": 460
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 242,
+          "width": 300
+        },
+        "positionMatrix": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+        "rect": {
+          "bottom": 857.8670043945312,
+          "height": 255.0777587890625,
+          "right": 1348.389892578125,
+          "width": 310.36572265625,
+          "x": 1038.024169921875,
+          "y": 602.7892456054688
+        },
+        "slot": "bottom-fantasy",
+        "tone": "outer",
+        "composed": {
+          "a": 1.100950896,
+          "b": 0.048068578800000004,
+          "c": -0.04806774759206403,
+          "d": 1.100950932291341,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.1019997566565316,
+        "axisY": 1.1019997566568456,
+        "axisDelta": 3.1397107136399427e-13,
+        "dot": 9.1686359504628e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.158384, 1, 0, 0)",
+        "imageMatrix": "matrix(1.123, 0, 0.177866, 1.123, 0, 0)",
+        "imageScaleToken": "1.123",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 614,
+          "width": 460
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 242,
+          "width": 257
+        },
+        "positionMatrix": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+        "rect": {
+          "bottom": 717.4711303710938,
+          "height": 253.2079162597656,
+          "right": 1548.4727783203125,
+          "width": 267.539306640625,
+          "x": 1280.9334716796875,
+          "y": 464.2632141113281
+        },
+        "slot": "right-mid-fantasy",
+        "tone": "outer",
+        "composed": {
+          "a": 1.121930904,
+          "b": 0.048984586200000006,
+          "c": -0.048983818931135986,
+          "d": 1.1219309374996993,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.1229997520193147,
+        "axisY": 1.1229997520195776,
+        "axisDelta": 2.6290081223123707e-13,
+        "dot": 8.624636191265078e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.158384, 1, 0, 0)",
+        "imageMatrix": "matrix(1.04, 0, 0.16472, 1.04, 0, 0)",
+        "imageScaleToken": "1.040",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": "true",
+        "natural": {
+          "height": 545,
+          "width": 460
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 492,
+          "width": 400
+        },
+        "positionMatrix": "matrix(0.999391, 0.0348995, -0.0348995, 0.999391, 0, 0)",
+        "rect": {
+          "bottom": 572.0040283203125,
+          "height": 505.437744140625,
+          "right": 1251.68603515625,
+          "width": 417.0361328125,
+          "x": 834.64990234375,
+          "y": 66.5662841796875
+        },
+        "slot": "main",
+        "tone": "main",
+        "composed": {
+          "a": 1.0393666400000001,
+          "b": 0.03629548,
+          "c": -0.036294840389760025,
+          "d": 1.03936666233568,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.0400001799102347,
+        "axisY": 1.0400001799104315,
+        "axisDelta": 1.9673151996357774e-13,
+        "dot": 6.656002302582453e-7
+      }
+    ],
+    "heroRect": {
+      "height": 734,
+      "width": 1429,
+      "x": 0,
+      "y": 0
+    },
+    "viewport": {
+      "clientWidth": 1429,
+      "innerHeight": 707,
+      "innerWidth": 1440,
+      "scrollWidth": 1429
+    }
+  },
+  "mobile": {
+    "cards": [
+      {
+        "frameMatrix": "matrix(1, 0, -0.105104, 1, 0, 0)",
+        "imageMatrix": "matrix(1.082, 0, 0.113723, 1.082, 0, 0)",
+        "imageScaleToken": "1.082",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 224,
+          "width": 179
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 113,
+          "width": 108
+        },
+        "positionMatrix": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+        "rect": {
+          "bottom": 590.394287109375,
+          "height": 115.28857421875,
+          "right": 368.4539489746094,
+          "width": 110.90789794921876,
+          "x": 257.5460510253906,
+          "y": 475.105712890625
+        },
+        "slot": "top-anime",
+        "tone": "near",
+        "composed": {
+          "a": 1.0816288740000002,
+          "b": 0.0283234058,
+          "c": -0.028322933961896016,
+          "d": 1.081628886355497,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.0819996471286948,
+        "axisY": 1.0819996471287978,
+        "axisDelta": 1.0302869668521453e-13,
+        "dot": 5.107036668734743e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.105104, 1, 0, 0)",
+        "imageMatrix": "matrix(1.102, 0, 0.115825, 1.102, 0, 0)",
+        "imageScaleToken": "1.102",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 269,
+          "width": 179
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 140,
+          "width": 96
+        },
+        "positionMatrix": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+        "rect": {
+          "bottom": 748.52734375,
+          "height": 143.5546875,
+          "right": 207.99676513671875,
+          "width": 101.9935302734375,
+          "x": 106.00323486328124,
+          "y": 604.97265625
+        },
+        "slot": "mid-expert",
+        "tone": "outer",
+        "composed": {
+          "a": 1.100950896,
+          "b": 0.048068578800000004,
+          "c": -0.048068187173184035,
+          "d": 1.1009509130988049,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.1019997566565316,
+        "axisY": 1.1019997566566013,
+        "axisDelta": 6.972200594645983e-14,
+        "dot": 4.3198380918901824e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.105104, 1, 0, 0)",
+        "imageMatrix": "matrix(1.102, 0, 0.115825, 1.102, 0, 0)",
+        "imageScaleToken": "1.102",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 269,
+          "width": 179
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 153,
+          "width": 96
+        },
+        "positionMatrix": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+        "rect": {
+          "bottom": 761.2302856445312,
+          "height": 155.4605712890625,
+          "right": 284.986083984375,
+          "width": 99.97216796875,
+          "x": 185.013916015625,
+          "y": 605.7697143554688
+        },
+        "slot": "mid-fantasy",
+        "tone": "near",
+        "composed": {
+          "a": 1.1016220140000001,
+          "b": 0.0288469438,
+          "c": -0.02884655193445604,
+          "d": 1.1016220242613448,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.1019996406061199,
+        "axisY": 1.1019996406061892,
+        "axisDelta": 6.927791673660977e-14,
+        "dot": 4.319837181854247e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.105104, 1, 0, 0)",
+        "imageMatrix": "matrix(1.092, 0, 0.114774, 1.092, 0, 0)",
+        "imageScaleToken": "1.092",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 239,
+          "width": 179
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 167,
+          "width": 102
+        },
+        "positionMatrix": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+        "rect": {
+          "bottom": 959.3065185546876,
+          "height": 169.113037109375,
+          "right": 189.1617431640625,
+          "width": 106.32350158691406,
+          "x": 82.83824157714844,
+          "y": 790.1934814453125
+        },
+        "slot": "bottom-robot",
+        "tone": "near",
+        "composed": {
+          "a": 1.0916254440000002,
+          "b": 0.0285851748,
+          "c": -0.028584742948176006,
+          "d": 1.091625455308421,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.0919996438674073,
+        "axisY": 1.0919996438674928,
+        "axisDelta": 8.548717289613705e-14,
+        "dot": 4.717436923006024e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.105104, 1, 0, 0)",
+        "imageMatrix": "matrix(1.092, 0, 0.114774, 1.092, 0, 0)",
+        "imageScaleToken": "1.092",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 269,
+          "width": 179
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 171,
+          "width": 96
+        },
+        "positionMatrix": "matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 0, 0)",
+        "rect": {
+          "bottom": 963.7271728515624,
+          "height": 173.454345703125,
+          "right": 261.2216796875,
+          "width": 100.443359375,
+          "x": 160.7783203125,
+          "y": 790.2728271484375
+        },
+        "slot": "bottom-companion",
+        "tone": "near",
+        "composed": {
+          "a": 1.0916254440000002,
+          "b": 0.0285851748,
+          "c": -0.028584742948176006,
+          "d": 1.091625455308421,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.0919996438674073,
+        "axisY": 1.0919996438674928,
+        "axisDelta": 8.548717289613705e-14,
+        "dot": 4.717436923006024e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.105104, 1, 0, 0)",
+        "imageMatrix": "matrix(1.102, 0, 0.115825, 1.102, 0, 0)",
+        "imageScaleToken": "1.102",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": null,
+        "natural": {
+          "height": 269,
+          "width": 179
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 149,
+          "width": 126
+        },
+        "positionMatrix": "matrix(0.999048, 0.0436194, -0.0436194, 0.999048, 0, 0)",
+        "rect": {
+          "bottom": 1032.6773681640625,
+          "height": 153.854736328125,
+          "right": 466.17877197265625,
+          "width": 132.3575439453125,
+          "x": 333.82122802734375,
+          "y": 878.8226318359375
+        },
+        "slot": "bottom-fantasy",
+        "tone": "outer",
+        "composed": {
+          "a": 1.100950896,
+          "b": 0.048068578800000004,
+          "c": -0.048068187173184035,
+          "d": 1.1009509130988049,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.1019997566565316,
+        "axisY": 1.1019997566566013,
+        "axisDelta": 6.972200594645983e-14,
+        "dot": 4.3198380918901824e-7
+      },
+      {
+        "frameMatrix": "matrix(1, 0, -0.105104, 1, 0, 0)",
+        "imageMatrix": "matrix(1.04, 0, 0.109308, 1.04, 0, 0)",
+        "imageScaleToken": "1.040",
+        "imgMatrix": "none",
+        "loaded": true,
+        "main": "true",
+        "natural": {
+          "height": 212,
+          "width": 179
+        },
+        "objectFit": "cover",
+        "offset": {
+          "height": 302,
+          "width": 168
+        },
+        "positionMatrix": "matrix(0.999391, 0.0348995, -0.0348995, 0.999391, 0, 0)",
+        "rect": {
+          "bottom": 857.3397216796875,
+          "height": 307.179443359375,
+          "right": 426.20989990234375,
+          "width": 178.41983032226562,
+          "x": 247.79006958007812,
+          "y": 550.1602783203125
+        },
+        "slot": "main",
+        "tone": "main",
+        "composed": {
+          "a": 1.0393666400000001,
+          "b": 0.03629548,
+          "c": -0.036295639902559976,
+          "d": 1.0393666344160801,
+          "e": 0,
+          "f": 0
+        },
+        "axisX": 1.0400001799102347,
+        "axisY": 1.040000179910247,
+        "axisDelta": 1.2212453270876722e-14,
+        "dot": -1.6640005754547937e-7
+      }
+    ],
+    "heroRect": {
+      "height": 844,
+      "width": 379,
+      "x": 0,
+      "y": 0
+    },
+    "viewport": {
+      "clientWidth": 379,
+      "innerHeight": 844,
+      "innerWidth": 390,
+      "scrollWidth": 379
+    }
+  }
+}

@@ -1,0 +1,1252 @@
+{
+  "viewport": {
+    "desktop": {
+      "css": {
+        "width": 1440,
+        "height": 1000
+      },
+      "screenshot": {
+        "width": 1429,
+        "height": 992
+      }
+    },
+    "mobile": {
+      "css": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": {
+        "width": 379,
+        "height": 820
+      }
+    }
+  },
+  "before": {
+    "desktop": [
+      {
+        "cardCss": {
+          "h": 248,
+          "ratio": 1.028226,
+          "w": 255
+        },
+        "cardRect": {
+          "h": 254.451,
+          "ratio": 1.232927,
+          "w": 313.719
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 248,
+          "objectFit": "cover",
+          "objectPosition": "50% 22%",
+          "ratio": 1.028226,
+          "transform": "matrix(1.04, 0, 0, 1.04, 0, 0)",
+          "w": 255
+        },
+        "imageRect": {
+          "h": 262.513,
+          "ratio": 1.23315,
+          "w": 323.718
+        },
+        "natural": {
+          "h": 576,
+          "ratio": 0.798611,
+          "w": 460
+        },
+        "slot": "top-strategist"
+      },
+      {
+        "cardCss": {
+          "h": 248,
+          "ratio": 1.028226,
+          "w": 255
+        },
+        "cardRect": {
+          "h": 254.451,
+          "ratio": 1.232927,
+          "w": 313.719
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 248,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 1.028226,
+          "transform": "matrix(1.04, 0, 0, 1.04, 0, 0)",
+          "w": 255
+        },
+        "imageRect": {
+          "h": 262.513,
+          "ratio": 1.23315,
+          "w": 323.718
+        },
+        "natural": {
+          "h": 576,
+          "ratio": 0.798611,
+          "w": 460
+        },
+        "slot": "top-anime"
+      },
+      {
+        "cardCss": {
+          "h": 258,
+          "ratio": 0.988372,
+          "w": 255
+        },
+        "cardRect": {
+          "h": 264.449,
+          "ratio": 1.195008,
+          "w": 316.019
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 258,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.988372,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 255
+        },
+        "imageRect": {
+          "h": 278.16,
+          "ratio": 1.194929,
+          "w": 332.381
+        },
+        "natural": {
+          "h": 691,
+          "ratio": 0.665702,
+          "w": 460
+        },
+        "slot": "top-support"
+      },
+      {
+        "cardCss": {
+          "h": 308,
+          "ratio": 0.737013,
+          "w": 227
+        },
+        "cardRect": {
+          "h": 313.943,
+          "ratio": 0.952538,
+          "w": 299.043
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 308,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.737013,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 227
+        },
+        "imageRect": {
+          "h": 330.623,
+          "ratio": 0.950889,
+          "w": 314.386
+        },
+        "natural": {
+          "h": 691,
+          "ratio": 0.665702,
+          "w": 460
+        },
+        "slot": "mid-expert"
+      },
+      {
+        "cardCss": {
+          "h": 348,
+          "ratio": 0.652299,
+          "w": 227
+        },
+        "cardRect": {
+          "h": 353.937,
+          "ratio": 0.870895,
+          "w": 308.242
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 348,
+          "objectFit": "cover",
+          "objectPosition": "50% 22%",
+          "ratio": 0.652299,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 227
+        },
+        "imageRect": {
+          "h": 373.016,
+          "ratio": 0.868961,
+          "w": 324.137
+        },
+        "natural": {
+          "h": 691,
+          "ratio": 0.665702,
+          "w": 460
+        },
+        "slot": "mid-fantasy"
+      },
+      {
+        "cardCss": {
+          "h": 348,
+          "ratio": 0.652299,
+          "w": 227
+        },
+        "cardRect": {
+          "h": 353.937,
+          "ratio": 0.870895,
+          "w": 308.242
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 348,
+          "objectFit": "cover",
+          "objectPosition": "50% 20%",
+          "ratio": 0.652299,
+          "transform": "matrix(1.12, 0, 0, 1.12, 0, 0)",
+          "w": 227
+        },
+        "imageRect": {
+          "h": 394.131,
+          "ratio": 0.868961,
+          "w": 342.484
+        },
+        "natural": {
+          "h": 614,
+          "ratio": 0.749186,
+          "w": 460
+        },
+        "slot": "mid-right-partial"
+      },
+      {
+        "cardCss": {
+          "h": 378,
+          "ratio": 0.637566,
+          "w": 241
+        },
+        "cardRect": {
+          "h": 384.182,
+          "ratio": 0.857361,
+          "w": 329.383
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 378,
+          "objectFit": "cover",
+          "objectPosition": "50% 16%",
+          "ratio": 0.637566,
+          "transform": "matrix(1.05, 0, 0, 1.05, 0, 0)",
+          "w": 241
+        },
+        "imageRect": {
+          "h": 401.255,
+          "ratio": 0.855509,
+          "w": 343.277
+        },
+        "natural": {
+          "h": 614,
+          "ratio": 0.749186,
+          "w": 460
+        },
+        "slot": "bottom-robot"
+      },
+      {
+        "cardCss": {
+          "h": 388,
+          "ratio": 0.585052,
+          "w": 227
+        },
+        "cardRect": {
+          "h": 393.931,
+          "ratio": 0.805829,
+          "w": 317.441
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 388,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.585052,
+          "transform": "matrix(1.05, 0, 0, 1.05, 0, 0)",
+          "w": 227
+        },
+        "imageRect": {
+          "h": 411.491,
+          "ratio": 0.803755,
+          "w": 330.738
+        },
+        "natural": {
+          "h": 692,
+          "ratio": 0.66474,
+          "w": 460
+        },
+        "slot": "bottom-companion"
+      },
+      {
+        "cardCss": {
+          "h": 308,
+          "ratio": 1.012987,
+          "w": 312
+        },
+        "cardRect": {
+          "h": 315.439,
+          "ratio": 1.218788,
+          "w": 384.454
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 308,
+          "objectFit": "cover",
+          "objectPosition": "50% 16%",
+          "ratio": 1.012987,
+          "transform": "matrix(1.04, 0, 0, 1.04, 0, 0)",
+          "w": 312
+        },
+        "imageRect": {
+          "h": 325.941,
+          "ratio": 1.218876,
+          "w": 397.281
+        },
+        "natural": {
+          "h": 691,
+          "ratio": 0.665702,
+          "w": 460
+        },
+        "slot": "bottom-operator"
+      },
+      {
+        "cardCss": {
+          "h": 328,
+          "ratio": 0.95122,
+          "w": 312
+        },
+        "cardRect": {
+          "h": 335.436,
+          "ratio": 1.159842,
+          "w": 389.053
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 328,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.95122,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 312
+        },
+        "imageRect": {
+          "h": 353.406,
+          "ratio": 1.159565,
+          "w": 409.797
+        },
+        "natural": {
+          "h": 691,
+          "ratio": 0.665702,
+          "w": 460
+        },
+        "slot": "bottom-fantasy"
+      },
+      {
+        "cardCss": {
+          "h": 328,
+          "ratio": 0.777439,
+          "w": 255
+        },
+        "cardRect": {
+          "h": 334.439,
+          "ratio": 0.99306,
+          "w": 332.118
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 328,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.777439,
+          "transform": "matrix(1.08, 0, 0, 1.08, 0, 0)",
+          "w": 255
+        },
+        "imageRect": {
+          "h": 358.997,
+          "ratio": 0.99176,
+          "w": 356.039
+        },
+        "natural": {
+          "h": 614,
+          "ratio": 0.749186,
+          "w": 460
+        },
+        "slot": "right-mid-fantasy"
+      },
+      {
+        "cardCss": {
+          "h": 748,
+          "ratio": 0.589572,
+          "w": 441
+        },
+        "cardRect": {
+          "h": 757.617,
+          "ratio": 0.810114,
+          "w": 613.756
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 748,
+          "objectFit": "cover",
+          "objectPosition": "50% 50%",
+          "ratio": 0.589572,
+          "transform": "matrix(1, 0, 0, 1, 0, 0)",
+          "w": 441
+        },
+        "imageRect": {
+          "h": 755.582,
+          "ratio": 0.80905,
+          "w": 611.304
+        },
+        "natural": {
+          "h": 545,
+          "ratio": 0.844037,
+          "w": 460
+        },
+        "slot": "main"
+      }
+    ],
+    "mobile": [
+      {
+        "cardCss": {
+          "h": 111,
+          "ratio": 0.954955,
+          "w": 106
+        },
+        "cardRect": {
+          "h": 114.368,
+          "ratio": 1.166896,
+          "w": 133.455
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 111,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.954955,
+          "transform": "matrix(1.04, 0, 0, 1.04, 0, 0)",
+          "w": 106
+        },
+        "imageRect": {
+          "h": 116.826,
+          "ratio": 1.166202,
+          "w": 136.243
+        },
+        "natural": {
+          "h": 224,
+          "ratio": 0.799107,
+          "w": 179
+        },
+        "slot": "top-anime"
+      },
+      {
+        "cardCss": {
+          "h": 138,
+          "ratio": 0.681159,
+          "w": 94
+        },
+        "cardRect": {
+          "h": 141.154,
+          "ratio": 0.904762,
+          "w": 127.711
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 138,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.681159,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 94
+        },
+        "imageRect": {
+          "h": 147.467,
+          "ratio": 0.900367,
+          "w": 132.774
+        },
+        "natural": {
+          "h": 269,
+          "ratio": 0.665428,
+          "w": 179
+        },
+        "slot": "mid-expert"
+      },
+      {
+        "cardCss": {
+          "h": 156,
+          "ratio": 0.602564,
+          "w": 94
+        },
+        "cardRect": {
+          "h": 159.151,
+          "ratio": 0.82846,
+          "w": 131.851
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 156,
+          "objectFit": "cover",
+          "objectPosition": "50% 22%",
+          "ratio": 0.602564,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 94
+        },
+        "imageRect": {
+          "h": 166.544,
+          "ratio": 0.82358,
+          "w": 137.162
+        },
+        "natural": {
+          "h": 269,
+          "ratio": 0.665428,
+          "w": 179
+        },
+        "slot": "mid-fantasy"
+      },
+      {
+        "cardCss": {
+          "h": 169,
+          "ratio": 0.591716,
+          "w": 100
+        },
+        "cardRect": {
+          "h": 172.754,
+          "ratio": 0.815796,
+          "w": 140.932
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 169,
+          "objectFit": "cover",
+          "objectPosition": "50% 16%",
+          "ratio": 0.591716,
+          "transform": "matrix(1.05, 0, 0, 1.05, 0, 0)",
+          "w": 100
+        },
+        "imageRect": {
+          "h": 179.255,
+          "ratio": 0.811154,
+          "w": 145.404
+        },
+        "natural": {
+          "h": 238,
+          "ratio": 0.752101,
+          "w": 179
+        },
+        "slot": "bottom-robot"
+      },
+      {
+        "cardCss": {
+          "h": 174,
+          "ratio": 0.54023,
+          "w": 94
+        },
+        "cardRect": {
+          "h": 177.149,
+          "ratio": 0.767661,
+          "w": 135.99
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 174,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.54023,
+          "transform": "matrix(1.05, 0, 0, 1.05, 0, 0)",
+          "w": 94
+        },
+        "imageRect": {
+          "h": 183.87,
+          "ratio": 0.762576,
+          "w": 140.215
+        },
+        "natural": {
+          "h": 269,
+          "ratio": 0.665428,
+          "w": 179
+        },
+        "slot": "bottom-companion"
+      },
+      {
+        "cardCss": {
+          "h": 147,
+          "ratio": 0.884354,
+          "w": 130
+        },
+        "cardRect": {
+          "h": 150.781,
+          "ratio": 1.098557,
+          "w": 165.642
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 147,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.884354,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 130
+        },
+        "imageRect": {
+          "h": 157.671,
+          "ratio": 1.097098,
+          "w": 172.981
+        },
+        "natural": {
+          "h": 269,
+          "ratio": 0.665428,
+          "w": 179
+        },
+        "slot": "bottom-fantasy"
+      },
+      {
+        "cardCss": {
+          "h": 336,
+          "ratio": 0.547619,
+          "w": 184
+        },
+        "cardRect": {
+          "h": 340.695,
+          "ratio": 0.771655,
+          "w": 262.899
+        },
+        "cardTransform": "matrix(0.996138, 0.0174524, -0.229977, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 336,
+          "objectFit": "cover",
+          "objectPosition": "50% 50%",
+          "ratio": 0.547619,
+          "transform": "matrix(1, 0, 0, 1, 0, 0)",
+          "w": 184
+        },
+        "imageRect": {
+          "h": 338.66,
+          "ratio": 0.76905,
+          "w": 260.447
+        },
+        "natural": {
+          "h": 212,
+          "ratio": 0.84434,
+          "w": 179
+        },
+        "slot": "main"
+      }
+    ]
+  },
+  "after": {
+    "desktop": [
+      {
+        "cardCss": {
+          "h": 248,
+          "ratio": 1.028226,
+          "w": 255
+        },
+        "cardRect": {
+          "h": 254.451,
+          "ratio": 1.027871,
+          "w": 261.543
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 248,
+          "objectFit": "cover",
+          "objectPosition": "50% 22%",
+          "ratio": 1.028226,
+          "transform": "matrix(1.04, 0, 0, 1.04, 0, 0)",
+          "w": 255
+        },
+        "imageRect": {
+          "h": 262.513,
+          "ratio": 1.028095,
+          "w": 269.888
+        },
+        "natural": {
+          "h": 576,
+          "ratio": 0.798611,
+          "w": 460
+        },
+        "slot": "top-strategist"
+      },
+      {
+        "cardCss": {
+          "h": 248,
+          "ratio": 1.028226,
+          "w": 255
+        },
+        "cardRect": {
+          "h": 254.451,
+          "ratio": 1.027871,
+          "w": 261.543
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 248,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 1.028226,
+          "transform": "matrix(1.04, 0, 0, 1.04, 0, 0)",
+          "w": 255
+        },
+        "imageRect": {
+          "h": 262.513,
+          "ratio": 1.028095,
+          "w": 269.888
+        },
+        "natural": {
+          "h": 576,
+          "ratio": 0.798611,
+          "w": 460
+        },
+        "slot": "top-anime"
+      },
+      {
+        "cardCss": {
+          "h": 258,
+          "ratio": 0.988372,
+          "w": 255
+        },
+        "cardRect": {
+          "h": 264.449,
+          "ratio": 0.989668,
+          "w": 261.717
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 258,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.988372,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 255
+        },
+        "imageRect": {
+          "h": 278.16,
+          "ratio": 0.989588,
+          "w": 275.263
+        },
+        "natural": {
+          "h": 691,
+          "ratio": 0.665702,
+          "w": 460
+        },
+        "slot": "top-support"
+      },
+      {
+        "cardCss": {
+          "h": 308,
+          "ratio": 0.737013,
+          "w": 227
+        },
+        "cardRect": {
+          "h": 313.943,
+          "ratio": 0.745384,
+          "w": 234.008
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 308,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.737013,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 227
+        },
+        "imageRect": {
+          "h": 330.623,
+          "ratio": 0.743724,
+          "w": 245.892
+        },
+        "natural": {
+          "h": 691,
+          "ratio": 0.665702,
+          "w": 460
+        },
+        "slot": "mid-expert"
+      },
+      {
+        "cardCss": {
+          "h": 348,
+          "ratio": 0.652299,
+          "w": 227
+        },
+        "cardRect": {
+          "h": 353.937,
+          "ratio": 0.66313,
+          "w": 234.706
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 348,
+          "objectFit": "cover",
+          "objectPosition": "50% 22%",
+          "ratio": 0.652299,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 227
+        },
+        "imageRect": {
+          "h": 373.016,
+          "ratio": 0.661183,
+          "w": 246.632
+        },
+        "natural": {
+          "h": 691,
+          "ratio": 0.665702,
+          "w": 460
+        },
+        "slot": "mid-fantasy"
+      },
+      {
+        "cardCss": {
+          "h": 348,
+          "ratio": 0.652299,
+          "w": 227
+        },
+        "cardRect": {
+          "h": 353.937,
+          "ratio": 0.66313,
+          "w": 234.706
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 348,
+          "objectFit": "cover",
+          "objectPosition": "50% 20%",
+          "ratio": 0.652299,
+          "transform": "matrix(1.12, 0, 0, 1.12, 0, 0)",
+          "w": 227
+        },
+        "imageRect": {
+          "h": 394.131,
+          "ratio": 0.661183,
+          "w": 260.592
+        },
+        "natural": {
+          "h": 614,
+          "ratio": 0.749186,
+          "w": 460
+        },
+        "slot": "mid-right-partial"
+      },
+      {
+        "cardCss": {
+          "h": 378,
+          "ratio": 0.637566,
+          "w": 241
+        },
+        "cardRect": {
+          "h": 384.182,
+          "ratio": 0.649496,
+          "w": 249.525
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 378,
+          "objectFit": "cover",
+          "objectPosition": "50% 16%",
+          "ratio": 0.637566,
+          "transform": "matrix(1.05, 0, 0, 1.05, 0, 0)",
+          "w": 241
+        },
+        "imageRect": {
+          "h": 401.255,
+          "ratio": 0.64763,
+          "w": 259.865
+        },
+        "natural": {
+          "h": 614,
+          "ratio": 0.749186,
+          "w": 460
+        },
+        "slot": "bottom-robot"
+      },
+      {
+        "cardCss": {
+          "h": 388,
+          "ratio": 0.585052,
+          "w": 227
+        },
+        "cardRect": {
+          "h": 393.931,
+          "ratio": 0.597578,
+          "w": 235.404
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 388,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.585052,
+          "transform": "matrix(1.05, 0, 0, 1.05, 0, 0)",
+          "w": 227
+        },
+        "imageRect": {
+          "h": 411.491,
+          "ratio": 0.595489,
+          "w": 245.038
+        },
+        "natural": {
+          "h": 692,
+          "ratio": 0.66474,
+          "w": 460
+        },
+        "slot": "bottom-companion"
+      },
+      {
+        "cardCss": {
+          "h": 308,
+          "ratio": 1.012987,
+          "w": 312
+        },
+        "cardRect": {
+          "h": 315.439,
+          "ratio": 1.013625,
+          "w": 319.737
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 308,
+          "objectFit": "cover",
+          "objectPosition": "50% 16%",
+          "ratio": 1.012987,
+          "transform": "matrix(1.04, 0, 0, 1.04, 0, 0)",
+          "w": 312
+        },
+        "imageRect": {
+          "h": 325.941,
+          "ratio": 1.013714,
+          "w": 330.411
+        },
+        "natural": {
+          "h": 691,
+          "ratio": 0.665702,
+          "w": 460
+        },
+        "slot": "bottom-operator"
+      },
+      {
+        "cardCss": {
+          "h": 328,
+          "ratio": 0.95122,
+          "w": 312
+        },
+        "cardRect": {
+          "h": 335.436,
+          "ratio": 0.954239,
+          "w": 320.086
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 328,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.95122,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 312
+        },
+        "imageRect": {
+          "h": 353.406,
+          "ratio": 0.95396,
+          "w": 337.135
+        },
+        "natural": {
+          "h": 691,
+          "ratio": 0.665702,
+          "w": 460
+        },
+        "slot": "bottom-fantasy"
+      },
+      {
+        "cardCss": {
+          "h": 328,
+          "ratio": 0.777439,
+          "w": 255
+        },
+        "cardRect": {
+          "h": 334.439,
+          "ratio": 0.786209,
+          "w": 262.939
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 328,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.777439,
+          "transform": "matrix(1.08, 0, 0, 1.08, 0, 0)",
+          "w": 255
+        },
+        "imageRect": {
+          "h": 358.997,
+          "ratio": 0.784901,
+          "w": 281.777
+        },
+        "natural": {
+          "h": 614,
+          "ratio": 0.749186,
+          "w": 460
+        },
+        "slot": "right-mid-fantasy"
+      },
+      {
+        "cardCss": {
+          "h": 748,
+          "ratio": 0.589572,
+          "w": 441
+        },
+        "cardRect": {
+          "h": 757.617,
+          "ratio": 0.601895,
+          "w": 456.006
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 748,
+          "objectFit": "cover",
+          "objectPosition": "50% 50%",
+          "ratio": 0.589572,
+          "transform": "matrix(1, 0, 0, 1, 0, 0)",
+          "w": 441
+        },
+        "imageRect": {
+          "h": 755.582,
+          "ratio": 0.600824,
+          "w": 453.972
+        },
+        "natural": {
+          "h": 545,
+          "ratio": 0.844037,
+          "w": 460
+        },
+        "slot": "main"
+      }
+    ],
+    "mobile": [
+      {
+        "cardCss": {
+          "h": 111,
+          "ratio": 0.954955,
+          "w": 106
+        },
+        "cardRect": {
+          "h": 114.368,
+          "ratio": 0.961346,
+          "w": 109.947
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 111,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.954955,
+          "transform": "matrix(1.04, 0, 0, 1.04, 0, 0)",
+          "w": 106
+        },
+        "imageRect": {
+          "h": 116.826,
+          "ratio": 0.960646,
+          "w": 112.229
+        },
+        "natural": {
+          "h": 224,
+          "ratio": 0.799107,
+          "w": 179
+        },
+        "slot": "top-anime"
+      },
+      {
+        "cardCss": {
+          "h": 138,
+          "ratio": 0.681159,
+          "w": 94
+        },
+        "cardRect": {
+          "h": 141.154,
+          "ratio": 0.697252,
+          "w": 98.42
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 138,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.681159,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 94
+        },
+        "imageRect": {
+          "h": 147.467,
+          "ratio": 0.692824,
+          "w": 102.169
+        },
+        "natural": {
+          "h": 269,
+          "ratio": 0.665428,
+          "w": 179
+        },
+        "slot": "mid-expert"
+      },
+      {
+        "cardCss": {
+          "h": 156,
+          "ratio": 0.602564,
+          "w": 94
+        },
+        "cardRect": {
+          "h": 159.151,
+          "ratio": 0.620379,
+          "w": 98.734
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 156,
+          "objectFit": "cover",
+          "objectPosition": "50% 22%",
+          "ratio": 0.602564,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 94
+        },
+        "imageRect": {
+          "h": 166.544,
+          "ratio": 0.615463,
+          "w": 102.501
+        },
+        "natural": {
+          "h": 269,
+          "ratio": 0.665428,
+          "w": 179
+        },
+        "slot": "mid-fantasy"
+      },
+      {
+        "cardCss": {
+          "h": 169,
+          "ratio": 0.591716,
+          "w": 100
+        },
+        "cardRect": {
+          "h": 172.754,
+          "ratio": 0.60762,
+          "w": 104.969
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 169,
+          "objectFit": "cover",
+          "objectPosition": "50% 16%",
+          "ratio": 0.591716,
+          "transform": "matrix(1.05, 0, 0, 1.05, 0, 0)",
+          "w": 100
+        },
+        "imageRect": {
+          "h": 179.255,
+          "ratio": 0.602943,
+          "w": 108.081
+        },
+        "natural": {
+          "h": 238,
+          "ratio": 0.752101,
+          "w": 179
+        },
+        "slot": "bottom-robot"
+      },
+      {
+        "cardCss": {
+          "h": 174,
+          "ratio": 0.54023,
+          "w": 94
+        },
+        "cardRect": {
+          "h": 177.149,
+          "ratio": 0.559125,
+          "w": 99.048
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 174,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.54023,
+          "transform": "matrix(1.05, 0, 0, 1.05, 0, 0)",
+          "w": 94
+        },
+        "imageRect": {
+          "h": 183.87,
+          "ratio": 0.554002,
+          "w": 101.864
+        },
+        "natural": {
+          "h": 269,
+          "ratio": 0.665428,
+          "w": 179
+        },
+        "slot": "bottom-companion"
+      },
+      {
+        "cardCss": {
+          "h": 147,
+          "ratio": 0.884354,
+          "w": 130
+        },
+        "cardRect": {
+          "h": 150.781,
+          "ratio": 0.892496,
+          "w": 134.572
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 147,
+          "objectFit": "cover",
+          "objectPosition": "50% 18%",
+          "ratio": 0.884354,
+          "transform": "matrix(1.06, 0, 0, 1.06, 0, 0)",
+          "w": 130
+        },
+        "imageRect": {
+          "h": 157.671,
+          "ratio": 0.891025,
+          "w": 140.489
+        },
+        "natural": {
+          "h": 269,
+          "ratio": 0.665428,
+          "w": 179
+        },
+        "slot": "bottom-fantasy"
+      },
+      {
+        "cardCss": {
+          "h": 336,
+          "ratio": 0.547619,
+          "w": 184
+        },
+        "cardRect": {
+          "h": 340.695,
+          "ratio": 0.563149,
+          "w": 191.862
+        },
+        "cardTransform": "matrix(0.999848, 0.0174524, -0.0174524, 0.999848, 0, 0)",
+        "imageCss": {
+          "h": 336,
+          "objectFit": "cover",
+          "objectPosition": "50% 50%",
+          "ratio": 0.547619,
+          "transform": "matrix(1, 0, 0, 1, 0, 0)",
+          "w": 184
+        },
+        "imageRect": {
+          "h": 338.66,
+          "ratio": 0.560524,
+          "w": 189.827
+        },
+        "natural": {
+          "h": 212,
+          "ratio": 0.84434,
+          "w": 179
+        },
+        "slot": "main"
+      }
+    ]
+  }
+}

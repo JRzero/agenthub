@@ -1,0 +1,98 @@
+{
+  "allLoaded": true,
+  "cards": [
+    {
+      "axisDelta": 1.2212453270876722e-14,
+      "axisX": 1.039999660826102,
+      "axisY": 1.0399996608261142,
+      "dot": -1.6639989146652326e-7,
+      "loaded": true,
+      "slot": "top-anime",
+      "subjectOffsetX": "0%",
+      "subjectOffsetY": "1%",
+      "subjectScale": "1.000",
+      "visible": true
+    },
+    {
+      "axisDelta": 1.2212453270876722e-14,
+      "axisX": 1.0399997703473618,
+      "axisY": 1.039999770347374,
+      "dot": -1.6639992654610136e-7,
+      "loaded": true,
+      "slot": "mid-expert",
+      "subjectOffsetX": "0%",
+      "subjectOffsetY": "0%",
+      "subjectScale": "1.000",
+      "visible": true
+    },
+    {
+      "axisDelta": 1.2212453270876722e-14,
+      "axisX": 1.039999660826102,
+      "axisY": 1.0399996608261142,
+      "dot": -1.6639989146652326e-7,
+      "loaded": true,
+      "slot": "mid-fantasy",
+      "subjectOffsetX": "0%",
+      "subjectOffsetY": "0%",
+      "subjectScale": "1.000",
+      "visible": true
+    },
+    {
+      "axisDelta": 1.1879386363489175e-14,
+      "axisX": 0.9983996743930578,
+      "axisY": 0.9983996743930696,
+      "dot": -1.533541399770244e-7,
+      "loaded": true,
+      "slot": "bottom-robot",
+      "subjectOffsetX": "0%",
+      "subjectOffsetY": "0%",
+      "subjectScale": "0.960",
+      "visible": true
+    },
+    {
+      "axisDelta": 1.1879386363489175e-14,
+      "axisX": 0.9983996743930578,
+      "axisY": 0.9983996743930696,
+      "dot": -1.533541399770244e-7,
+      "loaded": true,
+      "slot": "bottom-companion",
+      "subjectOffsetX": "0%",
+      "subjectOffsetY": "0%",
+      "subjectScale": "0.960",
+      "visible": true
+    },
+    {
+      "axisDelta": 1.2212453270876722e-14,
+      "axisX": 1.0399997703473618,
+      "axisY": 1.039999770347374,
+      "dot": -1.6639992654610136e-7,
+      "loaded": true,
+      "slot": "bottom-fantasy",
+      "subjectOffsetX": "0%",
+      "subjectOffsetY": "-1%",
+      "subjectScale": "1.000",
+      "visible": false
+    },
+    {
+      "axisDelta": 1.2212453270876722e-14,
+      "axisX": 1.0400001799102347,
+      "axisY": 1.040000179910247,
+      "dot": -1.6640005754547937e-7,
+      "loaded": true,
+      "slot": "main",
+      "subjectOffsetX": "0%",
+      "subjectOffsetY": "-1%",
+      "subjectScale": "1.000",
+      "visible": true
+    }
+  ],
+  "displayedCardCount": 7,
+  "maxAbsDot": 1.6640005754547937e-7,
+  "maxAxisDelta": 1.2212453270876722e-14,
+  "overflowX": 0,
+  "viewport": {
+    "height": 844,
+    "width": 390
+  },
+  "visibleCardCount": 6
+}
