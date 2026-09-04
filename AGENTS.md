@@ -2,6 +2,14 @@
 
 > AgentHub 独立前端仓库的 AI 操作手册。产品介绍和启动方式见 [`README.md`](./README.md)，已完成变更的规格、设计与任务记录见 [`openspec/changes/`](./openspec/changes/)。
 
+## Harness 导航
+
+- 仓库责任、禁止范围和协作规则：本文件。
+- Repository Harness 清单：[`harness.yaml`](./harness.yaml)。
+- 已确认的架构边界：[`docs/architecture.md`](./docs/architecture.md)。
+- 契约权威来源与兼容索引：[`docs/contracts.md`](./docs/contracts.md)。
+- 统一验证入口：`./scripts/verify fast` 或 `./scripts/verify full`。
+
 ## 0. 项目与协作边界
 
 - 本仓库是可独立安装、构建、测试和发布的 AgentHub 前端项目。
@@ -30,7 +38,9 @@ OYIIOYII 等应用只是 AgentHub 的发行或运行客户端之一。新增功�
 | 样式 | Tailwind CSS 3 |
 | 数据请求 | TanStack Query + `src/shared/api/` |
 | 测试 | Vitest + jsdom |
+| Node.js | 固定 `24.19.0`，`package.json` engines 为 `>=24.19.0 <25` |
 | 包管理器 | npm，锁文件为 `package-lock.json` |
+| OpenSpec | 固定仓内 `node_modules/.bin/openspec` 1.6.0，不依赖全局安装 |
 | 开发端口 | `3002` |
 | 默认后端 | `http://localhost:8080` |
 | API 环境变量 | `NEXT_PUBLIC_API_URL` |
@@ -40,7 +50,7 @@ OYIIOYII 等应用只是 AgentHub 的发行或运行客户端之一。新增功�
 常用命令：
 
 ```powershell
-npm install
+npm ci --ignore-scripts --no-audit --no-fund
 npm run dev
 npm run dev:webpack
 npm run lint
@@ -149,7 +159,7 @@ API 规则：
 
 实施前：
 
-1. `openspec list` 确认是否已有对应 change。
+1. `node_modules/.bin/openspec list` 确认是否已有对应 change。
 2. 阅读该 change 的 `proposal.md`、`design.md`、`specs/` 和 `tasks.md`。
 3. 不要跳过未确认的 artifact 阶段直接扩大实现范围。
 
@@ -157,10 +167,12 @@ API 规则：
 
 1. 更新 `tasks.md` 的完成状态。
 2. 保证代码、规格和 `docs/qa/` 证据一致。
-3. 执行 `openspec validate --all --strict`。
+3. 执行 `node_modules/.bin/openspec validate --all --strict`。
 4. 归档属于独立决策，不因代码完成而自动归档。
 
 ## 8. 验证与 QA
+
+默认通过统一入口运行门禁：日常快速检查使用 `./scripts/verify fast`，完整交付检查使用 `./scripts/verify full`。统一入口不替代下面列出的底层命令及与改动范围相关的浏览器、视觉和契约验证要求。
 
 代码变更提交前最低门禁：
 
@@ -169,7 +181,7 @@ npm run lint
 npm run typecheck
 npm test
 npm run build
-openspec validate --all --strict
+node_modules/.bin/openspec validate --all --strict
 ```
 
 验证要求：
@@ -229,4 +241,3 @@ openspec validate --all --strict
 - Commit 应按目的拆分，推荐：`feat(agenthub): ...`、`fix(agenthub): ...`、`test(agenthub): ...`、`docs(openspec): ...`、`chore(agenthub): ...`。
 - 不主动提交或 push；用户要求后再执行。
 - 交付说明必须包含：修改范围、验证结果、尚未接入的后端能力、需要用户决策的后续项。
-

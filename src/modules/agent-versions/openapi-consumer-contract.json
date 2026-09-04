@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "authority": {
+    "repository": "linkyun-agent",
+    "artifact": "docs/openapi/openapi.yaml",
+    "source_ref": "linkyun-agent:docs/openapi/openapi.yaml",
+    "producer_task": "LYN-HAR-001-HAR-06C-LA",
+    "producer_baseline": "1a15df62f4954ca0fbb13c35b58f62df5a506cee",
+    "producer_sha256": "e80b042cc1cf81f4da388073351d364c594e8d92541439c6a3499a84f4ac2b26",
+    "producer_status": "candidate_uncommitted",
+    "binding_status": "candidate-bound-to-uncommitted-producer"
+  },
+  "coverage": {
+    "producer": {
+      "paths": 14,
+      "operations": 16
+    },
+    "consumer": {
+      "paths": 12,
+      "operations": 14
+    },
+    "producer_operations_not_consumed": [
+      "Agent Client heartbeat",
+      "Agent Client acknowledgement"
+    ],
+    "consumer_operations_outside_producer_candidate": []
+  },
+  "consumer": {
+    "repository": "agenthub",
+    "module": "src/modules/agent-versions",
+    "baseline": "2fc749a9691129fd5437491f67a93709a5499d87",
+    "task_id": "LYN-HAR-001-HAR-06C-AH"
+  },
+  "operations": [
+    {
+      "id": "listAgentVersions",
+      "method": "GET",
+      "path": "/api/v1/agents/{agent_id}/versions",
+      "query_required": ["limit", "offset"],
+      "request_required": []
+    },
+    {
+      "id": "getAgentVersion",
+      "method": "GET",
+      "path": "/api/v1/agents/{agent_id}/versions/{version_no}",
+      "query_required": [],
+      "request_required": []
+    },
+    {
+      "id": "publishAgentVersion",
+      "method": "POST",
+      "path": "/api/v1/agents/{agent_id}/publish",
+      "query_required": [],
+      "request_required": [
+        "expected_draft_revision",
+        "expected_current_version_id",
+        "release_note",
+        "request_key"
+      ]
+    },
+    {
+      "id": "unpublishAgent",
+      "method": "POST",
+      "path": "/api/v1/agents/{agent_id}/unpublish",
+      "query_required": [],
+      "request_required": []
+    },
+    {
+      "id": "relistAgent",
+      "method": "POST",
+      "path": "/api/v1/agents/{agent_id}/relist",
+      "query_required": [],
+      "request_required": []
+    },
+    {
+      "id": "createDraftFromVersion",
+      "method": "POST",
+      "path": "/api/v1/agents/{agent_id}/versions/{version_no}/create-draft",
+      "query_required": [],
+      "request_required": ["expected_draft_revision", "confirm_replace"]
+    },
+    {
+      "id": "listAgentClients",
+      "method": "GET",
+      "path": "/api/v1/agents/{agent_id}/clients",
+      "query_required": [],
+      "request_required": []
+    },
+    {
+      "id": "createAgentClient",
+      "method": "POST",
+      "path": "/api/v1/agents/{agent_id}/clients",
+      "query_required": [],
+      "request_required": ["client_key", "client_type", "name"]
+    },
+    {
+      "id": "updateAgentClient",
+      "method": "PATCH",
+      "path": "/api/v1/agent-clients/{client_id}",
+      "query_required": [],
+      "request_required": ["expected_capability_hash"]
+    },
+    {
+      "id": "disableAgentClient",
+      "method": "DELETE",
+      "path": "/api/v1/agent-clients/{client_id}",
+      "query_required": [],
+      "request_required": []
+    },
+    {
+      "id": "getAgentClientRuntimeVersion",
+      "method": "GET",
+      "path": "/api/v1/agent-clients/{client_id}/runtime-version",
+      "query_required": [],
+      "request_required": []
+    },
+    {
+      "id": "createAgentClientExport",
+      "method": "POST",
+      "path": "/api/v1/agent-clients/{client_id}/exports",
+      "query_required": [],
+      "request_required": []
+    },
+    {
+      "id": "createAgentExport",
+      "method": "POST",
+      "path": "/api/v1/agents/{agent_id}/exports",
+      "query_required": [],
+      "request_required": []
+    },
+    {
+      "id": "downloadAgentExport",
+      "method": "GET",
+      "path": "/api/v1/agent-exports/{export_id}/download",
+      "query_required": [],
+      "request_required": []
+    }
+  ],
+  "stable_error_codes": [
+    "CLIENT_CAPABILITIES_CHANGED",
+    "CLIENT_INCOMPATIBLE",
+    "CURRENT_VERSION_CHANGED",
+    "DRAFT_CONFLICT",
+    "DRAFT_HAS_UNPUBLISHED_CHANGES",
+    "IDEMPOTENCY_CONFLICT",
+    "NO_VERSION_CHANGES",
+    "VERSION_NOT_FOUND",
+    "VERSION_REVOKED"
+  ],
+  "error_envelopes": {
+    "version_lifecycle": {
+      "code": "data.code",
+      "message": "data.error"
+    },
+    "export_and_respond_error_code": {
+      "code": "error.code",
+      "message": "error.message"
+    }
+  },
+  "type_contracts": {
+    "publish_input_required": [
+      "expected_draft_revision",
+      "expected_current_version_id",
+      "release_note",
+      "request_key"
+    ],
+    "restore_input_required": ["expected_draft_revision", "confirm_replace"],
+    "client_update_required": ["expected_capability_hash"],
+    "runtime_version_required": [
+      "version",
+      "client_config",
+      "current_version_id",
+      "current_version_no",
+      "current_version_hash"
+    ],
+    "export_record_required": [
+      "id",
+      "uuid",
+      "agent_id",
+      "agent_version_id",
+      "package_hash",
+      "storage_path",
+      "file_size",
+      "exported_by",
+      "exported_at"
+    ]
+  },
+  "semantic_invariants": {
+    "client_runtime_version": "version is the platform current Agent version; compatibility aliases are derived from version",
+    "generic_export": "Agent-level export has no required Client association or browser-generated request body",
+    "client_export": "Client-specific export remains a compatibility operation and does not replace generic export",
+    "export_download": "public payload is authenticated application/zip bytes; storage_path remains internal"
+  }
+}

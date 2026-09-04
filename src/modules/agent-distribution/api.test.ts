@@ -1,13 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createShareLink, deleteShareLink, getShareLink, setShareLinkEnabled } from "./api";
 
+const EXPECTED_API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
 describe("distribution share-link API", () => {
   beforeEach(() => { window.localStorage.clear(); vi.restoreAllMocks(); });
 
   it("keeps share-link requests scoped to the current workspace", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({ success: true, data: { share_token: "share-1" } }), { status: 200 }));
     await createShareLink("test-key", 32, "studio");
-    expect(fetchMock).toHaveBeenCalledWith("http://localhost:8080/api/v1/agents/32/share-link", expect.objectContaining({ method: "POST", headers: expect.objectContaining({ "X-Workspace-Code": "studio" }) }));
+    expect(fetchMock).toHaveBeenCalledWith(`${EXPECTED_API_BASE}/api/v1/agents/32/share-link`, expect.objectContaining({ method: "POST", headers: expect.objectContaining({ "X-Workspace-Code": "studio" }) }));
   });
 
   it("treats a missing share link as an unpublished channel", async () => {
